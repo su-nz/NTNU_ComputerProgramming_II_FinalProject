@@ -11,7 +11,8 @@ typedef struct Character{
 	int8_t Maxhp;
 	int8_t Maxarmor;
 	int8_t Ult_threshold;
-	int8_t token;
+	int8_t character_code; // 角色代碼
+	int8_t token_code; // 偷肯代碼 0)為沒有
 }character
 
 typedef struct Player{
