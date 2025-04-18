@@ -6,6 +6,7 @@
 #include <math.h>
 #define Ult_threshold Ultt
 #define Maxpower 25
+#define DeckMax 200
 
 typedef struct Character{
 	int8_t Maxhp;
@@ -36,5 +37,11 @@ typedef struct Card{
 	int8_t require_basic_card; // 0 means do not requires
 	int16_t cardcode; // for skill card 
 }card 
+
+int16_t Map[11][3] // Map[x][0]) 遺跡排的紀錄 Map[x][1]) 第一排和單人模式時使用的地圖 Map[x][2]) 第二排
+card player1[DeckMax],player2[DeckMax],player3[DeckMax],player4[DeckMax]; // 單人模式時，玩家一為player1、對手為player2 多人模式時，玩家一為player1、玩家二為player3
+card attack_shop[54],armor_shop[54],movement_shop[54],wild_shop[18];
+
+
 
 	
