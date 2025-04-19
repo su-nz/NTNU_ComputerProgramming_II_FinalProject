@@ -9,24 +9,34 @@ vector initVector() {
     return v;
 }
 void pushbackVector(vector* vec, int32_t val) {
-    vec.SIZE +=1;
-    vec.array[SIZE-1] = val;
+    if ((*vec).SIZE < 256) {
+        (*vec).array[(*vec).SIZE] = val;
+        (*vec).SIZE += 1;
+    }else{
+        printf("Max is 256!\n");
+    }
 }
 void popbackVector(vector* vec) {
-    vec.array[SIZE-1] = 0;
-    vec.SIZE -=1;
+    if ((*vec).SIZE > 0) {
+        (*vec).SIZE -= 1;
+        (*vec).array[(*vec).SIZE] = 0;
+    }else{
+        printf("Min is 0!\n");
+    }
 }
 void clearVector(vector* vec) {
-    while(vec.SIZE!=0){
-        vec.array[SIZE-1] = 0;
-        vec.SIZE -=1;
+    while((*vec).SIZE!=0){
+        (*vec).array[(*vec).SIZE-1] = 0;
+        (*vec).SIZE -=1;
     }
 }
 void eraseVector(vector* vec, int index) {
-  int newsize = vec.SIZE-1 ; 
-  vec.array[index] = 0;
-  for(int i = index ; i < newsize ; i++){
-      vec.array[index] = vec.array[index+1];
-  }
-  vec.SIZE-- ;
+  if (index < 0 || index >= (*vec).SIZE) return; 
+
+    for (int i = index; i < (*vec).SIZE - 1; i++) {
+        (*vec).array[i] = (*vec).array[i + 1]; 
+    }
+    (*vec).SIZE -= 1;
+    (*vec).array[(*vec).SIZE] = 0; 
 }
+
