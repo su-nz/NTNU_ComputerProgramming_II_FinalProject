@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <math.h>
+#include <time.h> 
+#include <unistd.h> 
 #define Ult_threshold Ultt
 #define Maxpower 25
 #define DeckMax 200
@@ -14,9 +16,11 @@ typedef struct Character{
 	int8_t Ult_threshold;
 	int8_t character_code; // 角色代碼
 	int8_t token_code; // 偷肯代碼 0)為沒有
-}character
+}character;
 
 typedef struct Player{
+	int8_t character; // 0 - 9
+	char * charname;
 	int8_t Maxhp;
 	int8_t hp;
 	int8_t Maxarmor;
@@ -25,7 +29,8 @@ typedef struct Player{
 	int8_t power;
 	int8_t hands;
 	int8_t token;
-}player
+	
+}player;
 
 typedef struct Card{
 	int8_t cost;
@@ -36,11 +41,21 @@ typedef struct Card{
 	int8_t value; // for example value = 1 on attack => deal 1 damage
 	int8_t require_basic_card; // 0 means do not requires
 	int16_t cardcode; // for skill card 
-}card 
+}card;
 
-int16_t Map[11][3] // Map[x][0]) 遺跡排的紀錄 Map[x][1]) 第一排和單人模式時使用的地圖 Map[x][2]) 第二排
-card player1[DeckMax],player2[DeckMax],player3[DeckMax],player4[DeckMax]; // 單人模式時，玩家一為player1、對手為player2 多人模式時，玩家一為player1、玩家二為player3
-card attack_shop[54],armor_shop[54],movement_shop[54],wild_shop[18];
+int16_t Map[11][3]={0};// Map[x][0]) 遺跡排的紀錄 Map[x][1]) 第一排和單人模式時使用的地圖 Map[x][2]) 第二排// 1v1 9格
+card player1[DeckMax],player2[DeckMax],player3[DeckMax],player4[DeckMax]; 
+card attack_shop[54],armor_shop[54],movement_shop[54],wild_shop[18]; 
+player player_1,player_2,player_3,player_4;
+int8_t mode=-1;
+int8_t RelicOn = -1;
+int8_t BotOn = -1;
+int8_t player1_char = -1;
+int8_t player2_char = -1;
+int8_t player3_char = -1;
+int8_t player4_char = -1;
+
+
 
 
 
