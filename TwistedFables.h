@@ -29,7 +29,8 @@ typedef struct Player{
 	int8_t power;
 	int8_t hands;
 	int8_t token;
-	
+	int8_t coordinate; //座標
+	int8_t first; // 先攻？
 }player;
 
 typedef struct Card{
