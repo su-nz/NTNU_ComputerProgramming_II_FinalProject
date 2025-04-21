@@ -28,9 +28,16 @@ typedef struct Player{
 	int8_t Ult_threshold;
 	int8_t power;
 	int8_t hands;
-	int8_t token;
-	int8_t coordinate; //座標
-	int8_t first; // 先攻？
+	int8_t coordinate;
+	int8_t firsts;
+	int8_t poison[12];
+	int8_t matches[12];
+	int8_t alice; //愛麗絲 狀態 -1代表不是愛麗絲
+	int8_t qi; //花木蘭 氣 -1代表不是花木蘭
+	int8_t combo; //桃樂絲 連擊 -1代表不是桃樂絲
+	int8_t tentacle[5];
+	int8_t Scheherazade_token[6];
+	
 }player;
 
 typedef struct Card{
