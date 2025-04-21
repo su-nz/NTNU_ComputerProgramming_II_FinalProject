@@ -29,14 +29,17 @@ typedef struct Player{
 	int8_t power;
 	int8_t hands;
 	int8_t coordinate;
-	int8_t firsts;
-	int8_t poison[12];
-	int8_t matches[12];
+	int8_t first;
+	
+	int8_t poison ;
+	
+	int8_t matches;
+	int8_t sleep;
 	int8_t alice; //愛麗絲 狀態 -1代表不是愛麗絲
 	int8_t qi; //花木蘭 氣 -1代表不是花木蘭
 	int8_t combo; //桃樂絲 連擊 -1代表不是桃樂絲
-	int8_t tentacle[5];
-	int8_t Scheherazade_token[6];
+	int8_t tentacle;
+	int8_t Scheherazade_token;
 	
 }player;
 
@@ -51,19 +54,11 @@ typedef struct Card{
 	int16_t cardcode; // for skill card 
 }card;
 
-int16_t Map[11][3]={0};// Map[x][0]) 遺跡排的紀錄 Map[x][1]) 第一排和單人模式時使用的地圖 Map[x][2]) 第二排// 1v1 9格
-card player1[DeckMax],player2[DeckMax],player3[DeckMax],player4[DeckMax]; 
-card attack_shop[54],armor_shop[54],movement_shop[54],wild_shop[18]; 
-player player_1,player_2,player_3,player_4;
-int8_t mode=-1;
-int8_t RelicOn = -1;
-int8_t BotOn = -1;
-int8_t player1_char = -1;
-int8_t player2_char = -1;
-int8_t player3_char = -1;
-int8_t player4_char = -1;
 
 
+void print_game_broad_9();
+int8_t command(player *P);
+int8_t inputcharacter(player *P, int8_t characternum);
 
 
 
