@@ -1,10 +1,61 @@
 #include "TwistedFables.h"
 
+int16_t Map[11][3]={0};// Map[x][0]) 遺跡排的紀錄 Map[x][1]) 第一排和單人模式時使用的地圖 Map[x][2]) 第二排// 1v1 9格
+card player1[DeckMax],player2[DeckMax],player3[DeckMax],player4[DeckMax]; 
+card attack_shop[54],armor_shop[54],movement_shop[54],wild_shop[18]; 
+player player_1,player_2,player_3,player_4;
+int8_t mode=-1;
+int8_t RelicOn = -1;
+int8_t BotOn = -1;
+int8_t player1_char = -1;
+int8_t player2_char = -1;
+int8_t player3_char = -1;
+int8_t player4_char = -1;
+
+void print_extra_inf(player *P){
+	if((*P).poison != -1){
+		printf("中毒牌組：%hhd\n",(*P).poison);
+	}
+	if((*P).matches!= -1){
+		printf("火柴牌組：%hhd\n",(*P).matches);
+	}
+	if((*P).sleep != -1){
+		if((*P).sleep == 1){ //沉睡
+			printf("睡美人目前是\033[1;32m沉睡狀態\033[0m，他的白馬王子在哪？\n");
+		}else{ //覺醒
+			printf("睡美人目前是\033[1;32m覺醒狀態\033[0m，她不需要白馬王子？\n");
+		}
+	}
+	if((*P).alice != -1){ //愛麗絲 狀態 -1代表不是愛麗絲
+		if((*P).alice == 0){ 
+			printf("愛麗絲目前是\033[1;31m紅心皇后\033[0m，注意你的人頭！\n");
+		}else if((*P).alice == 1){ 
+			printf("睡美人目前是\033[1;34m瘋帽子\033[0m，請不要跟她說話！\n");
+		}else{ 
+			printf("睡美人目前是\033[1;35m柴郡貓\033[0m，你追不上她的速度！\n");
+		}
+	}
+	if((*P).qi != -1){ //花木蘭 氣 -1代表不是花木蘭
+		printf("氣：%hhd\n",(*P).qi);
+	}
+	if((*P).combo != -1){ //桃樂絲 連擊 -1代表不是桃樂絲
+		printf("連擊：%hhd\n",(*P).combo);
+	}
+	if((*P).tentacle != -1){
+		printf("觸手：%hhd\n",(*P).tentacle);
+	}
+	if((*P).Scheherazade_token != -1){
+		printf("Token數量：%hhd\n",(*P).Scheherazade_token);
+	}
+}
+
 void print_game_broad_9(){
 	system("clear");
 	
 		printf("玩家一 │ 遊玩角色：%s 血量：%hhd 防禦值：%hhd 能量：%hhd 手牌數：%hhd 血量上限：%hhd 防禦上限：%hhd 必殺閥值:%hhd\n",player_1.charname,player_1.hp,player_1.armor,player_1.power,player_1.hands,player_1.Maxhp,player_1.Maxarmor,player_1.Ult_threshold);
+		print_extra_inf(&player_1);
 		printf("玩家二 │ 遊玩角色：%s 血量：%hhd 防禦值：%hhd 能量：%hhd 手牌數：%hhd 血量上限：%hhd 防禦上限：%hhd 必殺閥值:%hhd\n",player_2.charname,player_2.hp,player_2.armor,player_2.power,player_2.hands,player_2.Maxhp,player_2.Maxarmor,player_2.Ult_threshold);
+		print_extra_inf(&player_2);
 		printf("          ┌───────────────────┐           \n");
 		
 		//printf("     Board│ O O O O O O O O O │版面                   \n");//10
@@ -26,97 +77,6 @@ void print_game_broad_9(){
 		return ;
 }
 
-int8_t command(player *P){
-	printf("現在是%s的回合，現在是你的執行階段\n");
-}
-
-int8_t inputcharacter(player *P, int8_t characternum) { //寫入角色資訊
-    (*P).character = characternum;
-
-    switch (characternum) {
-        case 0: // 小紅帽
-            (*P).charname = "小紅帽  ";
-            (*P).Maxhp = 30;
-            (*P).Maxarmor = 6;
-            (*P).Ult_threshold = 15;
-            break;
-
-        case 1: // 白雪公主
-            (*P).charname = "白雪公主";
-            (*P).Maxhp = 34;
-            (*P).Maxarmor = 6;
-            (*P).Ult_threshold = 17;
-            break;
-
-        case 2: // 睡美人
-            (*P).charname = "睡美人  ";
-            (*P).Maxhp = 42;
-            (*P).Maxarmor = 6;
-            (*P).Ult_threshold = 21;
-            break;
-
-        case 3: // 愛麗絲
-            (*P).charname = "愛麗絲  ";
-            (*P).Maxhp = 32;
-            (*P).Maxarmor = 6;
-            (*P).Ult_threshold = 16;
-            break;
-
-        case 4: // 花木蘭
-            (*P).charname = "花木蘭  ";
-            (*P).Maxhp = 34;
-            (*P).Maxarmor = 3;
-            (*P).Ult_threshold = 17;
-            break;
-
-        case 5: // 輝夜姬
-            (*P).charname = "輝夜姬  ";
-            (*P).Maxhp = 32;
-            (*P).Maxarmor = 6;
-            (*P).Ult_threshold = 16;
-            break;
-
-        case 6: // 美人魚
-            (*P).charname = "美人魚  ";
-            (*P).Maxhp = 36;
-            (*P).Maxarmor = 3;
-            (*P).Ult_threshold = 18;
-            break;
-
-        case 7: // 火柴女孩
-            (*P).charname = "火柴女孩";
-            (*P).Maxhp = 36;
-            (*P).Maxarmor = 6;
-            (*P).Ult_threshold = 18;
-            break;
-
-        case 8: // 桃樂絲
-            (*P).charname = "桃樂絲  ";
-            (*P).Maxhp = 40;
-            (*P).Maxarmor = 6;
-            (*P).Ult_threshold = 20;
-            break;
-
-        case 9: // 山魯佐德
-            (*P).charname = "山魯佐德";
-            (*P).Maxhp = 36;
-            (*P).Maxarmor = 6;
-            (*P).Ult_threshold = 18;
-            break;
-
-        default:
-            return -1; // 無效的角色編號
-    }
-
-    // 共通初始化
-    (*P).hp = (*P).Maxhp;
-    (*P).armor = 0;
-    (*P).power = 0;
-    (*P).hands = 0;
-    (*P).token = 0;
-
-    return 0; // 成功
-}
 
 
 
@@ -131,8 +91,8 @@ int main(){
 		printf("請你選擇你想要遊玩的模式：(1.)1對1 (2.)2對2 （請輸入數字來做決定\n");
 		
 	} 
-	player_1.coordinate = 0;
-	player_2.coordinate = 8;
+	player_1.coordinate = 3;
+	player_2.coordinate = 5;
 	//RelicOn = -1
 	printf("是否要啟動遺跡模式？：(1.)是 (2.)否 （請輸入數字來做決定\n");
 	while (scanf("%hhd",&RelicOn)!=1 || !(RelicOn == 1 || RelicOn == 2 )){
