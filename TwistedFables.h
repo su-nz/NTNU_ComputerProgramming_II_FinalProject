@@ -76,6 +76,8 @@ void print_game_broad_9();
 int8_t action_command(player *P);
 int8_t inputcharacter(player *P, int8_t characternum);
 int16_t Card_Define(int16_t CardID , card *C);
+int8_t discard_back_to_deck(player *P);
+int8_t draw_card(int8_t amount , player *P);
 
 
 
