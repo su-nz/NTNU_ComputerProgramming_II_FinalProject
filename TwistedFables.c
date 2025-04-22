@@ -3,7 +3,6 @@
 
 int16_t Map[11][3]={0};// Map[x][0]) 遺跡排的紀錄 Map[x][1]) 第一排和單人模式時使用的地圖 Map[x][2]) 第二排// 1v1 9格
 //棄牌堆
-card hands1[50],hands2[50],hands3[50],hands4[50];
 
 vector basicBuyDeck[4][3];  // attack(0) LV1~3 defense(1) LV1~3 move(2) LV1~3 generic(3)
 
@@ -18,6 +17,40 @@ int8_t player1_char = -1;
 int8_t player2_char = -1;
 int8_t player3_char = -1;
 int8_t player4_char = -1;
+
+int8_t print_hands(player *P){
+	for(int i = 0 ; i < P->hands ; i++){
+		printf("%d) %s 效果：%s\n",i+1,P->hands_card[i].cardname,P->hands_card[i].inf);
+	}
+	return 0;
+}
+
+int8_t initialization_deck(player *P){
+	for(int i = 0 ; i < 3 ; i++){ //attack 
+		pushbackVector(&P->deck, basicBuyDeck[0][0].array[basicBuyDeck[0][0].SIZE-1]);
+		popbackVector(&basicBuyDeck[0][0]);
+	}
+	for(int i = 0 ; i < 3 ; i++){ //defend
+		pushbackVector(&P->deck, basicBuyDeck[1][0].array[basicBuyDeck[1][0].SIZE-1]);
+		popbackVector(&basicBuyDeck[1][0]);
+	}
+	for(int i = 0 ; i < 3 ; i++){ //movement 
+		pushbackVector(&P->deck, basicBuyDeck[2][0].array[basicBuyDeck[2][0].SIZE-1]);
+		popbackVector(&basicBuyDeck[2][0]);
+	}
+	
+	pushbackVector(&P->deck, skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1]);
+	popbackVector(&skillBuyDeck[P->num][0]);
+	
+	pushbackVector(&P->deck, skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1]);
+	popbackVector(&skillBuyDeck[P->num][1]);
+	
+	pushbackVector(&P->deck, skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1]);
+	popbackVector(&skillBuyDeck[P->num][2]);
+	
+				
+						
+}
 
 int8_t initialization_basic_shop(){
 	for(int i = 0 ; i < 3 ; i ++){
@@ -133,6 +166,9 @@ int8_t initialization_skill_shop(player *P){
 	return 0; // 成功
 }
 
+
+
+
 int8_t printf_basic_shop(){
 	system("clear");
 	printf("1.） 攻擊卡 Lv1 費用 1 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[0][0].SIZE);
@@ -193,7 +229,7 @@ int8_t skill_shop_command(player *P){
 						printf("此卡已經賣光了\n") ;
 						
 					}else{
-						pushbackVector(&P->discard, skillBuyDeck[P->num][0].array[basicBuyDeck[0][0].SIZE-1]);
+						pushbackVector(&P->discard, skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1]);
 						skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1] = 0;
 						skillBuyDeck[P->num][0].SIZE--;
 						P->power -=cardtemp1.cost;
@@ -211,7 +247,7 @@ int8_t skill_shop_command(player *P){
 						printf("此卡已經賣光了\n") ;
 						
 					}else{
-						pushbackVector(&P->discard, skillBuyDeck[P->num][1].array[basicBuyDeck[1][1].SIZE-1]);
+						pushbackVector(&P->discard, skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1]);
 						skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1] = 0;
 						skillBuyDeck[P->num][1].SIZE--;
 						P->power -=cardtemp2.cost;
@@ -229,7 +265,7 @@ int8_t skill_shop_command(player *P){
 						printf("此卡已經賣光了\n") ;
 						
 					}else{
-						pushbackVector(&P->discard, skillBuyDeck[P->num][2].array[basicBuyDeck[2][2].SIZE-1]);
+						pushbackVector(&P->discard, skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1]);
 						skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1] = 0;
 						skillBuyDeck[P->num][2].SIZE--;
 						P->power -=cardtemp3.cost;
@@ -469,8 +505,11 @@ int8_t basic_shop_command(player *P){
 
 int8_t action_command(player *P){
 	int8_t comm=-1;
+	
 	printf("現在是%s的回合，現在是你的執行階段請從以下的動作中選一個執行\n",(*P).charname);
 	printf("0.)專注 1.)購買基礎牌 2.)購買技能牌 3.)打牌 4.)查看自己的棄牌堆 5.)查看別人的棄牌堆 6.)結束回合\n");
+	printf("你的手牌：\n");
+	print_hands(P);
 	printf("輸入指令：");
 	scanf("%hhd",&comm);
 	switch(comm){
@@ -578,7 +617,7 @@ void print_game_broad_9(){
 		printf("          ├───────────────────┤           \n");
 		printf("Coordinate│ 0 1 2 3 4 5 6 7 8 │座標                   \n");
 		printf("          └───────────────────┘           \n");
-	action_command(&player_1);
+	
 		return ;
 }
 
@@ -604,6 +643,8 @@ int main(){ //mainfuc
 	player_4.num = 3;
 	initialization_skill_shop(&player_1);
 	initialization_skill_shop(&player_2);
+	initialization_deck(&player_1);
+	initialization_deck(&player_2);
 	player_1.coordinate = 3;
 	player_2.coordinate = 5;
 	//RelicOn = -1
@@ -791,6 +832,7 @@ int main(){ //mainfuc
 	
 	
 	//遊戲開始
+	int8_t round = 0;
 	int8_t flip_coins=0;
 	flip_coins = rand()%2+1;
 	if(flip_coins == 1){
@@ -804,13 +846,46 @@ int main(){ //mainfuc
 			player_2.first = 1;
 		}
 	}
-	if(mode == 1){
-		print_game_broad_9();
+	
+	if(player_1.first == 1){//玩家一先手
 		
 	}
-	
 	while(1){
-		print_game_broad_9();
+		if(mode == 1){//單人模式
+			round++;
+			if(player_1.first == 1){//玩家一先手
+				if(round == 1){
+					draw_card(4,&player_1);
+				}else{
+					draw_card(6,&player_1);
+				}
+				draw_card(6,&player_2);
+				print_game_broad_9();
+				if(round % 2 == 1){
+					printf("玩家一先手\n");	
+					action_command(&player_1);
+					
+				}else{
+					action_command(&player_2);
+				}
+			}else{
+				draw_card(6,&player_1);
+				if(round == 1){
+					draw_card(4,&player_2);
+				}else{
+					draw_card(6,&player_2);
+				}
+				print_game_broad_9();
+				if(round % 2 == 1){
+					printf("玩家二先手\n");
+					action_command(&player_2);
+				}else{
+					action_command(&player_1);
+				}
+			}
+		}
+		
+		
 		
 	}
 	
