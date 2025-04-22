@@ -1,5 +1,7 @@
 #include "TwistedFables.h"
-#include "Card.h"
+
+
+
 
 int16_t Card_Define(int16_t CardID , card *C){// 
 	//初始化
@@ -139,7 +141,7 @@ int16_t Card_Define(int16_t CardID , card *C){//
 	
 	if(CardID >= 108 && CardID <=120){ //基礎 通用牌 等級一
 		(*C).cardname = "通用牌 等級一";
-		(*C).cost = 1 ;
+		(*C).cost = 2 ;
 		(*C).level = 1;
 		(*C).range = 0; //for attack 0 means its doesn't need range
 		(*C).type = 3; // 0)attack 1)defend 2)movement 3) wild 4)skills 5)Ult 6)passive
@@ -379,6 +381,230 @@ int16_t Card_Define(int16_t CardID , card *C){//
 	    (*C).require_basic_card = 0;
 	    (*C).cardcode = CardID;
 	    (*C).inf = "射程3 傷害3 擊退3格，對手捨棄3張手牌";
+	}
+	
+	
+	
+	
+	//// snow white
+	
+	
+	
+	if(CardID == 148){ //水晶碎片
+		(*C).cardname = "水晶碎片";
+		(*C).cost = 0 ;
+		(*C).level = 1;
+		(*C).range = 1; // for attack 0 means it doesn't need range
+		(*C).type = 4; // 0)attack 1)defend 2)movement 3)wild 4)skills 5)Ult 6)passive
+		(*C).damage = 1;
+		(*C).shield = 0;
+		(*C).require_basic_card = 1;
+		(*C).cardcode = CardID;
+		(*C).inf = "射程1 傷害1+O\n將對手牌庫頂1張牌棄入棄牌堆";
+	}
+	if(CardID >= 149 && CardID <= 150){ //水晶漩渦
+		(*C).cardname = "水晶漩渦";
+		(*C).cost = 2 ;
+		(*C).level = 2;
+		(*C).range = 1;
+		(*C).type = 4;
+		(*C).damage = 2;
+		(*C).shield = 0;
+		(*C).require_basic_card = 1;
+		(*C).cardcode = CardID;
+		(*C).inf = "購買費用 2\n射程1 傷害2+O\n將對手牌庫頂2張牌棄入棄牌堆";
+	}
+	if(CardID == 151){ //水晶之棺
+		(*C).cardname = "水晶之棺";
+		(*C).cost = 0 ;
+		(*C).level = 0;
+		(*C).range = 0;
+		(*C).type = 6; // passive
+		(*C).damage = 0;
+		(*C).shield = 0;
+		(*C).require_basic_card = 0;
+		(*C).cardcode = CardID;
+		(*C).inf = "當你透過一個攻擊行動或是一個攻擊技能對對手造成至少兩點傷害時\n將中毒牌庫頂部1張牌放入他的棄牌堆";
+	}
+	if(CardID >= 152 && CardID <= 154){ //水晶風暴
+		(*C).cardname = "水晶風暴";
+		(*C).cost = 4 ;
+		(*C).level = 3;
+		(*C).range = 1;
+		(*C).type = 4;
+		(*C).damage = 3;
+		(*C).shield = 0;
+		(*C).require_basic_card = 1;
+		(*C).cardcode = CardID;
+		(*C).inf = "購買費用 4\n射程1 傷害3+O\n將對手牌庫頂3張牌棄入棄牌堆";
+	}
+	if(CardID == 155){ //至純之毒
+		(*C).cardname = "至純之毒";
+		(*C).cost = 0 ;
+		(*C).level = 0;
+		(*C).range = 0;
+		(*C).type = 6;
+		(*C).damage = 0;
+		(*C).shield = 0;
+		(*C).require_basic_card = 0;
+		(*C).cardcode = CardID;
+		(*C).inf = "當一張中毒牌進入對手的棄牌堆時 他額外失去1點生命\n此蛻變牌可以累積";
+	}
+	if(CardID == 156){ //玷污的恩惠
+		(*C).cardname = "玷污的恩惠";
+		(*C).cost = 0 ;
+		(*C).level = 1;
+		(*C).range = 1;
+		(*C).type = 4;
+		(*C).damage = 1;
+		(*C).shield = 0;
+		(*C).require_basic_card = 1;
+		(*C).cardcode = CardID;
+		(*C).inf = "射程1 傷害1\n將中毒牌庫頂部至多O張牌放入對手的棄牌堆中";
+	}
+	if(CardID == 157){ //玷污的盛筵
+		(*C).cardname = "玷污的盛筵";
+		(*C).cost = 2 ;
+		(*C).level = 2;
+		(*C).range = 1;
+		(*C).type = 4;
+		(*C).damage = 2;
+		(*C).shield = 0;
+		(*C).require_basic_card = 1;
+		(*C).cardcode = CardID;
+		(*C).inf = "購買費用 2\n射程1 傷害2\n將中毒牌庫頂部至多O張牌放入對手的棄牌堆中";
+	}
+	if(CardID == 158){ //墮落之劫
+		(*C).cardname = "墮落之劫";
+		(*C).cost = 0 ;
+		(*C).level = 0;
+		(*C).range = 0;
+		(*C).type = 6;
+		(*C).damage = 0;
+		(*C).shield = 0;
+		(*C).require_basic_card = 0;
+		(*C).cardcode = CardID;
+		(*C).inf = "當你要透過一個防禦技能將中毒牌放入對手的棄牌堆時\n可以選擇將其中1張中毒牌洗入他的牌庫來代替放入棄牌堆";
+	}
+	if(CardID == 159){ //玷污的狂歡
+		(*C).cardname = "玷污的狂歡";
+		(*C).cost = 4 ;
+		(*C).level = 3;
+		(*C).range = 1;
+		(*C).type = 4;
+		(*C).damage = 3;
+		(*C).shield = 0;
+		(*C).require_basic_card = 1;
+		(*C).cardcode = CardID;
+		(*C).inf = "購買費用 4\n射程1 傷害3\n將中毒牌庫頂部至多O張牌放入對手的棄牌堆中";
+	}
+	if(CardID == 160){ //至純之毒 (防禦蛻變)
+		(*C).cardname = "至純之毒";
+		(*C).cost = 0 ;
+		(*C).level = 0;
+		(*C).range = 0;
+		(*C).type = 6;
+		(*C).damage = 0;
+		(*C).shield = 0;
+		(*C).require_basic_card = 0;
+		(*C).cardcode = CardID;
+		(*C).inf = "當一張中毒牌進入對手的棄牌堆時 他額外失去1點生命\n此蛻變牌可以累積";
+	}
+	if(CardID == 161){ //破碎的幻想
+		(*C).cardname = "破碎的幻想";
+		(*C).cost = 0 ;
+		(*C).level = 1;
+		(*C).range = 0;
+		(*C).type = 4;
+		(*C).damage = 1;
+		(*C).shield = 0;
+		(*C).require_basic_card = 1;
+		(*C).cardcode = CardID;
+		(*C).inf = "射程O 傷害1\n將你放置到與對手相鄰的格子";
+	}
+	if(CardID >= 162 && CardID <= 163){ //破碎的現實
+		(*C).cardname = "破碎的現實";
+		(*C).cost = 2 ;
+		(*C).level = 2;
+		(*C).range = 1;
+		(*C).type = 4;
+		(*C).damage = 2;
+		(*C).shield = 0;
+		(*C).require_basic_card = 1;
+		(*C).cardcode = CardID;
+		(*C).inf = "購買費用 2\n射程1+O 傷害2\n將你放置到與對手相鄰的格子";
+	}
+	if(CardID == 164){ //劇毒之蝕
+		(*C).cardname = "劇毒之蝕";
+		(*C).cost = 0 ;
+		(*C).level = 0;
+		(*C).range = 0;
+		(*C).type = 6;
+		(*C).damage = 0;
+		(*C).shield = 0;
+		(*C).require_basic_card = 0;
+		(*C).cardcode = CardID;
+		(*C).inf = "當你透過一個移動行動（並非移動技能）穿過對手時\n或是對手透過一個移動行動穿過你時\n可以將中毒牌庫頂部一張牌入他的棄牌堆";
+	}
+	if(CardID >= 165 && CardID <= 167){ //破碎的命運
+		(*C).cardname = "破碎的命運";
+		(*C).cost = 4 ;
+		(*C).level = 3;
+		(*C).range = 2;
+		(*C).type = 4;
+		(*C).damage = 3;
+		(*C).shield = 0;
+		(*C).require_basic_card = 1;
+		(*C).cardcode = CardID;
+		(*C).inf = "購買費用 4\n射程2+O 傷害3\n將你放置到與對手相鄰的格子";
+	}
+	if(CardID == 168){ //至純之毒 (移動蛻變)
+		(*C).cardname = "至純之毒";
+		(*C).cost = 0 ;
+		(*C).level = 0;
+		(*C).range = 0;
+		(*C).type = 6;
+		(*C).damage = 0;
+		(*C).shield = 0;
+		(*C).require_basic_card = 0;
+		(*C).cardcode = CardID;
+		(*C).inf = "當一張中毒牌進入對手的棄牌堆時 他額外失去1點生命\n此蛻變牌可以累積";
+	}
+	if(CardID == 169){ //七蛇之怒
+		(*C).cardname = "七蛇之怒";
+		(*C).cost = 0 ;
+		(*C).level = 0;
+		(*C).range = 1;
+		(*C).type = 5; // ultimate
+		(*C).damage = 0; // damage based on poison count
+		(*C).shield = 0;
+		(*C).require_basic_card = 0;
+		(*C).cardcode = CardID;
+		(*C).inf = "射程1 對手失去X點生命\nX等於他棄牌堆中中毒牌的數量";
+	}
+	if(CardID == 170){ //魔鏡之雨
+		(*C).cardname = "魔鏡之雨";
+		(*C).cost = 0 ;
+		(*C).level = 0;
+		(*C).range = 1;
+		(*C).type = 5;
+		(*C).damage = 3;
+		(*C).shield = 0;
+		(*C).require_basic_card = 0;
+		(*C).cardcode = CardID;
+		(*C).inf = "射程1 傷害3\n對手必須棄掉他的全部手牌之後抽取4張牌";
+	}
+	if(CardID == 171){ //醞釀之災
+		(*C).cardname = "醞釀之災";
+		(*C).cost = 0 ;
+		(*C).level = 0;
+		(*C).range = 3;
+		(*C).type = 5;
+		(*C).damage = 3;
+		(*C).shield = 0;
+		(*C).require_basic_card = 0;
+		(*C).cardcode = CardID;
+		(*C).inf = "射程3 傷害3\n你可以選擇將對手棄牌堆中至多3張牌洗入他的牌庫";
 	}
 
 }
