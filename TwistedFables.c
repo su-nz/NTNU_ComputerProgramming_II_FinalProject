@@ -1,8 +1,12 @@
 #include "TwistedFables.h"
+#include "vector.h"
 
 int16_t Map[11][3]={0};// Map[x][0]) 遺跡排的紀錄 Map[x][1]) 第一排和單人模式時使用的地圖 Map[x][2]) 第二排// 1v1 9格
-card player1[DeckMax],player2[DeckMax],player3[DeckMax],player4[DeckMax]; 
-card attack_shop[54],armor_shop[54],movement_shop[54],wild_shop[18]; 
+//棄牌堆
+card hands1[50],hands2[50],hands3[50],hands4[50];
+
+vector basicBuyDeck[4][3];  // attack(0) LV1~3 defense(1) LV1~3 move(2) LV1~3 generic(3)
+ 
 player player_1,player_2,player_3,player_4;
 int8_t mode=-1;
 int8_t RelicOn = -1;
@@ -11,6 +15,294 @@ int8_t player1_char = -1;
 int8_t player2_char = -1;
 int8_t player3_char = -1;
 int8_t player4_char = -1;
+
+int8_t initialization_basic_shop(){
+	for(int i = 0 ; i < 3 ; i ++){
+		for(int j = 0 ; j < 3 ; j++){
+			basicBuyDeck[i][j].SIZE = 12;
+			for(int k = 1 ; k <=12 ; k++){
+				basicBuyDeck[i][j].array[k] = (k + 12*j + 36*i);
+			}
+			
+		}
+	}
+	basicBuyDeck[3][0].SIZE = 12;
+	for(int k = 1 ; k <=12 ; k++){
+		basicBuyDeck[4][0].array[k] = (k + 36*3); 
+	}
+	return 0; // 成功
+}
+
+int8_t printf_basic_shop(){
+	system("clear");
+	printf("1.）攻擊卡 Lv1 費用 1 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[0][0].SIZE);
+	printf("2.）攻擊卡 Lv2 費用 3 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[0][1].SIZE);
+	printf("3.）攻擊卡 Lv3 費用 6 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[0][2].SIZE);
+	printf("4.）防禦卡 Lv1 費用 1 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[1][0].SIZE);
+	printf("5.）防禦卡 Lv2 費用 3 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[1][1].SIZE);
+	printf("6.）防禦卡 Lv3 費用 6 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[1][2].SIZE);
+	printf("7.）移動卡 Lv1 費用 1 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[2][0].SIZE);
+	printf("8.）移動卡 Lv2 費用 3 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[2][1].SIZE);
+	printf("9.）移動卡 Lv3 費用 6 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[2][2].SIZE);
+	printf("10.）通用卡 Lv1 費用 2 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[3][0].SIZE);
+}
+
+int8_t basic_shop_command(player *P){
+	int8_t bsc =-1;
+	printf_basic_shop();
+	while(1){
+		
+		printf("請輸入你要做什麼？1.)購買卡片 2.)退出商店：");
+		scanf("%hhd",&bsc);
+		getchar();
+		if(bsc == 1){
+			int8_t cc =-1;
+			printf("請輸入你要購買的卡片：") ;
+			scanf("%hhd",&cc);
+			switch(cc){
+				case 1: // 攻擊卡 1
+					if(P->power < 1){
+						printf("你的能量不夠\n") ;
+						
+					}else if(basicBuyDeck[0][0].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, basicBuyDeck[0][0].array[basicBuyDeck[0][0].SIZE-1]);
+						basicBuyDeck[0][0].array[basicBuyDeck[0][0].SIZE-1] = 0;
+						basicBuyDeck[0][0].SIZE--;
+						P->power--;
+						printf_basic_shop();
+					}
+				
+				break;
+				
+				case 2: // 攻擊卡 2
+					if(P->power < 3){
+						printf("你的能量不夠\n") ;
+						
+					}else if(basicBuyDeck[0][1].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, basicBuyDeck[0][1].array[basicBuyDeck[0][1].SIZE-1]);
+						basicBuyDeck[0][1].array[basicBuyDeck[0][1].SIZE-1] = 0;
+						basicBuyDeck[0][1].SIZE--;
+						P->power--;
+						printf_basic_shop();
+					}
+				
+				break;
+				
+				case 3: // 攻擊卡 3
+					if(P->power < 6){
+						printf("你的能量不夠\n") ;
+						
+					}else if(basicBuyDeck[0][2].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, basicBuyDeck[0][2].array[basicBuyDeck[0][2].SIZE-1]);
+						basicBuyDeck[0][2].array[basicBuyDeck[0][2].SIZE-1] = 0;
+						basicBuyDeck[0][2].SIZE--;
+						P->power--;
+						printf_basic_shop();
+					}
+				
+				break;
+				
+				case 4: // 防禦卡 1
+					if(P->power < 1){
+						printf("你的能量不夠\n") ;
+						
+					}else if(basicBuyDeck[1][0].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, basicBuyDeck[1][0].array[basicBuyDeck[1][0].SIZE-1]);
+						basicBuyDeck[1][0].array[basicBuyDeck[1][0].SIZE-1] = 0;
+						basicBuyDeck[1][0].SIZE--;
+						P->power--;
+						printf_basic_shop();
+					}
+				
+				break;
+				
+				case 5: // 防禦卡 2
+					if(P->power < 3){
+						printf("你的能量不夠\n") ;
+						
+					}else if(basicBuyDeck[1][1].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, basicBuyDeck[1][1].array[basicBuyDeck[1][1].SIZE-1]);
+						basicBuyDeck[1][1].array[basicBuyDeck[1][1].SIZE-1] = 0;
+						basicBuyDeck[1][1].SIZE--;
+						P->power--;
+						printf_basic_shop();
+					}
+				
+				break;
+				
+				case 6: // 防禦卡 3
+					if(P->power < 6){
+						printf("你的能量不夠\n") ;
+						
+					}else if(basicBuyDeck[1][2].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, basicBuyDeck[1][2].array[basicBuyDeck[1][2].SIZE-1]);
+						basicBuyDeck[1][2].array[basicBuyDeck[1][2].SIZE-1] = 0;
+						basicBuyDeck[1][2].SIZE--;
+						P->power--;
+						printf_basic_shop();
+					}
+				
+				break;
+				
+				case 7: // 移動卡 1
+					if(P->power < 1){
+						printf("你的能量不夠\n") ;
+						
+					}else if(basicBuyDeck[2][0].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, basicBuyDeck[2][0].array[basicBuyDeck[2][0].SIZE-1]);
+						basicBuyDeck[2][0].array[basicBuyDeck[2][0].SIZE-1] = 0;
+						basicBuyDeck[2][0].SIZE--;
+						P->power--;
+						printf_basic_shop();
+					}
+				
+				break;
+				
+				case 8: // 移動卡 2
+					if(P->power < 3){
+						printf("你的能量不夠\n") ;
+						
+					}else if(basicBuyDeck[2][1].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, basicBuyDeck[2][1].array[basicBuyDeck[2][1].SIZE-1]);
+						basicBuyDeck[2][1].array[basicBuyDeck[2][1].SIZE-1] = 0;
+						basicBuyDeck[2][1].SIZE--;
+						P->power--;
+						printf_basic_shop();
+					}
+				
+				break;
+				
+				case 9: // 移動卡 3
+					if(P->power < 6){
+						printf("你的能量不夠\n") ;
+						
+					}else if(basicBuyDeck[2][2].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, basicBuyDeck[2][2].array[basicBuyDeck[2][2].SIZE-1]);
+						basicBuyDeck[2][2].array[basicBuyDeck[2][2].SIZE-1] = 0;
+						basicBuyDeck[2][2].SIZE--;
+						P->power--;
+						printf_basic_shop();
+					}
+				
+				break;
+				
+				case 10: // 通用卡 
+					if(P->power < 2){
+						printf("你的能量不夠\n") ;
+						
+					}else if(basicBuyDeck[2][2].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, basicBuyDeck[3][0].array[basicBuyDeck[3][0].SIZE-1]);
+						basicBuyDeck[3][0].array[basicBuyDeck[3][0].SIZE-1] = 0;
+						basicBuyDeck[3][0].SIZE--;
+						P->power--;
+						printf_basic_shop();
+					}
+				
+				break;
+				
+				default:
+					printf("不存在此選項\n");
+				break;
+			}
+		}else if (bsc == 2){
+			
+			if(mode == 1){
+				print_game_broad_9();
+				return 0;
+			}else{
+				
+			}
+			action_command(P);
+			return 0;
+		}else{
+			printf("不合法輸入！！\n") ;
+		}
+	}
+	return 0;
+}
+	
+
+
+
+int8_t action_command(player *P){
+	int8_t comm=-1;
+	printf("現在是%s的回合，現在是你的執行階段請從以下的動作中選一個執行\n",(*P).charname);
+	printf("0.)專注 1.)購買基礎牌 2.)購買技能牌 3.)打牌 4.)查看自己的棄牌堆 5.)查看別人的棄牌堆 6.)結束回合\n");
+	printf("輸入指令：");
+	scanf("%hhd",&comm);
+	switch(comm){
+		case 0:  // 專注
+		
+		
+            	break;
+            	
+            	case 1:  // 購買基礎牌
+			basic_shop_command(P);
+		
+            	break;
+            	
+            	case 2:  // 購買技能牌
+		
+		
+            	break;
+            	
+            	case 3:  // 打牌
+		
+		
+            	break;
+            	
+            	case 4:  // 查看自己的棄牌
+		
+		
+            	break;
+            	
+            	case 5:  // 查看別人的棄牌堆
+		
+		
+            	break;
+            	
+            	case 6:  // 結束遊戲階段
+		
+		
+            	break;
+	}
+}
+
+
+
+void print_skills_shop(player *P){
+
+}
 
 void print_extra_inf(player *P){
 	if((*P).poison != -1){
@@ -73,16 +365,17 @@ void print_game_broad_9(){
 		printf("          ├───────────────────┤           \n");
 		printf("Coordinate│ 0 1 2 3 4 5 6 7 8 │座標                   \n");
 		printf("          └───────────────────┘           \n");
-		
+	action_command(&player_1);
 		return ;
 }
 
 
 
 
-int main(){
+int main(){ //mainfuc
 
 	srand( time(NULL) );
+	initialization_basic_shop();
 	//mode=-1
 	printf("請你選擇你想要遊玩的模式：(1.)1對1 (2.)2對2 （請輸入數字來做決定\n");
 	while (scanf("%hhd",&mode)!=1 || !(mode == 1 || mode ==2 )){
@@ -295,7 +588,9 @@ int main(){
 		print_game_broad_9();
 	}
 	
-	
+	while(1){
+		print_game_broad_9();
+	}
 	
 	
 	
