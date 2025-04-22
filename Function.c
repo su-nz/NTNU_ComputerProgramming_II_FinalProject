@@ -4,8 +4,12 @@
 
 
 
-int8_t command(player *P){
+int8_t action_command(player *P){
+	int8_t comm=-1;
 	printf("現在是%s的回合，現在是你的執行階段請從以下的動作中選一個執行\n",(*P).charname);
+	printf("0.)專注 1.)購買基礎牌 2.)購買技能牌 3.)打牌 4.)查看自己的棄牌堆 5.)查看別人的棄牌堆\n");
+	printf("輸入指令：");
+	scanf("%hhd",&comm);
 }
 
 
