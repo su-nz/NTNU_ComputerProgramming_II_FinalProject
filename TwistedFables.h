@@ -35,6 +35,7 @@ typedef struct Card{
 }card;
 
 typedef struct Player{
+	int8_t num; //1 2 3 4
 	int8_t character; // 0 - 9
 	char * charname;
 	int8_t Maxhp;
@@ -74,6 +75,7 @@ typedef struct Deck{
 void print_game_broad_9();
 int8_t action_command(player *P);
 int8_t inputcharacter(player *P, int8_t characternum);
+int16_t Card_Define(int16_t CardID , card *C);
 
 
 
