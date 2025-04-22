@@ -6,7 +6,10 @@ int16_t Map[11][3]={0};// Map[x][0]) 遺跡排的紀錄 Map[x][1]) 第一排和�
 card hands1[50],hands2[50],hands3[50],hands4[50];
 
 vector basicBuyDeck[4][3];  // attack(0) LV1~3 defense(1) LV1~3 move(2) LV1~3 generic(3)
- 
+
+vector skillBuyDeck[4][3];  // 4 player 
+
+
 player player_1,player_2,player_3,player_4;
 int8_t mode=-1;
 int8_t RelicOn = -1;
@@ -33,20 +36,230 @@ int8_t initialization_basic_shop(){
 	return 0; // 成功
 }
 
+int8_t initialization_skill_shop(player *P){
+	skillBuyDeck[P->num][0].SIZE = 8;
+	skillBuyDeck[P->num][1].SIZE = 8;
+	skillBuyDeck[P->num][2].SIZE = 8;
+	switch (P->character){
+		case 0:
+			for(int i = 0 ; i < 3 ; i++){
+				for(int j = 0 ; j < 8 ; j++){
+					skillBuyDeck[P->num][i].array[j] = (128+i*8) - j ;
+				}
+			}
+		break;
+		
+		case 1:
+			for(int i = 0 ; i < 3 ; i++){
+				for(int j = 0 ; j < 8 ; j++){
+					skillBuyDeck[P->num][i].array[j] = (155+i*8) - j ;
+				}
+			}
+		break;
+		
+		case 2:
+			for(int i = 0 ; i < 3 ; i++){
+				for(int j = 0 ; j < 8 ; j++){
+					skillBuyDeck[P->num][i].array[j] = (200+i*8) - j ;
+				}
+			}
+		break;
+		
+		case 3:
+			for(int i = 0 ; i < 3 ; i++){
+				for(int j = 0 ; j < 8 ; j++){
+					skillBuyDeck[P->num][i].array[j] = (227+i*8) - j ;
+				}
+			}
+			
+		break;
+		
+		case 4:
+			for(int i = 0 ; i < 3 ; i++){
+				for(int j = 0 ; j < 8 ; j++){
+					skillBuyDeck[P->num][i].array[j] = (254+i*8) - j ;
+				}
+			}
+			
+		break;
+		
+		case 5:
+			for(int i = 0 ; i < 3 ; i++){
+				for(int j = 0 ; j < 8 ; j++){
+					skillBuyDeck[P->num][i].array[j] = (274+i*8) - j ;
+				}
+			}
+			
+		break;
+		
+		case 6:
+			for(int i = 0 ; i < 3 ; i++){
+				for(int j = 0 ; j < 8 ; j++){
+					skillBuyDeck[P->num][i].array[j] = (308+i*8) - j ;
+				}
+			}
+			
+		break;
+		
+		case 7:
+			for(int i = 0 ; i < 3 ; i++){
+				for(int j = 0 ; j < 8 ; j++){
+					skillBuyDeck[P->num][i].array[j] = (335+i*8) - j ;
+				}
+			}
+			
+		break;
+		
+		case 8:
+			for(int i = 0 ; i < 3 ; i++){
+				for(int j = 0 ; j < 8 ; j++){
+					skillBuyDeck[P->num][i].array[j] = (374+i*8) - j ;
+				}
+			}
+			
+		break;
+		
+		case 9:
+			for(int i = 0 ; i < 3 ; i++){
+				for(int j = 0 ; j < 8 ; j++){
+					skillBuyDeck[P->num][i].array[j] = (401+i*8) - j ;
+				}
+			}
+			
+		break;
+		
+			
+	}
+	return 0; // 成功
+}
+
 int8_t printf_basic_shop(){
 	system("clear");
-	printf("1.）攻擊卡 Lv1 費用 1 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[0][0].SIZE);
-	printf("2.）攻擊卡 Lv2 費用 3 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[0][1].SIZE);
-	printf("3.）攻擊卡 Lv3 費用 6 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[0][2].SIZE);
-	printf("4.）防禦卡 Lv1 費用 1 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[1][0].SIZE);
-	printf("5.）防禦卡 Lv2 費用 3 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[1][1].SIZE);
-	printf("6.）防禦卡 Lv3 費用 6 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[1][2].SIZE);
-	printf("7.）移動卡 Lv1 費用 1 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[2][0].SIZE);
-	printf("8.）移動卡 Lv2 費用 3 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[2][1].SIZE);
-	printf("9.）移動卡 Lv3 費用 6 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[2][2].SIZE);
+	printf("1.） 攻擊卡 Lv1 費用 1 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[0][0].SIZE);
+	printf("2.） 攻擊卡 Lv2 費用 3 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[0][1].SIZE);
+	printf("3.） 攻擊卡 Lv3 費用 6 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[0][2].SIZE);
+	printf("4.） 防禦卡 Lv1 費用 1 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[1][0].SIZE);
+	printf("5.） 防禦卡 Lv2 費用 3 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[1][1].SIZE);
+	printf("6.） 防禦卡 Lv3 費用 6 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[1][2].SIZE);
+	printf("7.） 移動卡 Lv1 費用 1 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[2][0].SIZE);
+	printf("8.） 移動卡 Lv2 費用 3 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[2][1].SIZE);
+	printf("9.） 移動卡 Lv3 費用 6 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[2][2].SIZE);
 	printf("10.）通用卡 Lv1 費用 2 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[3][0].SIZE);
 }
 
+int8_t printf_skill_shop(int8_t player_num){
+	
+	system("clear");
+	
+	card cardtemp1;
+	Card_Define(skillBuyDeck[player_num][0].array[skillBuyDeck[player_num][0].SIZE-1], &cardtemp1);
+	card cardtemp2;
+	Card_Define(skillBuyDeck[player_num][1].array[skillBuyDeck[player_num][1].SIZE-1], &cardtemp2);
+	card cardtemp3;
+	Card_Define(skillBuyDeck[player_num][2].array[skillBuyDeck[player_num][2].SIZE-1], &cardtemp3);
+	
+	printf("1.）攻擊技能鏈   升級費用 %hhd 點能量  卡片剩餘數:%hhd\n",cardtemp1.cost ,skillBuyDeck[player_num][0].SIZE);
+	if(skillBuyDeck[player_num][0].SIZE!=0)printf("目前的卡片：%s\n效果：%s\n\n",cardtemp1.cardname,cardtemp1.inf);
+	printf("2.）防禦技能鏈   升級費用 %hhd 點能量  卡片剩餘數:%hhd\n",cardtemp2.cost ,skillBuyDeck[player_num][1].SIZE);
+	if(skillBuyDeck[player_num][1].SIZE!=0)printf("目前的卡片：%s\n效果：%s\n\n",cardtemp2.cardname,cardtemp2.inf);
+	printf("3.）移動技能鏈   升級費用 %hhd 點能量  卡片剩餘數:%hhd\n",cardtemp3.cost ,skillBuyDeck[player_num][2].SIZE);
+	if(skillBuyDeck[player_num][2].SIZE!=0)printf("目前的卡片：%s\n效果：%s\n\n",cardtemp2.cardname,cardtemp2.inf);
+}
+
+int8_t skill_shop_command(player *P){
+	printf_skill_shop(P->num);
+	card cardtemp1;
+	Card_Define(skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1], &cardtemp1);
+	card cardtemp2;
+	Card_Define(skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1], &cardtemp2);
+	card cardtemp3;
+	Card_Define(skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1], &cardtemp3);
+	int8_t ssc =-1;
+	printf_skill_shop(P->num);
+	while(1){
+		printf("請輸入你要做什麼？1.)升級技能 2.)退出商店：");
+		scanf("%hhd",&ssc);
+		getchar();
+		if(ssc == 1){
+			int8_t cc =-1;
+			printf("請輸入你要升級的技能：") ;
+			scanf("%hhd",&cc);
+			switch(cc){
+				case 1: // 攻擊
+					if(P->power < cardtemp1.cost){
+						printf("你的能量不夠\n") ;
+						
+					}else if(skillBuyDeck[P->num][0].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, skillBuyDeck[P->num][0].array[basicBuyDeck[0][0].SIZE-1]);
+						skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1] = 0;
+						skillBuyDeck[P->num][0].SIZE--;
+						P->power -=cardtemp1.cost;
+						Card_Define(skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1], &cardtemp1);
+						printf_skill_shop(P->num);
+					}
+				
+				break;
+				
+				case 2: // 防禦
+					if(P->power < cardtemp2.cost){
+						printf("你的能量不夠\n") ;
+						
+					}else if(skillBuyDeck[P->num][1].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, skillBuyDeck[P->num][1].array[basicBuyDeck[1][1].SIZE-1]);
+						skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1] = 0;
+						skillBuyDeck[P->num][1].SIZE--;
+						P->power -=cardtemp2.cost;
+						Card_Define(skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1], &cardtemp2);
+						printf_skill_shop(P->num);
+					}
+				
+				break;
+				
+				case 3: // 移動
+					if(P->power < cardtemp3.cost){
+						printf("你的能量不夠\n") ;
+						
+					}else if(skillBuyDeck[P->num][2].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, skillBuyDeck[P->num][2].array[basicBuyDeck[2][2].SIZE-1]);
+						skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1] = 0;
+						skillBuyDeck[P->num][2].SIZE--;
+						P->power -=cardtemp3.cost;
+						Card_Define(skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1], &cardtemp3);
+						printf_skill_shop(P->num);
+					}
+				
+				break;
+			
+				
+				default:
+					printf("不存在此選項\n");
+				break;
+			}
+		}else if (ssc == 2){
+			
+			if(mode == 1){
+				print_game_broad_9();
+				return 0;
+			}else{
+				
+			}
+			action_command(P);
+			return 0;
+		}else{
+			printf("不合法輸入！！\n") ;
+		}
+	}
+	return 0;
+	}
 int8_t basic_shop_command(player *P){
 	int8_t bsc =-1;
 	printf_basic_shop();
@@ -88,7 +301,7 @@ int8_t basic_shop_command(player *P){
 						pushbackVector(&P->discard, basicBuyDeck[0][1].array[basicBuyDeck[0][1].SIZE-1]);
 						basicBuyDeck[0][1].array[basicBuyDeck[0][1].SIZE-1] = 0;
 						basicBuyDeck[0][1].SIZE--;
-						P->power--;
+						P->power-=3;
 						printf_basic_shop();
 					}
 				
@@ -105,7 +318,7 @@ int8_t basic_shop_command(player *P){
 						pushbackVector(&P->discard, basicBuyDeck[0][2].array[basicBuyDeck[0][2].SIZE-1]);
 						basicBuyDeck[0][2].array[basicBuyDeck[0][2].SIZE-1] = 0;
 						basicBuyDeck[0][2].SIZE--;
-						P->power--;
+						P->power-=6;
 						printf_basic_shop();
 					}
 				
@@ -139,7 +352,7 @@ int8_t basic_shop_command(player *P){
 						pushbackVector(&P->discard, basicBuyDeck[1][1].array[basicBuyDeck[1][1].SIZE-1]);
 						basicBuyDeck[1][1].array[basicBuyDeck[1][1].SIZE-1] = 0;
 						basicBuyDeck[1][1].SIZE--;
-						P->power--;
+						P->power-=3;
 						printf_basic_shop();
 					}
 				
@@ -156,7 +369,7 @@ int8_t basic_shop_command(player *P){
 						pushbackVector(&P->discard, basicBuyDeck[1][2].array[basicBuyDeck[1][2].SIZE-1]);
 						basicBuyDeck[1][2].array[basicBuyDeck[1][2].SIZE-1] = 0;
 						basicBuyDeck[1][2].SIZE--;
-						P->power--;
+						P->power-=6;
 						printf_basic_shop();
 					}
 				
@@ -190,7 +403,7 @@ int8_t basic_shop_command(player *P){
 						pushbackVector(&P->discard, basicBuyDeck[2][1].array[basicBuyDeck[2][1].SIZE-1]);
 						basicBuyDeck[2][1].array[basicBuyDeck[2][1].SIZE-1] = 0;
 						basicBuyDeck[2][1].SIZE--;
-						P->power--;
+						P->power-=3;
 						printf_basic_shop();
 					}
 				
@@ -207,7 +420,7 @@ int8_t basic_shop_command(player *P){
 						pushbackVector(&P->discard, basicBuyDeck[2][2].array[basicBuyDeck[2][2].SIZE-1]);
 						basicBuyDeck[2][2].array[basicBuyDeck[2][2].SIZE-1] = 0;
 						basicBuyDeck[2][2].SIZE--;
-						P->power--;
+						P->power-=6;
 						printf_basic_shop();
 					}
 				
@@ -224,7 +437,7 @@ int8_t basic_shop_command(player *P){
 						pushbackVector(&P->discard, basicBuyDeck[3][0].array[basicBuyDeck[3][0].SIZE-1]);
 						basicBuyDeck[3][0].array[basicBuyDeck[3][0].SIZE-1] = 0;
 						basicBuyDeck[3][0].SIZE--;
-						P->power--;
+						P->power-=2;
 						printf_basic_shop();
 					}
 				
@@ -272,7 +485,7 @@ int8_t action_command(player *P){
             	break;
             	
             	case 2:  // 購買技能牌
-		
+			skill_shop_command(P);
 		
             	break;
             	
@@ -375,6 +588,7 @@ void print_game_broad_9(){
 int main(){ //mainfuc
 
 	srand( time(NULL) );
+	
 	initialization_basic_shop();
 	//mode=-1
 	printf("請你選擇你想要遊玩的模式：(1.)1對1 (2.)2對2 （請輸入數字來做決定\n");
@@ -384,6 +598,12 @@ int main(){ //mainfuc
 		printf("請你選擇你想要遊玩的模式：(1.)1對1 (2.)2對2 （請輸入數字來做決定\n");
 		
 	} 
+	player_1.num = 0;
+	player_2.num = 1;
+	player_3.num = 2;
+	player_4.num = 3;
+	initialization_skill_shop(&player_1);
+	initialization_skill_shop(&player_2);
 	player_1.coordinate = 3;
 	player_2.coordinate = 5;
 	//RelicOn = -1
@@ -586,10 +806,12 @@ int main(){ //mainfuc
 	}
 	if(mode == 1){
 		print_game_broad_9();
+		
 	}
 	
 	while(1){
 		print_game_broad_9();
+		
 	}
 	
 	
