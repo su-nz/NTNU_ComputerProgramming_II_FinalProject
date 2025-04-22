@@ -50,14 +50,18 @@ typedef struct Card{
 	int8_t type; // 0)attack 1)defend 2)movement 3)skills 4)Ult 5)passive
 	int8_t power_generate;
 	int8_t value; // for example value = 1 on attack => deal 1 damage
+	int8_t damage;
+	int8_t shield;
 	int8_t require_basic_card; // 0 means do not requires
 	int16_t cardcode; // for skill card 
+	char * inf;
+	char * cardname;
 }card;
 
 
 
 void print_game_broad_9();
-int8_t command(player *P);
+int8_t action_command(player *P);
 int8_t inputcharacter(player *P, int8_t characternum);
 
 
