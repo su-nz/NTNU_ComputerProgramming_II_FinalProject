@@ -55,16 +55,16 @@ int8_t initialization_deck(player *P){
 int8_t initialization_basic_shop(){
 	for(int i = 0 ; i < 3 ; i ++){
 		for(int j = 0 ; j < 3 ; j++){
-			basicBuyDeck[i][j].SIZE = 12;
-			for(int k = 1 ; k <=12 ; k++){
-				basicBuyDeck[i][j].array[k] = (k + 12*j + 36*i);
+			basicBuyDeck[i][j].SIZE = 18;
+			for(int k = 1 ; k <=18 ; k++){
+				basicBuyDeck[i][j].array[k] = 1+j+i*3;
 			}
 			
 		}
 	}
-	basicBuyDeck[3][0].SIZE = 12;
-	for(int k = 1 ; k <=12 ; k++){
-		basicBuyDeck[4][0].array[k] = (k + 36*3); 
+	basicBuyDeck[3][0].SIZE = 18;
+	for(int k = 1 ; k <=18 ; k++){
+		basicBuyDeck[4][0].array[k] = 10; 
 	}
 	return 0; // 成功
 }
@@ -72,96 +72,43 @@ int8_t initialization_basic_shop(){
 int8_t initialization_skill_shop(player *P){
 	skillBuyDeck[P->num][0].SIZE = 8;
 	skillBuyDeck[P->num][1].SIZE = 8;
-	skillBuyDeck[P->num][2].SIZE = 8;
+	skillBuyDeck[P->num][2].SIZE = 8; 
+	
 	switch (P->character){
 		case 0:
-			for(int i = 0 ; i < 3 ; i++){
-				for(int j = 0 ; j < 8 ; j++){
-					skillBuyDeck[P->num][i].array[j] = (128+i*8) - j ;
-				}
+			int8_t temp1[] = {138,13,13,13,135,12,12,11};
+			for (int i = 0; i < 8; ++i) {
+			    skillBuyDeck[P->num][0].array[i] = temp1[i];
 			}
+			int8_t temp2[] = {138,16,16,16,136,15,15,14};
+			for (int i = 0; i < 8; ++i) {
+			    skillBuyDeck[P->num][1].array[i] = temp2[i];
+			}
+			int8_t temp3[] = {138,19,19,19,137,18,18,17};
+			for (int i = 0; i < 8; ++i) {
+			    skillBuyDeck[P->num][2].array[i]  = temp3[i];
+			}
+			
+			
 		break;
 		
 		case 1:
-			for(int i = 0 ; i < 3 ; i++){
-				for(int j = 0 ; j < 8 ; j++){
-					skillBuyDeck[P->num][i].array[j] = (155+i*8) - j ;
-				}
+			int temp4[] = {142,25,25,25,139,24,24,23};
+			for (int i = 0; i < 8; ++i) {
+			    skillBuyDeck[P->num][0].array[i] = temp4[i];
 			}
-		break;
-		
-		case 2:
-			for(int i = 0 ; i < 3 ; i++){
-				for(int j = 0 ; j < 8 ; j++){
-					skillBuyDeck[P->num][i].array[j] = (200+i*8) - j ;
-				}
+
+			int temp5[] = {142,28,28,28,140,27,27,26};
+			for (int i = 0; i < 8; ++i) {
+			    skillBuyDeck[P->num][1].array[i] = temp5[i];
 			}
-		break;
-		
-		case 3:
-			for(int i = 0 ; i < 3 ; i++){
-				for(int j = 0 ; j < 8 ; j++){
-					skillBuyDeck[P->num][i].array[j] = (227+i*8) - j ;
-				}
+
+			int temp6[] = {142,31,31,31,141,30,30,29};
+			for (int i = 0; i < 8; ++i) {
+			    skillBuyDeck[P->num][2].array[i] = temp6[i];
 			}
-			
+					
 		break;
-		
-		case 4:
-			for(int i = 0 ; i < 3 ; i++){
-				for(int j = 0 ; j < 8 ; j++){
-					skillBuyDeck[P->num][i].array[j] = (254+i*8) - j ;
-				}
-			}
-			
-		break;
-		
-		case 5:
-			for(int i = 0 ; i < 3 ; i++){
-				for(int j = 0 ; j < 8 ; j++){
-					skillBuyDeck[P->num][i].array[j] = (274+i*8) - j ;
-				}
-			}
-			
-		break;
-		
-		case 6:
-			for(int i = 0 ; i < 3 ; i++){
-				for(int j = 0 ; j < 8 ; j++){
-					skillBuyDeck[P->num][i].array[j] = (308+i*8) - j ;
-				}
-			}
-			
-		break;
-		
-		case 7:
-			for(int i = 0 ; i < 3 ; i++){
-				for(int j = 0 ; j < 8 ; j++){
-					skillBuyDeck[P->num][i].array[j] = (335+i*8) - j ;
-				}
-			}
-			
-		break;
-		
-		case 8:
-			for(int i = 0 ; i < 3 ; i++){
-				for(int j = 0 ; j < 8 ; j++){
-					skillBuyDeck[P->num][i].array[j] = (374+i*8) - j ;
-				}
-			}
-			
-		break;
-		
-		case 9:
-			for(int i = 0 ; i < 3 ; i++){
-				for(int j = 0 ; j < 8 ; j++){
-					skillBuyDeck[P->num][i].array[j] = (401+i*8) - j ;
-				}
-			}
-			
-		break;
-		
-			
 	}
 	return 0; // 成功
 }
@@ -295,7 +242,40 @@ int8_t skill_shop_command(player *P){
 		}
 	}
 	return 0;
+}
+
+int8_t discard_command(player *P){
+	int8_t dc =-1;
+	print_discard(P);
+	while(1){
+		printf("請輸入你要做什麼？1.)查看 2.)返回\n");
+		printf("請輸入：");
+		scanf("%hhd",&dc);
+		getchar();
+		if(dc == 1){
+			int8_t cc =-1;
+			printf("請輸入你要查看的牌：");
+			scanf("%hhd",&cc);
+			if(cc > P->discard.SIZE){
+				printf("沒有這張卡！\n");
+			}else{
+				card temp_card;
+				Card_Define(P->discard.array[cc-1] , &temp_card);
+				printf("卡名：%s 效果：%s\n",temp_card.cardname,temp_card.inf);
+			}
+		}else{
+			if(mode == 1){
+				print_game_broad_9();
+				return 0;
+			}else{
+				
+			}
+			action_command(P);
+			return 0;
+		}
 	}
+}
+
 int8_t basic_shop_command(player *P){
 	int8_t bsc =-1;
 	printf_basic_shop();
@@ -500,6 +480,90 @@ int8_t basic_shop_command(player *P){
 	return 0;
 }
 	
+int8_t remove_card(player *P){
+	system("clear");
+	int8_t comm=-1;
+	printf("請問你要對哪一個地方使用專注？ 0.）手牌 1.）棄牌堆 2.）返回\n");
+	printf("輸入指令：");
+	scanf("%hhd",&comm);
+	switch(comm){
+		case 0:
+			while(1){
+				print_hands(P);
+				int8_t select=-1;
+				if((*P).hands == 0){
+					if(mode == 1){
+						print_game_broad_9();
+						
+					}else{
+							
+					}
+					printf("你沒有手牌了！\n");
+					action_command(P);
+				}
+				printf("請問你要移除哪一牌？\n");
+				printf("輸入數字：");
+				scanf("%hhd",&select);
+				if(select > P->hands || select <= 0 ){
+						printf("沒有這張卡！\n");
+				}else{
+					Card_Define(0 , &(*P).hands_card[select-1]);
+					for (int8_t i = select-1; i < (*P).hands - 1; i++) {
+						Card_Define(0, &(*P).hands_card[i]);
+						Card_Define((*P).hands_card[i + 1].cardcode , &(*P).hands_card[i]);
+					}
+					(*P).hands--;
+					return -1;
+				}
+				
+			}
+			return -1;
+		break;
+		
+		case 1:
+			while(1){//
+				if(P->discard.SIZE == 0){
+					if(mode == 1){
+						print_game_broad_9();
+						
+					}else{
+							
+					}
+					printf("你的棄牌堆沒有牌！\n");
+					action_command(P);
+					return 0;
+				}
+				int8_t cc=-1;
+				printf("請問你要移除哪一牌？\n");
+				printf("輸入數字：");
+				scanf("%hhd",&cc);
+				if(cc > P->discard.SIZE){
+					printf("沒有這張卡！\n");
+					break;
+				}else{
+					eraseVector(&P->discard, cc);
+					break;
+				}
+				
+			}
+			return -1;
+		break;
+		
+		case 2:
+		
+		if(mode == 1){
+			print_game_broad_9();
+			
+		}else{
+				
+		}
+		action_command(P);
+		return 0;
+		
+		break;
+		
+	}
+}
 
 
 
@@ -512,9 +576,11 @@ int8_t action_command(player *P){
 	print_hands(P);
 	printf("輸入指令：");
 	scanf("%hhd",&comm);
+	getchar();
 	switch(comm){
 		case 0:  // 專注
-		
+			remove_card(P) ;
+			return -1;
 		
             	break;
             	
@@ -529,32 +595,32 @@ int8_t action_command(player *P){
             	break;
             	
             	case 3:  // 打牌
-		
+			
 		
             	break;
             	
             	case 4:  // 查看自己的棄牌
-		
+			discard_command(&player_1);
 		
             	break;
             	
             	case 5:  // 查看別人的棄牌堆
-		
+			discard_command(&player_2);
 		
             	break;
             	
             	case 6:  // 結束遊戲階段
-		
+		return -1;
 		
             	break;
 	}
+	print_game_broad_9();
+	action_command(P);
+	return 0;
 }
 
 
 
-void print_skills_shop(player *P){
-
-}
 
 void print_extra_inf(player *P){
 	if((*P).poison != -1){
@@ -641,10 +707,7 @@ int main(){ //mainfuc
 	player_2.num = 1;
 	player_3.num = 2;
 	player_4.num = 3;
-	initialization_skill_shop(&player_1);
-	initialization_skill_shop(&player_2);
-	initialization_deck(&player_1);
-	initialization_deck(&player_2);
+	
 	player_1.coordinate = 3;
 	player_2.coordinate = 5;
 	//RelicOn = -1
@@ -830,6 +893,10 @@ int main(){ //mainfuc
 		inputcharacter(&player_4, player4_char);
 	}
 	
+	initialization_skill_shop(&player_1);
+	initialization_skill_shop(&player_2);
+	initialization_deck(&player_1);
+	initialization_deck(&player_2);
 	
 	//遊戲開始
 	int8_t round = 0;
@@ -853,36 +920,39 @@ int main(){ //mainfuc
 	while(1){
 		if(mode == 1){//單人模式
 			round++;
-			if(player_1.first == 1){//玩家一先手
-				if(round == 1){
-					draw_card(4,&player_1);
+			while(1){ // 執行階段
+				if(player_1.first == 1){//玩家一先手
+					if(round == 1){
+						draw_card(4,&player_1);
+					}else{
+						draw_card(6,&player_1);
+					}
+					draw_card(6,&player_2);
+					print_game_broad_9();
+					if(round % 2 == 1){
+						if(round == 1) printf("玩家一先手\n");	
+						if(action_command(&player_1) == -1) break;
+						
+					}else{
+						if(action_command(&player_2)== -1) break;
+					}
 				}else{
 					draw_card(6,&player_1);
-				}
-				draw_card(6,&player_2);
-				print_game_broad_9();
-				if(round % 2 == 1){
-					printf("玩家一先手\n");	
-					action_command(&player_1);
-					
-				}else{
-					action_command(&player_2);
-				}
-			}else{
-				draw_card(6,&player_1);
-				if(round == 1){
-					draw_card(4,&player_2);
-				}else{
-					draw_card(6,&player_2);
-				}
-				print_game_broad_9();
-				if(round % 2 == 1){
-					printf("玩家二先手\n");
-					action_command(&player_2);
-				}else{
-					action_command(&player_1);
+					if(round == 1){
+						draw_card(4,&player_2);
+					}else{
+						draw_card(6,&player_2);
+					}
+					print_game_broad_9();
+					if(round % 2 == 1){
+						if(round == 1) printf("玩家二先手\n");
+						if(action_command(&player_2)== -1) break;
+					}else{
+						if(action_command(&player_1) == -1) break;
+					}
 				}
 			}
+			//判斷輸贏
 		}
 		
 		
