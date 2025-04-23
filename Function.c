@@ -1,6 +1,8 @@
 #include "TwistedFables.h"
 
 
+
+
 int8_t inputcharacter(player *P, int8_t characternum) { //寫入角色資訊
     (*P).character = characternum;
 	(*P).poison= -1;
@@ -130,4 +132,18 @@ int8_t draw_card(int8_t amount , player *P){
 	}
 	return 0;
 }
+
+int8_t print_discard(player *P){
+	system("clear");
+	printf("%s的棄牌堆：\n",P->charname);
+	for(int i = 0 ; i < P->discard.SIZE ; i++){
+		card temp_card;
+		Card_Define(P->discard.array[i] , &temp_card);
+		printf("%d.)%s ",i+1,temp_card.cardname);
+	}
+}
+
+
+
+
 
