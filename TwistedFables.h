@@ -5,11 +5,15 @@
 #include <stdbool.h>
 #include <math.h>
 #include <time.h> 
-#include <unistd.h> 
+#include <unistd.h>
+#include <termios.h>
 #include "vector.h"
 #define Ult_threshold Ultt
 #define Maxpower 25
 #define DeckMax 200
+#define GREEN "\033[32m"
+#define BOLD  "\033[1m"
+#define RESET "\033[0m"
 
 typedef struct Character{
 	int8_t Maxhp;
@@ -35,7 +39,7 @@ typedef struct Card{
 }card;
 
 typedef struct Player{
-	int8_t num; //1 2 3 4
+	int8_t num; //0 1 2 3
 	int8_t character; // 0 - 9
 	char * charname;
 	int8_t Maxhp;
@@ -80,6 +84,11 @@ int8_t discard_back_to_deck(player *P);
 int8_t draw_card(int8_t amount , player *P);
 int8_t print_discard(player *P);
 int8_t discard_command(player *P);
-
-
-	
+void print_header();
+int8_t get_random_unused_character(int8_t remaining_roles[], int8_t remaining_count);
+void enable_raw_mode();
+void disable_raw_mode();
+void wait_for_space();
+int8_t str_display_width(const char *s);
+void print_aligned_charname(const char* name, int8_t width);
+void shuffle(vector *v);
