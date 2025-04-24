@@ -9,8 +9,8 @@ vector basicBuyDeck[4][3];  // attack(0) LV1~3 defense(1) LV1~3 move(2) LV1~3 ge
 vector skillBuyDeck[4][3];  // 4 player 
 
 
+player Player[4];
 
-player player_1,player_2,player_3,player_4;
 int8_t mode=-1;
 int8_t RelicOn = -1;
 int8_t BotOn = -1;
@@ -665,7 +665,7 @@ int8_t action_command(player *P){
             	
             	case 5:  // 查看別人的棄牌堆
             		if(mode ==1){// 新增不同回合要換人
-				discard_command(&player_2);
+				discard_command(&Player[1]);
 			}
 		
             	break;
@@ -735,27 +735,27 @@ int8_t utf8_strlen(const char *s) {
 
 void print_game_broad_9(){
 	int8_t len = 0;
-	if(utf8_strlen(player_1.charname) == 3 && utf8_strlen(player_2.charname) == 3) len = 6;
+	if(utf8_strlen(Player[0].charname) == 3 && utf8_strlen(Player[1].charname) == 3) len = 6;
 	else len = 8;
 	system("clear");
 	printf("玩家一 │ 遊玩角色：");
-	print_aligned_charname(player_1.charname, len);
-	printf(" 血量：%hhd 防禦值：%hhd 能量：%hhd 手牌數：%hhd 血量上限：%hhd 防禦上限：%hhd 必殺閥值:%hhd\n", player_1.hp, player_1.armor, player_1.power, player_1.hands, player_1.Maxhp, player_1.Maxarmor, player_1.Ult_threshold);
-	print_extra_inf(&player_1);
+	print_aligned_charname(Player[0].charname, len);
+	printf(" 血量：%hhd 防禦值：%hhd 能量：%hhd 手牌數：%hhd 血量上限：%hhd 防禦上限：%hhd 必殺閥值:%hhd\n", Player[0].hp, Player[0].armor, Player[0].power, Player[0].hands, Player[0].Maxhp, Player[0].Maxarmor, Player[0].Ult_threshold);
+	print_extra_inf(&Player[0]);
 
 	printf("玩家二 │ 遊玩角色：");
-	print_aligned_charname(player_2.charname, len);
-	printf(" 血量：%hhd 防禦值：%hhd 能量：%hhd 手牌數：%hhd 血量上限：%hhd 防禦上限：%hhd 必殺閥值:%hhd\n", player_2.hp, player_2.armor, player_2.power, player_2.hands, player_2.Maxhp, player_2.Maxarmor, player_2.Ult_threshold);
-	print_extra_inf(&player_2);
+	print_aligned_charname(Player[1].charname, len);
+	printf(" 血量：%hhd 防禦值：%hhd 能量：%hhd 手牌數：%hhd 血量上限：%hhd 防禦上限：%hhd 必殺閥值:%hhd\n", Player[1].hp, Player[1].armor, Player[1].power, Player[1].hands, Player[1].Maxhp, Player[1].Maxarmor, Player[1].Ult_threshold);
+	print_extra_inf(&Player[1]);
 
 	printf("          ┌───────────────────┐           \n");
 	
 	//printf("     Board│ O O O O O O O O O │版面                   \n");//10
 	printf("     Board│ ");
 	for(int i = 0 ; i < 9 ; i++){
-		if(player_1.coordinate == i){
+		if(Player[0].coordinate == i){
 			printf("1 ");
-		}else if(player_2.coordinate == i){
+		}else if(Player[1].coordinate == i){
 			printf("2 ");
 		}else{
 			printf("_ ");
@@ -793,19 +793,19 @@ void print_header()
 	else printf("（未選擇）\n");
 
 	printf("玩家一　　：");	
-	if(player_1.charname) printf("%s\n", player_1.charname);	
+	if(Player[0].charname) printf("%s\n", Player[0].charname);	
 	else printf("（未選擇）\n");
 	
 	printf("玩家二　　：");        
-	if(player_2.charname) printf("%s\n", player_2.charname);        
+	if(Player[1].charname) printf("%s\n", Player[1].charname);        
 	else printf("（未選擇）\n");
 
 	printf("玩家三　　：");        
-	if(player_3.charname) printf("%s\n", player_3.charname);        
+	if(Player[2].charname) printf("%s\n", Player[2].charname);        
 	else printf("（未選擇）\n");
 
 	printf("玩家四　　：");        
-	if(player_4.charname) printf("%s\n\n", player_4.charname);        
+	if(Player[3].charname) printf("%s\n\n", Player[3].charname);        
 	else printf("（未選擇）\n\n");
 }
 
@@ -885,13 +885,13 @@ int main(){ //mainfuc
         	printf("2. 2對2\n");
 		printf("> ");
 	} 
-	player_1.num = 0;
-	player_2.num = 1;
-	player_3.num = 2;
-	player_4.num = 3;
+	Player[0].num = 0;
+	Player[1].num = 1;
+	Player[2].num = 2;
+	Player[3].num = 3;
 	
-	player_1.coordinate = 4;
-	player_2.coordinate = 6;
+	Player[0].coordinate = 4;
+	Player[1].coordinate = 6;
 	
 	//RelicOn = -1
 	print_header();
@@ -969,7 +969,7 @@ int main(){ //mainfuc
 	if(player1_char == 10){
 		player1_char = get_random_unused_character(remaining_roles, remaining_count);
 	}
-	inputcharacter(&player_1, player1_char);
+	inputcharacter(&Player[0], player1_char);
 	remaining_roles[player1_char] = 0;
 	remaining_count--;
 	
@@ -1019,7 +1019,7 @@ int main(){ //mainfuc
 	if(player2_char == 10){
                 player2_char = get_random_unused_character(remaining_roles, remaining_count);
         }
-        inputcharacter(&player_2, player2_char);
+        inputcharacter(&Player[1], player2_char);
         remaining_roles[player2_char] = 0;
         remaining_count--;
 	
@@ -1061,7 +1061,7 @@ int main(){ //mainfuc
 		if(player3_char == 10){
 	                player3_char = get_random_unused_character(remaining_roles, remaining_count);
 	        }
-	        inputcharacter(&player_3, player3_char);
+	        inputcharacter(&Player[2], player3_char);
 	        remaining_roles[player3_char] = 0;
 	        remaining_count--;
 		
@@ -1111,15 +1111,15 @@ int main(){ //mainfuc
 		if(player4_char == 10){
 	                player4_char = get_random_unused_character(remaining_roles, remaining_count);
 	        }
-	        inputcharacter(&player_4, player4_char);
+	        inputcharacter(&Player[3], player4_char);
 	        remaining_roles[player4_char] = 0;
 	        remaining_count--;
 	}
 	
-	initialization_skill_shop(&player_1);
-	initialization_skill_shop(&player_2);
-	initialization_deck(&player_1);
-	initialization_deck(&player_2);	
+	initialization_skill_shop(&Player[0]);
+	initialization_skill_shop(&Player[1]);
+	initialization_deck(&Player[0]);
+	initialization_deck(&Player[1]);	
 
 	print_header();	
 	wait_for_space();
@@ -1130,16 +1130,16 @@ int main(){ //mainfuc
 	if(flip_coins == 1){
 		//player 1 first
 		if(mode == 1){
-			player_1.first = 1;
+			Player[0].first = 1;
 		}
 	}else{
 		//player 2 first
 		if(mode == 1){
-			player_2.first = 1;
+			Player[1].first = 1;
 		}
 	}
 	
-	if(player_1.first == 1){//玩家一先手
+	if(Player[0].first == 1){//玩家一先手
 		
 	}
 	while(1){
@@ -1147,35 +1147,35 @@ int main(){ //mainfuc
 			round++;
 			while(1){ // 執行階段
 				 turn = 0;
-				if(player_1.first == 1){//玩家一先手
+				if(Player[0].first == 1){//玩家一先手
 					if(round == 1){
-						draw_card(4,&player_1);
+						draw_card(4,&Player[0]);
 					}else{
-						draw_card(6,&player_1);
+						draw_card(6,&Player[0]);
 					}
-					draw_card(6,&player_2);
+					draw_card(6,&Player[1]);
 					//補一個專注
 					print_game_broad_9();
 					if(round % 2 == 1){
 						if(round == 1) printf("玩家一先手\n");	
-						if(action_command(&player_1) == -1) break;
+						if(action_command(&Player[0]) == -1) break;
 						
 					}else{
-						if(action_command(&player_2)== -1) break;
+						if(action_command(&Player[1])== -1) break;
 					}
 				}else{
-					draw_card(6,&player_1);
+					draw_card(6,&Player[0]);
 					if(round == 1){
-						draw_card(4,&player_2);
+						draw_card(4,&Player[1]);
 					}else{
-						draw_card(6,&player_2);
+						draw_card(6,&Player[1]);
 					}
 					print_game_broad_9();
 					if(round % 2 == 1){
 						if(round == 1) printf("玩家二先手\n");
-						if(action_command(&player_2)== -1) break;
+						if(action_command(&Player[1])== -1) break;
 					}else{
-						if(action_command(&player_1) == -1) break;
+						if(action_command(&Player[0]) == -1) break;
 					}
 				}
 			}
