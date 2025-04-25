@@ -76,7 +76,7 @@ int16_t Card_Define(int16_t CardID , card *C){//
 	}
 	
 	if(CardID == 4){ //基礎 防禦牌 等級一
-		(*C).cardname = " 防禦牌 等級一";
+		(*C).cardname = "防禦牌 等級一";
 		(*C).cost = 1 ;
 		(*C).level = 1;
 		(*C).range = 0; //for attack 0 means its doesn't need range
