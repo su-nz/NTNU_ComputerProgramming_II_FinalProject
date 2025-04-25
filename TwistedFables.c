@@ -10,7 +10,7 @@ vector skillBuyDeck[4][3];  // 4 player
 
 
 player Player[4];
-
+int8_t Right_MAX = 0;
 int8_t mode=-1;
 int8_t RelicOn = -1;
 int8_t BotOn = -1;
@@ -49,6 +49,7 @@ int8_t initialization_deck(player *P){
 	pushbackVector(&P->deck, skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1]);
 	popbackVector(&skillBuyDeck[P->num][2]);
 	
+	for(int i = 0 ; i < 5 ; i++)shuffle(&P->deck);
 				
 						
 }
@@ -486,6 +487,15 @@ int8_t basic_shop_command(player *P){
 	}
 	return 0;
 }
+
+int8_t discard_card_from_hand(player *P,int8_t index){
+					pushbackVector(&P->discard,(*P).hands_card[index].cardcode);
+					for (int8_t i = index; i < (*P).hands - 1; i++) {
+						Card_Define(0, &(*P).hands_card[i]);
+						Card_Define((*P).hands_card[i + 1].cardcode , &(*P).hands_card[i]);
+					}
+					(*P).hands--;
+}
 	
 int8_t remove_card(player *P){
 	system("clear");
@@ -575,6 +585,22 @@ int8_t remove_card(player *P){
 	}
 }
 
+int8_t target(player *you){
+	if(you->coordinate > 0){
+		if(Player[0].coordinate > 0 && Player[0].coordinate != you->coordinate) return Player[0].num;
+		if(Player[1].coordinate > 0 && Player[1].coordinate != you->coordinate) return Player[1].num;
+		if(Player[2].coordinate > 0 && Player[2].coordinate != you->coordinate) return Player[2].num;
+		if(Player[3].coordinate > 0 && Player[3].coordinate != you->coordinate) return Player[3].num;
+	}else{
+		if(Player[0].coordinate < 0 && Player[0].coordinate != you->coordinate) return Player[0].num;
+		if(Player[1].coordinate < 0 && Player[1].coordinate != you->coordinate) return Player[1].num;
+		if(Player[2].coordinate < 0 && Player[2].coordinate != you->coordinate) return Player[2].num;
+		if(Player[3].coordinate < 0 && Player[3].coordinate != you->coordinate) return Player[3].num;
+	}
+}
+
+
+
 int8_t play_a_card(player *P){
 	system("clear");
 	print_game_broad_9();
@@ -591,31 +617,106 @@ int8_t play_a_card(player *P){
 			printf("你沒有手牌了！\n");
 			action_command(P);
 		}
-		printf("請問你要打哪一張牌？\n");
-		printf("輸入數字：");
-		scanf("%hhd",&select);
-		if(select == 0){
-			if(mode == 1){
-				print_game_broad_9();
+		
+			printf("請問你要打哪一張牌？\n");
+			printf("輸入數字：");
+			scanf("%hhd",&select);
+			if(select == 0){
+				if(mode == 1){
+					print_game_broad_9();
+					return 0;
+				}else{
+					
+				}
+				action_command(P);
 				return 0;
+			}
+		
+			if(select > P->hands || select < 0 ){
+					printf("沒有這張卡！%d\n",target(P));
 			}else{
-				
-			}
-			action_command(P);
-			return 0;
-		}
-	
-		if(select > P->hands || select < 0 ){
-				printf("沒有這張卡！\n");
-		}else{
-			switch (P->hands_card[select-1].type){
-				case 0:
+				printf("%d\n",P->hands_card[select-1].type);
+				switch (P->hands_card[select-1].type){
+					case 0://攻擊卡
+						if(range_counter(P,&Player[target(P)],P->hands_card[select-1].range) == 1){
+							Player[target(P)].hp -= (P->hands_card[select-1].value + P->atk_buff );
+							P->power += P->hands_card[select-1].power_generate;
+							discard_card_from_hand(P,select-1);
+							int inf_atk = (P->hands_card[select-1].value + P->atk_buff );
+							print_game_broad_9();
+							printf("你對對手造成了\033[1;31m%hhd\033[0m點傷害",inf_atk );
+							action_command(P);
+							
+							
+							
+						}else{
+							print_game_broad_9();
+							printf("對手不在你的攻擊範圍！\n");
+							action_command(P);
+						}
+					break;
 					
-				break;
+					case 1://防禦卡
+						P->armor += P->hands_card[select-1].value + P->defend_buff;
+						P->power  += P->hands_card[select-1].power_generate;
+						int ar_in = P->hands_card[select-1].value + P->defend_buff ;
+						discard_card_from_hand(P,select-1);
+						print_game_broad_9();
+						printf("你獲得了\033[1;31m%hhd\033[0m個盾",ar_in );
+						action_command(P);
+					break;
 					
+					case 2://移動卡
+						int8_t way = 0;
+						printf("你要向左還是向右？1.)向左 2.)向右 ：");
+						scanf("%hhd",&way);
+						int move = P->hands_card[select-1].value + P->speed_buff ;
+						for(int i = 0 ; i < move ; i++){
+							
+							if(way == 1){ //左
+							
+								if(P->coordinate -1 != 0){
+									if(P->coordinate -1 == Player[target(P)].coordinate && P->coordinate - 2 != 0 && move >= 2 ){
+											P->coordinate-=2 ;
+											move -=2 ;
+									}else{
+											P->coordinate--;
+											move --;
+									}
+								}
+								
+							}else{
+								if(P->coordinate +1 != Right_MAX){
+									if(P->coordinate +1 == Player[target(P)].coordinate && P->coordinate + 2 != Right_MAX && move >= 2 ){
+											P->coordinate+=2 ;
+											move -=2 ;
+									}else{
+											P->coordinate++;
+											move --;
+									}
+								}
+							}
+								
+						}
+						P->power  += P->hands_card[select-1].power_generate;
+						discard_card_from_hand(P,select-1);
+						print_game_broad_9();
+						action_command(P);
+					break;
+					
+					case 3://技能卡
+					
+					break;
+					
+					case 5://大招卡
+					
+					break;
+					
+						
+				}
+				return -1;
 			}
-			return -1;
-		}
+		
 				
 	}
 }
@@ -694,7 +795,7 @@ void print_extra_inf(player *P){
 		if((*P).sleep == 1){ //沉睡
 			printf("睡美人目前是\033[1;32m沉睡狀態\033[0m，他的白馬王子在哪？\n");
 		}else{ //覺醒
-			printf("睡美人目前是\033[1;32m覺醒狀態\033[0m，她不需要白馬王子？\n");
+			printf("睡美人目前是\033[1;32m覺醒狀態\033[0m，她不需要白馬王子！\n");
 		}
 	}
 	if((*P).alice != -1){ //愛麗絲 狀態 -1代表不是愛麗絲
@@ -752,7 +853,7 @@ void print_game_broad_9(){
 	
 	//printf("     Board│ O O O O O O O O O │版面                   \n");//10
 	printf("     Board│ ");
-	for(int i = 0 ; i < 9 ; i++){
+	for(int i = 1 ; i <= 9 ; i++){
 		if(Player[0].coordinate == i){
 			printf("1 ");
 		}else if(Player[1].coordinate == i){
@@ -1123,6 +1224,12 @@ int main(){ //mainfuc
 
 	print_header();	
 	wait_for_space();
+	
+	if(mode == 1){
+		Right_MAX = 9;
+	}else{
+		Right_MAX = 11;
+	}
 	//遊戲開始
 	int8_t round = 0;
 	int8_t flip_coins=0;
