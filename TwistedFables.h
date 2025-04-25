@@ -51,6 +51,9 @@ typedef struct Player{
 	int8_t hands;
 	int8_t coordinate;
 	int8_t first;
+	int8_t atk_buff;
+	int8_t defend_buff;
+	int8_t speed_buff;
 	
 	int8_t poison ;
 	
@@ -92,3 +95,4 @@ void wait_for_space();
 int8_t str_display_width(const char *s);
 void print_aligned_charname(const char* name, int8_t width);
 void shuffle(vector *v);
+int8_t range_counter(player *P,player*P2 , int8_t range);
