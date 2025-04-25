@@ -23,6 +23,9 @@ void shuffle(vector *v) {
 
 int8_t inputcharacter(player *P, int8_t characternum) { //寫入角色資訊
     (*P).character = characternum;
+    (*P).atk_buff = 0;
+    (*P).defend_buff = 0;
+    (*P).speed_buff = 0;
 	(*P).poison= -1;
 	(*P).matches= -1;
 	(*P).sleep = -1;
@@ -163,22 +166,10 @@ int8_t print_discard(player *P){
 }
 
 int8_t range_counter(player *P1,player *P2,int8_t range){
-	if(abs(P1->coordinate - P2->coordinate) >= range){
-		return 1;
+	if(abs(P1->coordinate - P2->coordinate) <= range){
+		return 1;//in range
 	}else{
-		return 0;
+		return 0;//out of range
 	}
 }
 
-int8_t target(player *you, player *p1, player *p2, player *p3){
-	int floor = 0;
-	if(you->coordinate > 0){
-		if(p1->coordinate > 0) return p1->num;
-		if(p2->coordinate > 0) return p2->num;
-		if(p3->coordinate > 0) return p3->num;
-	}else{
-		if(p1->coordinate < 0) return p1->num;
-		if(p2->coordinate < 0) return p2->num;
-		if(p3->coordinate < 0) return p3->num;
-	}
-}
