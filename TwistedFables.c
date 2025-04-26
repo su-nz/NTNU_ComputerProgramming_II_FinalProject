@@ -10,7 +10,7 @@ vector skillBuyDeck[4][3];  // 4 player
 
 
 player Player[4];
-int8_t Right_MAX = 0;
+int8_t Right_MAX = 0; //右邊牆壁
 int8_t mode=-1;
 int8_t RelicOn = -1;
 int8_t BotOn = -1;
