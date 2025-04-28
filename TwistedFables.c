@@ -10,7 +10,7 @@ vector skillBuyDeck[4][3];  // 4 player
 
 
 player Player[4];
-int8_t Right_MAX = 0; //右邊牆壁
+int8_t Right_MAX = 0;
 int8_t mode=-1;
 int8_t RelicOn = -1;
 int8_t BotOn = -1;
@@ -500,6 +500,7 @@ int8_t discard_card_from_hand(player *P,int8_t index){
 int8_t remove_card(player *P){
 	system("clear");
 	int8_t comm=-1;
+	printf("現在是"GREEN BOLD"%s"RESET"在進行\n",P->charname);
 	printf("請問你要對哪一個地方使用專注？\n");
 	printf("0. 手牌\n");
 	printf("1. 棄牌堆\n");
@@ -965,6 +966,20 @@ void print_aligned_charname(const char* name, int8_t width) {
 	for (int8_t i = 0; i < width - actual_width; i++) putchar(' ');
 }
 
+int8_t focus(player *P){
+	int8_t focus = -1;
+	printf("現在是"GREEN BOLD"%s"RESET"在進行\n",P->charname);
+	printf("請問本回合你要進行專注嘛？\n0. 要\n1. 不要\n");
+	printf(">");
+	scanf("%hhd",&focus);
+	if(focus == 0){
+		remove_card(P);
+		return -1;
+	}
+	system("clear");
+	
+}
+
 int main(){ //mainfuc
 	system("clear");
 	print_header();
@@ -1250,6 +1265,7 @@ int main(){ //mainfuc
 		
 	}
 	while(1){
+		 
 		if(mode == 1){//單人模式
 			round++;
 			while(1){ // 執行階段
@@ -1257,31 +1273,48 @@ int main(){ //mainfuc
 				if(Player[0].first == 1){//玩家一先手
 					if(round == 1){
 						draw_card(4,&Player[0]);
+						draw_card(6,&Player[1]);
 					}else{
 						draw_card(6,&Player[0]);
+						draw_card(4,&Player[1]);
 					}
-					draw_card(6,&Player[1]);
+					
 					//補一個專注
 					print_game_broad_9();
+					
 					if(round % 2 == 1){
+						if(focus(&Player[0])==-1) break;
+						print_game_broad_9();
 						if(round == 1) printf("玩家一先手\n");	
 						if(action_command(&Player[0]) == -1) break;
 						
 					}else{
+						if(focus(&Player[1])==-1) break;
+						print_game_broad_9();
 						if(action_command(&Player[1])== -1) break;
 					}
 				}else{
-					draw_card(6,&Player[0]);
+					
 					if(round == 1){
 						draw_card(4,&Player[1]);
+						draw_card(6,&Player[0]);
 					}else{
 						draw_card(6,&Player[1]);
+						draw_card(4,&Player[0]);
 					}
+					
 					print_game_broad_9();
+					
 					if(round % 2 == 1){
+						
+						if(focus(&Player[1])==-1) break;
+						print_game_broad_9();
 						if(round == 1) printf("玩家二先手\n");
 						if(action_command(&Player[1])== -1) break;
 					}else{
+						
+						if(focus(&Player[0])==-1) break;
+						print_game_broad_9();
 						if(action_command(&Player[0]) == -1) break;
 					}
 				}
