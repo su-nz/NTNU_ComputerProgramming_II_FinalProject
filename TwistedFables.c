@@ -485,7 +485,7 @@ int8_t basic_shop_command(player *P){
 			printf("不合法輸入！！\n") ;
 		}
 	}
-	return 0;
+	return 1;
 }
 
 int8_t discard_card_from_hand(player *P,int8_t index){
@@ -681,7 +681,7 @@ int8_t play_a_card(player *P){
 											P->coordinate-=2 ;
 											move -=2 ;
 									}else{
-											P->coordinate--;
+										if(P->coordinate -1 !=Player[target(P)].coordinate)P->coordinate-- ;
 											move --;
 									}
 								}
@@ -692,7 +692,7 @@ int8_t play_a_card(player *P){
 											P->coordinate+=2 ;
 											move -=2 ;
 									}else{
-											P->coordinate++;
+											if(P->coordinate +1 !=Player[target(P)].coordinate)P->coordinate++ ;
 											move --;
 									}
 								}
@@ -744,37 +744,38 @@ int8_t action_command(player *P){
             	
             	
             	case 1:  // 購買基礎牌
-			basic_shop_command(P);
-		
+			if(basic_shop_command(P)!=0)return -1;
+			
             	break;
             	
             	case 2:  // 購買技能牌
-			skill_shop_command(P);
-		
+			if(skill_shop_command(P)!=0) return -1;
+			
             	break;
             	
             	case 3:  // 打牌
-			play_a_card(P);
-		
+			if(play_a_card(P)!=0) return -1;
             	break;
             	
             	case 4:  // 查看自己的棄牌
             		
-			discard_command(P);
+			if(discard_command(P)!=0) return -1;
 			
 		
             	break;
             	
             	case 5:  // 查看別人的棄牌堆
             		if(mode ==1){// 新增不同回合要換人
-				discard_command(&Player[1]);
-			}
+						if(discard_command(&Player[target(P)])!=0)return -1; 
+					}
+					
 		
             	break;
             	
             	case 6:  // 結束遊戲階段
-		return -1;
-		
+            		P->end_turn = 1;
+					return -1;
+						 
             	break;
 	}
 	print_game_broad_9();
@@ -978,6 +979,29 @@ int8_t focus(player *P){
 	}
 	system("clear");
 	
+}
+
+int8_t discard_all_hands(player *P){
+	while(P->hands !=0){
+		discard_card_from_hand(P,0);
+	}
+	return 0;
+}
+
+int8_t ending_phase(player *P){
+	P->power = 0;
+	discard_all_hands(P);
+	draw_card(6,P);
+	
+	return 0;
+}
+
+int8_t starting_phase(player *P){
+	P->armor = 0;
+	P->end_turn = 0;
+	//TODO : 其他結算
+	
+	return 0;
 }
 
 int main(){ //mainfuc
@@ -1265,60 +1289,74 @@ int main(){ //mainfuc
 		
 	}
 	while(1){
-		 
+		 round++;
 		if(mode == 1){//單人模式
-			round++;
+			
 			while(1){ // 執行階段
 				 turn = 0;
 				if(Player[0].first == 1){//玩家一先手
+					
 					if(round == 1){
 						draw_card(4,&Player[0]);
 						draw_card(6,&Player[1]);
-					}else{
-						draw_card(6,&Player[0]);
-						draw_card(4,&Player[1]);
 					}
 					
 					//補一個專注
 					print_game_broad_9();
 					
 					if(round % 2 == 1){
+						starting_phase(&Player[0]);
 						if(focus(&Player[0])==-1) break;
 						print_game_broad_9();
 						if(round == 1) printf("玩家一先手\n");	
-						if(action_command(&Player[0]) == -1) break;
+						action_command(&Player[0]);
+						if( Player[0].end_turn == 1) break;
 						
 					}else{
-						if(focus(&Player[1])==-1) break;
+						starting_phase(&Player[1]);
+						if(focus(&Player[1])== 1) break;
 						print_game_broad_9();
-						if(action_command(&Player[1])== -1) break;
+						action_command(&Player[1]);
+						if( Player[1].end_turn == 1) break;
 					}
 				}else{
 					
 					if(round == 1){
 						draw_card(4,&Player[1]);
 						draw_card(6,&Player[0]);
-					}else{
-						draw_card(6,&Player[1]);
-						draw_card(4,&Player[0]);
+						
 					}
 					
 					print_game_broad_9();
 					
 					if(round % 2 == 1){
-						
 						if(focus(&Player[1])==-1) break;
 						print_game_broad_9();
 						if(round == 1) printf("玩家二先手\n");
-						if(action_command(&Player[1])== -1) break;
+						action_command(&Player[1]);
+						if( Player[1].end_turn == 1) break;
 					}else{
-						
 						if(focus(&Player[0])==-1) break;
-						print_game_broad_9();
-						if(action_command(&Player[0]) == -1) break;
+						action_command(&Player[0]);
+						if( Player[0].end_turn == 1) break;
 					}
 				}
+			} // 執行階段結束
+			if(Player[0].first == 1){
+				if(round % 2 == 1){	
+					ending_phase(&Player[0]);
+				}else{
+					ending_phase(&Player[1]);
+				}
+			}else{
+				if(round % 2 == 1){	
+					ending_phase(&Player[1]);
+				}else{
+					ending_phase(&Player[0]);
+				}
 			}
+			
+			
 			//判斷輸贏
 		}
 		
