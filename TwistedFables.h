@@ -39,6 +39,7 @@ typedef struct Card{
 }card;
 
 typedef struct Player{
+	int8_t end_turn;
 	int8_t num; //0 1 2 3
 	int8_t character; // 0 - 9
 	char * charname;
