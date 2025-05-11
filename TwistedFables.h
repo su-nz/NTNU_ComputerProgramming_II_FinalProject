@@ -32,7 +32,7 @@ typedef struct Card{
 	int8_t value; // for example value = 1 on attack => deal 1 damage
 	int8_t damage;
 	int8_t shield;
-	int8_t require_basic_card; // 0 means do not requires
+	int8_t require_basic_card; // 0)attack 1)defend 2)movement
 	int16_t cardcode; // for skill card 
 	char * inf;
 	char * cardname;
