@@ -26,6 +26,45 @@ int8_t print_hands(player *P){
 	return 0;
 }
 
+int8_t end_game_detection(){
+	
+	
+	if(mode == 1){
+		if(Player[0].hp <=0){
+			
+			return 1;
+			
+		}else if(Player[1].hp <=0){
+			
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int8_t print_end_game(){
+	
+	
+	if(mode == 1){
+		if(Player[0].hp <=0){
+			if(BotOn ==1){
+				system("clear");
+				printf("電腦-%s勝利",Player[1].charname);
+				return 1;
+			}else{
+				system("clear");
+				printf("玩家二-%s勝利",Player[1].charname);
+				return 1;
+			}
+		}else{
+			system("clear");
+			printf("玩家一-%s勝利",Player[0].charname);
+			return 1;
+		}
+	}
+	return 0;
+}
+
 int8_t initialization_deck(player *P){
 	for(int i = 0 ; i < 3 ; i++){ //attack 
 		pushbackVector(&P->deck, basicBuyDeck[0][0].array[basicBuyDeck[0][0].SIZE-1]);
@@ -601,6 +640,18 @@ int8_t target(player *you){
 }
 
 
+int8_t deal_damage(player *P , int8_t damage){
+		for(int i = 0 ; i < damage ; i++){
+			if(Player[target(P)].armor > 0){
+				Player[target(P)].armor--;
+			}else if(Player[target(P)].armor == 0){
+				if(Player[target(P)].hp > 0){
+					Player[target(P)].hp--;
+				}
+			}
+		}
+	return 0;
+}
 
 int8_t play_a_card(player *P){
 	system("clear");
@@ -640,7 +691,7 @@ int8_t play_a_card(player *P){
 				switch (P->hands_card[select-1].type){
 					case 0://攻擊卡
 						if(range_counter(P,&Player[target(P)],P->hands_card[select-1].range) == 1){
-							Player[target(P)].hp -= (P->hands_card[select-1].value + P->atk_buff );
+							deal_damage(&Player[target(P)] , P->hands_card[select-1].value + P->atk_buff)
 							P->power += P->hands_card[select-1].power_generate;
 							discard_card_from_hand(P,select-1);
 							int inf_atk = (P->hands_card[select-1].value + P->atk_buff );
@@ -706,6 +757,18 @@ int8_t play_a_card(player *P){
 					break;
 					
 					case 3://技能卡
+						int8_t damage_deal=0;
+						int8_t armor_get=0;
+						if(P->hands_card[select-1].require_basic_card == 0){
+							printf("你要搭配哪一張基礎攻擊卡？\n>");
+						}else if(P->hands_card[select-1].require_basic_card == 1){
+							printf("你要搭配哪一張基礎防禦卡？\n>");
+						}else if(P->hands_card[select-1].require_basic_card == 2){
+							printf("你要搭配哪一張基礎移動卡？\n>");
+						}
+						
+						use_skill(int8_t card_id , damage_deal , armor_get);
+						
 					
 					break;
 					
@@ -724,7 +787,10 @@ int8_t play_a_card(player *P){
 
 int8_t action_command(player *P){
 	int8_t comm=-1;
-	
+	if(end_game_detection() == 1){
+		P->end_turn = 1;
+		return -1;
+	}
 	printf("現在是"GREEN BOLD"%s"RESET"的回合，現在是你的執行階段請從以下的動作中選一個執行\n",(*P).charname);
 	printf("1. 購買基礎牌\n");
 	printf("2. 購買技能牌\n");
@@ -837,6 +903,7 @@ int8_t utf8_strlen(const char *s) {
 }
 
 void print_game_broad_9(){
+	if(end_game_detection() == 1) return ;
 	int8_t len = 0;
 	if(utf8_strlen(Player[0].charname) == 3 && utf8_strlen(Player[1].charname) == 3) len = 6;
 	else len = 8;
@@ -947,6 +1014,14 @@ void wait_for_space() {
 	disable_raw_mode();
 }
 
+void wait_for_space_end() {
+	enable_raw_mode();
+	printf("按下空白鍵結束遊戲");
+	int8_t ch;
+	while ((ch = getchar()) != ' ') {}
+	disable_raw_mode();
+}
+
 int8_t str_display_width(const char *s) {
 	int8_t width = 0;
     	while (*s) {
@@ -1003,6 +1078,15 @@ int8_t starting_phase(player *P){
 	
 	return 0;
 }
+
+int8_t Ult_Gain(player *P){
+	//TODO : 終級卡
+}
+
+
+
+
+
 
 int main(){ //mainfuc
 	system("clear");
@@ -1334,7 +1418,7 @@ int main(){ //mainfuc
 						print_game_broad_9();
 						if(round == 1) printf("玩家二先手\n");
 						action_command(&Player[1]);
-						if( Player[1].end_turn == 1) break;
+						if( Player[1].end_turn == 1  ) break;
 					}else{
 						if(focus(&Player[0])==-1) break;
 						action_command(&Player[0]);
@@ -1356,7 +1440,11 @@ int main(){ //mainfuc
 				}
 			}
 			
-			
+			if(end_game_detection() == 1){
+				print_end_game();
+				wait_for_space_end();
+				return 0;
+			}
 			//判斷輸贏
 		}
 		
