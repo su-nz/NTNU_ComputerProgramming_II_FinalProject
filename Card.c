@@ -1,4 +1,4 @@
-#include "TwistedFables.h"
+5#include "TwistedFables.h"
 
 
 
@@ -174,7 +174,7 @@ int16_t Card_Define(int16_t CardID , card *C){//
 		(*C).type = 4; // 0)attack 1)defend 2)movement 3) wild 4)skills 5)Ult 6)passive
 		(*C).power_generate = 0;
 		(*C).damage = 1; // for example value = 1 on attack => deal 1 damage
-		(*C).require_basic_card = 1; // 0 means do not requires
+		(*C).require_basic_card = 0; // 0)attack 1)defend 2)movement 3)
 		(*C).cardcode = CardID;
 		(*C).inf = "射程1 傷害1+O";
 	}
@@ -187,7 +187,7 @@ int16_t Card_Define(int16_t CardID , card *C){//
 		(*C).type = 4; // 0)attack 1)defend 2)movement 3) wild 4)skills 5)Ult 6)passive
 		(*C).power_generate = 0;
 		(*C).damage = 2;
-		(*C).require_basic_card = 1;
+		(*C).require_basic_card = 0;
 		(*C).cardcode = CardID;
 		(*C).inf = "射程2 傷害2+O";
 	}
@@ -211,7 +211,7 @@ int16_t Card_Define(int16_t CardID , card *C){//
 		(*C).type = 4; // 0)attack 1)defend 2)movement 3) wild 4)skills 5)Ult 6)passive
 		(*C).power_generate = 0;
 		(*C).damage = 3;
-		(*C).require_basic_card = 1;
+		(*C).require_basic_card = 0;
 		(*C).cardcode = CardID;
 		(*C).inf = "射程3 傷害3+O";
 	}
@@ -236,7 +236,7 @@ int16_t Card_Define(int16_t CardID , card *C){//
 		(*C).power_generate = 0;
 		(*C).shield = 1;
 		(*C).damage = 1;
-		(*C).require_basic_card = 0;
+		(*C).require_basic_card = 1;
 		(*C).cardcode = CardID;
 		(*C).inf = "射程1 傷害1 防禦1\n持續：在你下個回合的開始階段 如果防禦不為0\n對射程1內的對手造成 2點傷害";
 	}
@@ -249,7 +249,7 @@ int16_t Card_Define(int16_t CardID , card *C){//
 		(*C).power_generate = 0;
 		(*C).shield = 1;
 		(*C).damage = 2;
-		(*C).require_basic_card = 0;
+		(*C).require_basic_card = 1;
 		(*C).cardcode = CardID;
 		(*C).inf = "射程2 傷害2 防禦1\n持續：在你下個回合的開始階段 如果防禦不為0\n對射程2內的對手造成 4點傷害";
 	}
@@ -274,7 +274,7 @@ int16_t Card_Define(int16_t CardID , card *C){//
 		(*C).power_generate = 0;
 		(*C).shield = 1;
 		(*C).damage = 3;
-		(*C).require_basic_card = 0;
+		(*C).require_basic_card = 1;
 		(*C).cardcode = CardID;
 		(*C).inf = "射程3 傷害3 防禦1\n持續：在你下個回合的開始階段 如果防禦不為0\n對射程3內的對手造成 6點傷害";
 	}
@@ -288,7 +288,7 @@ int16_t Card_Define(int16_t CardID , card *C){//
 	    (*C).power_generate = 0;
 	    (*C).damage = 1;
 	    (*C).shield = 0;
-	    (*C).require_basic_card = 1;
+	    (*C).require_basic_card = 2;
 	    (*C).cardcode = CardID;
 	    (*C).inf = "將對手擊退至多O格";
 	}
@@ -301,7 +301,7 @@ int16_t Card_Define(int16_t CardID , card *C){//
 	    (*C).power_generate = 0;
 	    (*C).damage = 2;
 	    (*C).shield = 0;
-	    (*C).require_basic_card = 1;
+	    (*C).require_basic_card = 2;
 	    (*C).cardcode = CardID;
 	    (*C).inf = "將對手擊退至多O格";
 	}
@@ -327,7 +327,7 @@ int16_t Card_Define(int16_t CardID , card *C){//
 	    (*C).power_generate = 0;
 	    (*C).damage = 3;
 	    (*C).shield = 0;
-	    (*C).require_basic_card = 1;
+	    (*C).require_basic_card = 2;
 	    (*C).cardcode = CardID;
 	    (*C).inf = "將對手擊退至多O格";
 	}
@@ -388,7 +388,7 @@ int16_t Card_Define(int16_t CardID , card *C){//
 		(*C).type = 4; // 0)attack 1)defend 2)movement 3)wild 4)skills 5)Ult 6)passive
 		(*C).damage = 1;
 		(*C).shield = 0;
-		(*C).require_basic_card = 1;
+		(*C).require_basic_card = 0;
 		(*C).cardcode = CardID;
 		(*C).inf = "射程1 傷害1+O\n將對手牌庫頂1張牌棄入棄牌堆";
 	}
@@ -400,7 +400,7 @@ int16_t Card_Define(int16_t CardID , card *C){//
 		(*C).type = 4;
 		(*C).damage = 2;
 		(*C).shield = 0;
-		(*C).require_basic_card = 1;
+		(*C).require_basic_card = 0;
 		(*C).cardcode = CardID;
 		(*C).inf = "購買費用 2\n射程1 傷害2+O\n將對手牌庫頂2張牌棄入棄牌堆";
 	}
@@ -424,7 +424,7 @@ int16_t Card_Define(int16_t CardID , card *C){//
 		(*C).type = 4;
 		(*C).damage = 3;
 		(*C).shield = 0;
-		(*C).require_basic_card = 1;
+		(*C).require_basic_card = 0;
 		(*C).cardcode = CardID;
 		(*C).inf = "購買費用 4\n射程1 傷害3+O\n將對手牌庫頂3張牌棄入棄牌堆";
 	}
@@ -497,7 +497,7 @@ int16_t Card_Define(int16_t CardID , card *C){//
 		(*C).type = 4;
 		(*C).damage = 1;
 		(*C).shield = 0;
-		(*C).require_basic_card = 1;
+		(*C).require_basic_card = 2;
 		(*C).cardcode = CardID;
 		(*C).inf = "射程O 傷害1\n將你放置到與對手相鄰的格子";
 	}
@@ -509,7 +509,7 @@ int16_t Card_Define(int16_t CardID , card *C){//
 		(*C).type = 4;
 		(*C).damage = 2;
 		(*C).shield = 0;
-		(*C).require_basic_card = 1;
+		(*C).require_basic_card = 2;
 		(*C).cardcode = CardID;
 		(*C).inf = "購買費用 2\n射程1+O 傷害2\n將你放置到與對手相鄰的格子";
 	}
@@ -533,7 +533,7 @@ int16_t Card_Define(int16_t CardID , card *C){//
 		(*C).type = 4;
 		(*C).damage = 3;
 		(*C).shield = 0;
-		(*C).require_basic_card = 1;
+		(*C).require_basic_card = 2;
 		(*C).cardcode = CardID;
 		(*C).inf = "購買費用 4\n射程2+O 傷害3\n將你放置到與對手相鄰的格子";
 	}
