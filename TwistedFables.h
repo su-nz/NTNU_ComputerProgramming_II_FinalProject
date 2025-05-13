@@ -24,6 +24,7 @@ typedef struct Character{
 }character;
 
 typedef struct Card{
+	int8_t remain;
 	int8_t cost;
 	int8_t level;
 	int8_t range; //for attack 0 means its doesn't need range
@@ -67,7 +68,13 @@ typedef struct Player{
 	int8_t Scheherazade_token;
 	vector discard;
 	vector deck;
+	int16_t passive[7];//蛻變牌 美人魚多一個
+	int16_t starting_size;//持續牌數量
+	int16_t starting[256];//持續牌
+	int8_t combo_basic[256];//搭配持續牌
+	int16_t starting_lv[256];//搭配持續牌等級
 	card hands_card[50];
+	int8_t hands_select[50];//手牌選取
 	
 }player;
 
@@ -79,7 +86,8 @@ typedef struct Deck{
 }deck;
 
 
-
+int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output , int8_t *armor_output, int8_t lv ,int8_t combo_cardid, int8_t mode);
+int8_t clear_select(player *P);
 void print_game_broad_9();
 int8_t action_command(player *P);
 int8_t inputcharacter(player *P, int8_t characternum);
@@ -97,3 +105,7 @@ int8_t str_display_width(const char *s);
 void print_aligned_charname(const char* name, int8_t width);
 void shuffle(vector *v);
 int8_t range_counter(player *P,player*P2 , int8_t range);
+int8_t print_hands(player *P);
+int8_t initialization_starting(player *P);
+int8_t initialization_deck(player *P);
+
