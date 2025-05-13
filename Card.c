@@ -1,4 +1,4 @@
-5#include "TwistedFables.h"
+#include "TwistedFables.h"
 
 
 
@@ -10,12 +10,13 @@ int16_t Card_Define(int16_t CardID , card *C){//
 	(*C).cost = 0;
 	(*C).level = 0;
 	(*C).range = 0; 
-	(*C).type = 0; 
+	(*C).type = -1; 
 	(*C).power_generate = 0;
 	(*C).value = 0;
 	(*C).shield = 0;
 	(*C).damage = 0;
 	(*C).require_basic_card = 0;
+	(*C).remain = 0;
 	(*C).cardcode = CardID;
 	(*C).inf = " ";	
 	
@@ -233,6 +234,7 @@ int16_t Card_Define(int16_t CardID , card *C){//
 		(*C).level = 1;
 		(*C).range = 1; //for attack 0 means its doesn't need range
 		(*C).type = 1; // 0)attack 1)defend 2)movement 3) wild 4)skills 5)Ult 6)passive
+		(*C).remain = 1;
 		(*C).power_generate = 0;
 		(*C).shield = 1;
 		(*C).damage = 1;
@@ -245,6 +247,7 @@ int16_t Card_Define(int16_t CardID , card *C){//
 		(*C).cost = 2;
 		(*C).level = 2;
 		(*C).range = 2; //for attack 0 means its doesn't need range
+		(*C).remain = 1;
 		(*C).type = 1; // 0)attack 1)defend 2)movement 3) wild 4)skills 5)Ult 6)passive
 		(*C).power_generate = 0;
 		(*C).shield = 1;
@@ -272,6 +275,7 @@ int16_t Card_Define(int16_t CardID , card *C){//
 		(*C).range = 3; //for attack 0 means its doesn't need range
 		(*C).type = 1; // 0)attack 1)defend 2)movement 3) wild 4)skills 5)Ult 6)passive
 		(*C).power_generate = 0;
+		(*C).remain = 1;
 		(*C).shield = 1;
 		(*C).damage = 3;
 		(*C).require_basic_card = 1;
