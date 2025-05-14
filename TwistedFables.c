@@ -273,7 +273,7 @@ int8_t skill_shop_command(player *P){
 			}else{
 				
 			}
-			action_command(P);
+			
 			return 0;
 		}else{
 			printf("不合法輸入！！\n") ;
@@ -310,7 +310,7 @@ int8_t discard_command(player *P){
 			}else{
 				
 			}
-			action_command(P);
+			
 			return 0;
 		}
 	}
@@ -513,7 +513,7 @@ int8_t basic_shop_command(player *P){
 			}else{
 				
 			}
-			action_command(P);
+			
 			return 0;
 		}else{
 			printf("不合法輸入！！\n") ;
@@ -554,7 +554,7 @@ int8_t remove_card(player *P){
 							
 					}
 					printf("你沒有手牌了！\n");
-					action_command(P);
+					
 				}
 				printf("請問你要移除哪一牌？\n");
 				printf("輸入數字：");
@@ -585,7 +585,7 @@ int8_t remove_card(player *P){
 							
 					}
 					printf("你的棄牌堆沒有牌！\n");
-					action_command(P);
+					
 					return 0;
 				}
 				int8_t cc=-1;
@@ -612,7 +612,7 @@ int8_t remove_card(player *P){
 		}else{
 				
 		}
-		action_command(P);
+		
 		return 0;
 		
 		break;
@@ -652,7 +652,8 @@ int8_t play_a_card(player *P){
 	system("clear");
 	print_game_broad_9();
 	print_hands(P);
-	printf("1.)攻擊牌\n2.)防禦牌\n3.)移動牌\n4.)技能牌\n5.)大招牌");
+	
+	printf("\n1.)攻擊牌\n2.)防禦牌\n3.)移動牌\n4.)技能牌\n5.)大招牌\n");
 	printf("你要打哪一種張牌？（輸入0返回）\n>");
 	while(1){
 		int8_t select=-1;
@@ -663,7 +664,7 @@ int8_t play_a_card(player *P){
 				}else{			
 			}
 			printf("你沒有手牌了！\n");
-			action_command(P);
+			
 		}
 		scanf("%hhd",&select);
 			if(select == 0){
@@ -673,26 +674,134 @@ int8_t play_a_card(player *P){
 				}else{
 					//TODO: 2v2
 				}
-				action_command(P);
+				
 				return 0;
 			}else if(select == 1){
-					int atk =0;
-					int power_generate =0;
-					if(range_counter(P,&Player[target(P)],1) == 1){
+				int atk =0;
+				int power_generate =0;
+				if(range_counter(P,&Player[target(P)],1) == 1){
 					printf("請選擇所有你想打出的攻擊牌，選擇完後請輸入0\n");
 					int8_t cn = -1;
 					while(cn!=0){
 						scanf("%hhd",&cn);
+						if(cn == 0)break;
 						if(P->hands_card[cn-1].type == 0 || P->hands_card[cn-1].type == 3){
 							atk += P->hands_card[cn-1].value + P->atk_buff;
-							power_generate = P->hands_card[cn-1].power_generate;
-							P->hands_select[cn-1] == 1;
+							power_generate += P->hands_card[cn-1].power_generate;
+							discard_card_from_hand(P,cn-1);
+							system("clear");
+							print_game_broad_9();
+							print_hands(P);
+							printf("請選擇所有你想打出的攻擊牌，選擇完後請輸入0\n");
+							
+						}else{
+							printf("這不是攻擊牌請重新輸入\n>");
 						}
 						
 					}
+				P->power += power_generate;
+				deal_damage(&Player[target(P)] , atk);
+				
+				printf("你對對手造成了\033[1;31m%hhd\033[0m點傷害",atk);
+				return 0;
+					
+			}else{
+				
+				printf("對手不在你的攻擊範圍！\n");
+				return 0;
 			}
+			
+		}else if(select == 2){
+			int def =0;
+			int power_generate =0;
+			printf("請選擇所有你想打出的防禦牌，選擇完後請輸入0\n>");
+			int8_t cn = -1;
+			while(cn!=0){
+				scanf("%hhd",&cn);
+				if(cn == 0)break;
+				if(P->hands_card[cn-1].type == 1 || P->hands_card[cn-1].type == 3){
+					def += P->hands_card[cn-1].value + P->defend_buff;
+					power_generate += P->hands_card[cn-1].power_generate;						
+					discard_card_from_hand(P,cn-1);
+					system("clear");
+					print_game_broad_9();
+					print_hands(P);
+					printf("請選擇所有你想打出的防禦牌，選擇完後請輸入0\n>");
+					
+				}else{
+						printf("這不是防禦牌請重新輸入\n>");
+					}
+				
+			}	
+			P->armor += def;
+			if(P->armor > P-> Maxarmor)	{
+				def -= (P-> Maxarmor - P-> armor);
+				P-> armor = P-> Maxarmor;
+			}
+			P->power += power_generate;
+			
+			
+			printf("你獲得了\033[1;31m%hhd\033[0m個盾",def);
+			return 0;
+			
+		}else if(select == 3){
+			int move =0;
+			int save = move;
+			int power_generate =0;
+			printf("請選擇所有你想打出的移動牌，選擇完後請輸入0\n>");
+			int8_t cn = -1;
+			while(cn!=0){
+				scanf("%hhd",&cn);
+				if(cn == 0)break;
+				if(P->hands_card[cn-1].type == 2 || P->hands_card[cn-1].type == 3){
+					move += P->hands_card[cn-1].value + P->speed_buff;
+					power_generate += P->hands_card[cn-1].power_generate;						
+					discard_card_from_hand(P,cn-1);
+					system("clear");
+					print_game_broad_9();
+					print_hands(P);
+					printf("請選擇所有你想打出的移動牌，選擇完後請輸入0\n>");
+					
+				}else{
+						printf("這不是移動牌請重新輸入\n>");
+					}
+				
+			}	
+			int8_t way = 0;
+			printf("你要向左還是向右？1.)向左 2.)向右 ：");
+			scanf("%hhd",&way);
+			while(move !=0){
+							
+						if(way == 1){ //左
+						
+							if(P->coordinate -1 != 0){
+								if(P->coordinate -1 == Player[target(P)].coordinate && P->coordinate - 2 != 0 && move >= 2 ){
+										P->coordinate-=2 ;
+										move -=2 ;
+								}else{										
+								if(P->coordinate -1 !=Player[target(P)].coordinate)P->coordinate-- ;
+										move --;
+								}
+							}
+							
+						}else{
+							if(P->coordinate +1 != Right_MAX){
+								if(P->coordinate +1 == Player[target(P)].coordinate && P->coordinate + 2 != Right_MAX && move >= 2 ){
+										P->coordinate+=2 ;
+										move -=2 ;
+								}else{
+										if(P->coordinate +1 !=Player[target(P)].coordinate)P->coordinate++ ;
+										move --;
+								}
+							}
+						}							
+			}
+			P->power += power_generate ;
+			return 0;
+			
 		}
 	}
+	return 0;
 }
 
 int8_t action_command(player *P){
@@ -754,8 +863,7 @@ int8_t action_command(player *P){
 						 
             	break;
 	}
-	print_game_broad_9();
-	action_command(P);
+	
 	return 0;
 }
 
@@ -952,8 +1060,9 @@ void print_aligned_charname(const char* name, int8_t width) {
 }
 
 int8_t focus(player *P){
+	system("clear");
 	int8_t focus = -1;
-	printf("現在是"GREEN BOLD"%s"RESET"在進行\n",P->charname);
+	printf("\n現在是"GREEN BOLD"%s"RESET"在進行\n",P->charname);
 	printf("請問本回合你要進行專注嘛？\n0. 要\n1. 不要\n");
 	printf(">");
 	scanf("%hhd",&focus);
@@ -1287,58 +1396,64 @@ int main(){ //mainfuc
 	}
 	while(1){
 		 round++;
+		 turn = 0;
 		if(mode == 1){//單人模式
 			
+			if(Player[0].first == 1){
+				starting_phase(&Player[0]);
+				if(round == 1){
+					draw_card(4,&Player[0]);
+					draw_card(6,&Player[1]);
+				}
+			}else{
+				starting_phase(&Player[1]);
+				if(round == 1){
+					draw_card(4,&Player[1]);
+					draw_card(6,&Player[0]);	
+				}
+			}
+			
 			while(1){ // 執行階段
-				 turn = 0;
+				turn ++;
 				if(Player[0].first == 1){//玩家一先手
-					
-					if(round == 1){
-						draw_card(4,&Player[0]);
-						draw_card(6,&Player[1]);
-					}
-					
-					//補一個專注
-					print_game_broad_9();
-					
 					if(round % 2 == 1){
-						starting_phase(&Player[0]);
-						if(focus(&Player[0])==-1) break;
+						if(turn == 1){
+							if(focus(&Player[0])==-1) break;
+						}
 						print_game_broad_9();
 						if(round == 1) printf("玩家一先手\n");	
 						action_command(&Player[0]);
 						if( Player[0].end_turn == 1) break;
 						
 					}else{
-						starting_phase(&Player[1]);
-						if(focus(&Player[1])== 1) break;
+						if(turn == 1){
+							if(focus(&Player[1])== 1) break;
+						}
 						print_game_broad_9();
 						action_command(&Player[1]);
 						if( Player[1].end_turn == 1) break;
 					}
 				}else{
 					
-					if(round == 1){
-						draw_card(4,&Player[1]);
-						draw_card(6,&Player[0]);
-						
-					}
-					
-					print_game_broad_9();
-					
 					if(round % 2 == 1){
-						if(focus(&Player[1])==-1) break;
+						if(turn == 1){
+							if(focus(&Player[1])==-1) break;
+						}
 						print_game_broad_9();
 						if(round == 1) printf("玩家二先手\n");
 						action_command(&Player[1]);
 						if( Player[1].end_turn == 1  ) break;
 					}else{
-						if(focus(&Player[0])==-1) break;
+						if(turn == 1){
+							if(focus(&Player[0])==-1) break;
+						}
+						print_game_broad_9();
 						action_command(&Player[0]);
 						if( Player[0].end_turn == 1) break;
 					}
 				}
 			} // 執行階段結束
+			
 			if(Player[0].first == 1){
 				if(round % 2 == 1){	
 					ending_phase(&Player[0]);
