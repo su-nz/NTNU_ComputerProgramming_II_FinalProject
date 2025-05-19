@@ -845,14 +845,44 @@ int8_t play_a_card(player *P){
 						
 						if(P->hands_card[cn-1].remain ==1){
 							if(cn-1 > combo_card -1){
+							
+								Card_Define(0 , &(*P).hands_card[cn-1]);
+								for (int8_t i = cn-1; i < (*P).hands - 1; i++) {
+									Card_Define(0, &(*P).hands_card[i]);
+									Card_Define((*P).hands_card[i + 1].cardcode , &(*P).hands_card[i]);
+								}
+								(*P).hands--;
+								
+								Card_Define(0 , &(*P).hands_card[combo_card-1]);
+								for (int8_t i = combo_card-1; i < (*P).hands - 1; i++) {
+									Card_Define(0, &(*P).hands_card[i]);
+									Card_Define((*P).hands_card[i + 1].cardcode , &(*P).hands_card[i]);
+								}
+								(*P).hands--;
+								
+							}else{
+								Card_Define(0 , &(*P).hands_card[cn-1]);
+								for (int8_t i = cn-1; i < (*P).hands - 1; i++) {
+									Card_Define(0, &(*P).hands_card[i]);
+									Card_Define((*P).hands_card[i + 1].cardcode , &(*P).hands_card[i]);
+								}
+								(*P).hands--;
+								
+								Card_Define(0 , &(*P).hands_card[combo_card]);
+								for (int8_t i = combo_card; i < (*P).hands - 1; i++) {
+									Card_Define(0, &(*P).hands_card[i]);
+									Card_Define((*P).hands_card[i + 1].cardcode , &(*P).hands_card[i]);
+								}
+								(*P).hands--;
+							}
+						}else{
+							if(cn-1 > combo_card -1){
 								discard_card_from_hand(P,cn-1); // 4 5
 								discard_card_from_hand(P,combo_card-1);// 4
 							}else{
 								discard_card_from_hand(P,cn-1); // 4 5
 								discard_card_from_hand(P,combo_card);
 							}
-						}else{
-							
 						}
 						return 0;
 						
@@ -1006,6 +1036,7 @@ void print_game_broad_9(){
 	if(utf8_strlen(Player[0].charname) == 3 && utf8_strlen(Player[1].charname) == 3) len = 6;
 	else len = 8;
 	system("clear");
+	printf("p1 %hhd p2 %hhd\n",Player[0].starting_size,Player[1].starting_size);
 	printf("玩家一 │ 遊玩角色：");
 	print_aligned_charname(Player[0].charname, len);
 	printf(" 血量：%hhd 防禦值：%hhd 能量：%hhd 手牌數：%hhd 血量上限：%hhd 防禦上限：%hhd 必殺閥值:%hhd\n", Player[0].hp, Player[0].armor, Player[0].power, Player[0].hands, Player[0].Maxhp, Player[0].Maxarmor, Player[0].Ult_threshold);
@@ -1483,13 +1514,22 @@ int main(){ //mainfuc
 		if(mode == 1){//單人模式
 			
 			if(Player[0].first == 1){
-				starting_phase(&Player[0]);
+				if(round % 2 == 1){
+					starting_phase(&Player[0]);
+				}else{
+					starting_phase(&Player[1]);
+				}
 				if(round == 1){
 					draw_card(4,&Player[0]);
 					draw_card(6,&Player[1]);
 				}
 			}else{
-				starting_phase(&Player[1]);
+				if(round % 2 == 1){
+					starting_phase(&Player[1]);
+				}else{
+					starting_phase(&Player[0]);
+				}
+			
 				if(round == 1){
 					draw_card(4,&Player[1]);
 					draw_card(6,&Player[0]);	
