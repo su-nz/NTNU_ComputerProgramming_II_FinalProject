@@ -822,7 +822,6 @@ int8_t play_a_card(player *P){
 				printf("請問你要打哪一張技能牌？(輸入0返回)\n");
 				printf(">");
 				scanf("%hhd",&cn);
-				printf("cn:%hhd\n",cn);
 				if(cn == 0)return 0;
 				if(P->hands_card[cn-1].type == 4){
 					if(P->hands_card[cn-1].require_basic_card == 0){
@@ -1036,7 +1035,6 @@ void print_game_broad_9(){
 	if(utf8_strlen(Player[0].charname) == 3 && utf8_strlen(Player[1].charname) == 3) len = 6;
 	else len = 8;
 	system("clear");
-	printf("p1 %hhd p2 %hhd\n",Player[0].starting_size,Player[1].starting_size);
 	printf("玩家一 │ 遊玩角色：");
 	print_aligned_charname(Player[0].charname, len);
 	printf(" 血量：%hhd 防禦值：%hhd 能量：%hhd 手牌數：%hhd 血量上限：%hhd 防禦上限：%hhd 必殺閥值:%hhd\n", Player[0].hp, Player[0].armor, Player[0].power, Player[0].hands, Player[0].Maxhp, Player[0].Maxarmor, Player[0].Ult_threshold);
