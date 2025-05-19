@@ -282,6 +282,8 @@ int8_t skill_shop_command(player *P){
 	return 0;
 }
 
+
+
 int8_t discard_command(player *P){
 	int8_t dc =-1;
 	print_discard(P);
@@ -637,15 +639,23 @@ int8_t target(player *you){
 
 int8_t deal_damage(player *P , int8_t damage){
 		for(int i = 0 ; i < damage ; i++){
-			if(Player[target(P)].armor > 0){
-				Player[target(P)].armor--;
-			}else if(Player[target(P)].armor == 0){
-				if(Player[target(P)].hp > 0){
-					Player[target(P)].hp--;
+			if(P->armor > 0){
+				P->armor--;
+			}else if(P->armor == 0){
+				if(P->hp > 0){
+					P->hp--;
 				}
 			}
 		}
 	return 0;
+}
+
+int8_t gain_armor(player *P , int8_t def){
+	P->armor += def;
+	if(P->armor > P-> Maxarmor)	{
+		def -= (P-> Maxarmor - P-> armor);
+		P-> armor = P-> Maxarmor;
+	}
 }
 
 int8_t play_a_card(player *P){
@@ -702,11 +712,10 @@ int8_t play_a_card(player *P){
 				P->power += power_generate;
 				deal_damage(&Player[target(P)] , atk);
 				
-				printf("你對對手造成了\033[1;31m%hhd\033[0m點傷害",atk);
+				printf("你對對手造成了\033[1;31m%hhd\033[0m點傷害\n",atk);
 				return 0;
 					
 			}else{
-				
 				printf("對手不在你的攻擊範圍！\n");
 				return 0;
 			}
@@ -733,15 +742,11 @@ int8_t play_a_card(player *P){
 					}
 				
 			}	
-			P->armor += def;
-			if(P->armor > P-> Maxarmor)	{
-				def -= (P-> Maxarmor - P-> armor);
-				P-> armor = P-> Maxarmor;
-			}
+			gain_armor(P , def);
 			P->power += power_generate;
 			
 			
-			printf("你獲得了\033[1;31m%hhd\033[0m個盾",def);
+			printf("你獲得了\033[1;31m%hhd\033[0m個盾\n",def);
 			return 0;
 			
 		}else if(select == 3){
@@ -764,6 +769,7 @@ int8_t play_a_card(player *P){
 					
 				}else{
 						printf("這不是移動牌請重新輸入\n>");
+						
 					}
 				
 			}	
@@ -799,8 +805,81 @@ int8_t play_a_card(player *P){
 			P->power += power_generate ;
 			return 0;
 			
+		}else if(select == 4){
+			
+			
+			system("clear");
+			print_game_broad_9();
+			print_hands(P);
+			
+			int8_t combo_card =-1;
+			int8_t damage_deal=1;
+			int8_t armor_get=0;
+			int8_t levels = -1;
+			int8_t cn = -1;
+				
+			while(cn!=0){
+				printf("請問你要打哪一張技能牌？(輸入0返回)\n");
+				printf(">");
+				scanf("%hhd",&cn);
+				printf("cn:%hhd\n",cn);
+				if(cn == 0)return 0;
+				if(P->hands_card[cn-1].type == 4){
+					if(P->hands_card[cn-1].require_basic_card == 0){
+					printf("你要搭配哪一張基礎攻擊卡？\n>");
+				}else if(P->hands_card[cn-1].require_basic_card == 1){
+					printf("你要搭配哪一張基礎防禦卡？\n>");
+				}else if(P->hands_card[cn-1].require_basic_card == 2){
+					printf("你要搭配哪一張基礎移動卡？\n>");
+				}
+				while(scanf("%hhd",&combo_card)!=1){
+					getchar();
+					printf("invalid input");
+				}
+				if(P->hands_card[combo_card-1].type == P->hands_card[cn-1].require_basic_card ){
+					if(range_counter(P,&Player[target(P)],P->hands_card[cn-1].range) == 1 || P->hands_card[cn-1].range == 0){
+						use_skill(P,&Player[target(P)], P->hands_card[cn-1].cardcode , &damage_deal , &armor_get , P->hands_card[combo_card-1].level , P->hands_card[combo_card-1].cardcode , mode);
+						deal_damage(&Player[target(P)], damage_deal);
+						gain_armor(P , armor_get);
+						
+						
+						if(P->hands_card[cn-1].remain ==1){
+							if(cn-1 > combo_card -1){
+								discard_card_from_hand(P,cn-1); // 4 5
+								discard_card_from_hand(P,combo_card-1);// 4
+							}else{
+								discard_card_from_hand(P,cn-1); // 4 5
+								discard_card_from_hand(P,combo_card);
+							}
+						}else{
+							
+						}
+						return 0;
+						
+					}else{
+						printf("對手不在你的攻擊範圍！\n");
+						
+					}
+							
+				}else{
+					printf("你所選擇的卡片並不能搭配這張卡！\n");
+					
+					
+				}
+				//TODO:逃樂思	
+			}else{
+				printf("這不是技能牌請重新輸入\n>");
+			}
 		}
-	}
+						
+					
+					
+		}else if(select == 4){
+			//TODO:
+		}	
+					
+					
+		}
 	return 0;
 }
 
@@ -839,7 +918,8 @@ int8_t action_command(player *P){
             	break;
             	
             	case 3:  // 打牌
-			if(play_a_card(P)!=0) return -1;
+				play_a_card(P)!=0;
+				return 0;
             	break;
             	
             	case 4:  // 查看自己的棄牌
@@ -1067,10 +1147,12 @@ int8_t focus(player *P){
 	printf(">");
 	scanf("%hhd",&focus);
 	if(focus == 0){
-		remove_card(P);
-		return -1;
+		if(remove_card(P) ==-1){
+			return -1;
+		}
 	}
 	system("clear");
+	return 0;
 	
 }
 
@@ -1090,6 +1172,7 @@ int8_t ending_phase(player *P){
 }
 
 int8_t starting_phase(player *P){
+	check_starting(P,&Player[target(P)]);
 	P->armor = 0;
 	P->end_turn = 0;
 	//TODO : 其他結算
