@@ -1,15 +1,32 @@
 #include "TwistedFables.h"
 
 
-int8_t add_card_to_starting(player *P,int16_t card_id  ,int16_t combo_cardid ){
+int8_t add_card_to_starting(player *P,int16_t card_id  ,int16_t combo_cardid ,int16_t lv){
 	P->starting[P->starting_size] = card_id;
-	P->combo_basic[P->starting_size];
+	P->combo_basic[P->starting_size] = combo_cardid;
+	P->starting_lv[P->starting_size] = lv;
 	P->starting_size++;
 }
 
-int8_t startingskill(player *P,int16_t card_id,int16_t lv ){
-	if(card_id == 11){
-	
+int8_t startingskill(player* you ,player *P,int16_t card_id,int16_t lv ){
+	if(card_id == 14){
+		if(you->armor !=0 ){
+			if(range_counter(you,P,1) == 1){
+				deal_damage(P,2);
+			}
+		}
+	}else if(card_id == 15){
+		if(you->armor !=0 ){
+			if(range_counter(you,P,2) == 1){
+				deal_damage(P,4);
+			}
+		}
+	}else if(card_id == 16){
+		if(you->armor !=0 ){
+			if(range_counter(you,P,3) == 1){
+				deal_damage(P,6);
+			}
+		}
 	}
 }
 
@@ -43,15 +60,15 @@ int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output ,
 	}else if(card_id == 14){
 		*damage_output = 1;
 		*armor_output = lv;
-		add_card_to_starting(P,14,combo_cardid);
+		add_card_to_starting(you,14,combo_cardid,lv);
 	}else if(card_id == 15){
 		*damage_output = 2;
 		*armor_output = lv;
-		add_card_to_starting(P,15,combo_cardid);
+		add_card_to_starting(you,15,combo_cardid,lv);
 	}else if(card_id == 16){
 		*damage_output = 3;
 		*armor_output = lv;
-		add_card_to_starting(P,16,combo_cardid);
+		add_card_to_starting(you,16,combo_cardid,lv);
 	}else if(card_id == 17){
 		*damage_output = 1;
 		for(int i = 0 ; i < lv ; i++){
