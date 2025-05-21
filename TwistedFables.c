@@ -100,7 +100,7 @@ int8_t initialization_basic_shop(){
 	}
 	basicBuyDeck[3][0].SIZE = 18;
 	for(int k = 1 ; k <=18 ; k++){
-		basicBuyDeck[4][0].array[k] = 10; 
+		basicBuyDeck[3][0].array[k] = 10; 
 	}
 	return 0; // 成功
 }
