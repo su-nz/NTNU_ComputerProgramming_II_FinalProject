@@ -113,18 +113,21 @@ int8_t initialization_skill_shop(player *P){
 	switch (P->character){
 		case 0:
 		{
-			int8_t temp1[] = {138,13,13,13,135,12,12,11};
+			int16_t temp1[] = {138,13,13,13,135,12,12,11};
 			for (int i = 0; i < 8; ++i) {
 			    skillBuyDeck[P->num][0].array[i] = temp1[i];
 			}
-			int8_t temp2[] = {138,16,16,16,136,15,15,14};
+			int16_t temp2[] = {138,16,16,16,136,15,15,14};
 			for (int i = 0; i < 8; ++i) {
 			    skillBuyDeck[P->num][1].array[i] = temp2[i];
 			}
-			int8_t temp3[] = {138,19,19,19,137,18,18,17};
+			int16_t temp3[] = {138,19,19,19,137,18,18,17};
 			for (int i = 0; i < 8; ++i) {
 			    skillBuyDeck[P->num][2].array[i]  = temp3[i];
 			}	
+			P->Ult_deck[0] = 20;
+			P->Ult_deck[1] = 21;
+			P->Ult_deck[2] = 22;
 			break;
 		}
 		
@@ -1210,7 +1213,49 @@ int8_t starting_phase(player *P){
 }
 
 int8_t Ult_Gain(player *P){
-	//TODO : 終級卡
+	if(P->hp <= P->Ult_threshold && P->Ult_deck[0] != 0){
+		system("clear");
+		
+		card cardtemp1;
+		card cardtemp2;
+		card cardtemp3;
+		Card_Define(P->Ult_deck[0], &cardtemp1);
+		printf("%d) %s 效果：%s\n",0,cardtemp1.cardname,cardtemp1.inf);
+		Card_Define(P->Ult_deck[1], &cardtemp2);
+		printf("%d) %s 效果：%s\n",1,cardtemp2.cardname,cardtemp2.inf);
+		Card_Define(P->Ult_deck[2], &cardtemp3);
+		printf("%d) %s 效果：%s\n",2,cardtemp3.cardname,cardtemp3.inf);
+		while(1){
+			printf(GREEN BOLD"%s"RESET"請選擇你要的必殺牌：\n>",P->charname);
+			int cho = -1;
+			scanf("%d",&cho);
+			getchar();
+			if(cho == 0){
+				Card_Define(P->Ult_deck[0], &P->hands_card[P->hands]);
+				P->hands++;
+				P->Ult_deck[0] =0;
+				P->Ult_deck[1] =0;
+				P->Ult_deck[2] =0;
+				break;
+			}else if(cho == 1){
+				Card_Define(P->Ult_deck[1], &P->hands_card[P->hands]);
+				P->hands++;
+				P->Ult_deck[0] =0;
+				P->Ult_deck[1] =0;
+				P->Ult_deck[2] =0;
+				break;
+			}else if(cho == 2){
+				Card_Define(P->Ult_deck[2], &P->hands_card[P->hands]);
+				P->hands++;
+				P->Ult_deck[0] =0;
+				P->Ult_deck[1] =0;
+				P->Ult_deck[2] =0;
+				break;
+			}else{
+				printf("錯誤輸入！！\n");
+			}
+		}
+	}
 }
 
 
@@ -1514,8 +1559,10 @@ int main(){ //mainfuc
 			if(Player[0].first == 1){
 				if(round % 2 == 1){
 					starting_phase(&Player[0]);
+					Ult_Gain(&Player[target(&Player[0])]);
 				}else{
 					starting_phase(&Player[1]);
+					Ult_Gain(&Player[target(&Player[1])]);
 				}
 				if(round == 1){
 					draw_card(4,&Player[0]);
@@ -1524,8 +1571,10 @@ int main(){ //mainfuc
 			}else{
 				if(round % 2 == 1){
 					starting_phase(&Player[1]);
+					Ult_Gain(&Player[target(&Player[1])]);
 				}else{
 					starting_phase(&Player[0]);
+					Ult_Gain(&Player[target(&Player[0])]);
 				}
 			
 				if(round == 1){
@@ -1541,6 +1590,7 @@ int main(){ //mainfuc
 						if(turn == 1){
 							if(focus(&Player[0])==-1) break;
 						}
+						Ult_Gain(&Player[target(&Player[0])]);
 						print_game_broad_9();
 						if(round == 1) printf("玩家一先手\n");	
 						action_command(&Player[0]);
@@ -1550,6 +1600,7 @@ int main(){ //mainfuc
 						if(turn == 1){
 							if(focus(&Player[1])== 1) break;
 						}
+						Ult_Gain(&Player[target(&Player[0])]);
 						print_game_broad_9();
 						action_command(&Player[1]);
 						if( Player[1].end_turn == 1) break;
@@ -1560,6 +1611,7 @@ int main(){ //mainfuc
 						if(turn == 1){
 							if(focus(&Player[1])==-1) break;
 						}
+						Ult_Gain(&Player[target(&Player[1])]);
 						print_game_broad_9();
 						if(round == 1) printf("玩家二先手\n");
 						action_command(&Player[1]);
@@ -1568,6 +1620,7 @@ int main(){ //mainfuc
 						if(turn == 1){
 							if(focus(&Player[0])==-1) break;
 						}
+						Ult_Gain(&Player[target(&Player[0])]);
 						print_game_broad_9();
 						action_command(&Player[0]);
 						if( Player[0].end_turn == 1) break;
