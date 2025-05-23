@@ -173,3 +173,12 @@ int8_t range_counter(player *P1,player *P2,int8_t range){
 	}
 }
 
+int8_t print_hands(player *P) {
+    printf("[DEBUG] print_hands called for player %d\n", P->num);
+    return 0;
+}
+
+int8_t check_starting(player *you , player *P) {
+    printf("[DEBUG] check_starting called\n");
+    return 0;
+}

@@ -578,5 +578,152 @@ int16_t Card_Define(int16_t CardID , card *C){//
 		(*C).cardcode = CardID;
 		(*C).inf = "射程3 傷害3\n你可以選擇將對手棄牌堆中至多3張牌洗入他的牌庫";
 	}
+	//--------------------------------------------------------------------------
+	// 花木蘭
+	if(CardID == 59){ //不容小覷
+		(*C).cardname = "不容小覷";
+		(*C).cost = 0;
+		(*C).level = 1;
+		(*C).range = 1;
+		(*C).type = 4;
+		(*C).damage = 1;
+		(*C).shield = 0;
+		(*C).require_basic_card = 1;
+		(*C).cardcode = CardID;
+		(*C).inf = "射程1 傷害1+O\n你可以將對手放置到你的另一個相鄰的格子\n如果對手位於戰鬥軌道邊緣的格子\n你可以從他手牌中隨機棄掉一張牌";
+	}
+	if(CardID == 60){ //勢不可擋
+		(*C).cardname = "勢不可擋";
+		(*C).cost = 2;
+		(*C).level = 2;
+		(*C).range = 1;
+		(*C).type = 4;
+		(*C).damage = 2;
+		(*C).shield = 0;
+		(*C).require_basic_card = 1;
+		(*C).cardcode = CardID;
+		(*C).inf = "購買費用 2\n射程1 傷害2+O\n你可以將對手放置到你的另一個相鄰的格子\n如果對手位於戰鬥軌道邊緣的格子\n你可以從他手牌中隨機棄掉一張牌";
+	}
+	if(CardID == 61){ //堅不可摧
+		(*C).cardname = "堅不可摧";
+		(*C).cost = 4;
+		(*C).level = 3;
+		(*C).range = 1;
+		(*C).type = 4;
+		(*C).damage = 3;
+		(*C).shield = 0;
+		(*C).require_basic_card = 1;
+		(*C).cardcode = CardID;
+		(*C).inf = "購買費用 4\n射程1 傷害3+O\n你可以將對手放置到你的另一個相鄰的格子\n如果對手位於戰鬥軌道邊緣的格子\n你可以從他手牌中隨機棄掉一張牌";
+	}
+	if(CardID == 62){ //以靜制動
+		(*C).cardname = "以靜制動";
+		(*C).cost = 0;
+		(*C).level = 1;
+		(*C).range = 0;
+		(*C).type = 4;
+		(*C).damage = 0;
+		(*C).shield = 0;
+		(*C).require_basic_card = 1;
+		(*C).cardcode = CardID;
+		(*C).inf = "防禦O\n當你在本回合結束階段抽取卡牌時\n可以花費X點氣來額外抽取X張牌\nX至多為1";
+	}
+	if(CardID == 63){ //以柔克剛
+		(*C).cardname = "以柔克剛";
+		(*C).cost = 2;
+		(*C).level = 2;
+		(*C).range = 0;
+		(*C).type = 4;
+		(*C).damage = 0;
+		(*C).shield = 0;
+		(*C).require_basic_card = 1;
+		(*C).cardcode = CardID;
+		(*C).inf = "購買費用 2\n防禦O\n當你在本回合結束階段抽取卡牌時\n可以花費X點氣來額外抽取X張牌\nX至多為2";
+	}
+	if(CardID == 64){ //以弱勝強
+		(*C).cardname = "以弱勝強";
+		(*C).cost = 4;
+		(*C).level = 3;
+		(*C).range = 0;
+		(*C).type = 4;
+		(*C).damage = 0;
+		(*C).shield = 0;
+		(*C).require_basic_card = 1;
+		(*C).cardcode = CardID;
+		(*C).inf = "購買費用 4\n防禦O\n當你在本回合結束階段抽取卡牌時\n可以花費X點氣來額外抽取X張牌\nX至多為3";
+	}
+	if(CardID == 65){ //永不退縮
+		(*C).cardname = "永不退縮";
+		(*C).cost = 0;
+		(*C).level = 1;
+		(*C).range = 1;
+		(*C).type = 4;
+		(*C).damage = 1;
+		(*C).shield = 0;
+		(*C).require_basic_card = 1;
+		(*C).cardcode = CardID;
+		(*C).inf = "射程1 傷害1\n將對手擊退O格\n之後將你放置到一個與對手相鄰的格子\n如果對手位於戰鬥軌道的邊緣，你可以從他的手牌中隨機捨棄一張牌";
+	}
+	if(CardID == 66){ //毫不留情
+		(*C).cardname = "毫不留情";
+		(*C).cost = 2;
+		(*C).level = 2;
+		(*C).range = 1;
+		(*C).type = 4;
+		(*C).damage = 2;
+		(*C).shield = 0;
+		(*C).require_basic_card = 1;
+		(*C).cardcode = CardID;
+		(*C).inf = "購買費用 2\n射程1 傷害2\n將對手擊退O格\n之後將你放置到一個與對手相鄰的格子\n如果對手位於戰鬥軌道的邊緣，你可以從他的手牌中隨機捨棄一張牌";
+	}
+	if(CardID == 67){ //絕不饒恕
+		(*C).cardname = "絕不饒恕";
+		(*C).cost = 4;
+		(*C).level = 3;
+		(*C).range = 1;
+		(*C).type = 4;
+		(*C).damage = 3;
+		(*C).shield = 0;
+		(*C).require_basic_card = 1;
+		(*C).cardcode = CardID;
+		(*C).inf = "購買費用 4\n射程1 傷害3\n將對手擊退O格\n之後將你放置到一個與對手相鄰的格子\n如果對手位於戰鬥軌道的邊緣，你可以從他的手牌中隨機捨棄一張牌";
+	}
+	if(CardID == 68){ //氣沖雲霄
+		(*C).cardname = "氣沖雲霄";
+		(*C).cost = 0;
+		(*C).level = 0;
+		(*C).range = 0;
+		(*C).type = 5;
+		(*C).damage = 0;
+		(*C).shield = 0;
+		(*C).require_basic_card = 0;
+		(*C).cardcode = CardID;
+		(*C).inf = "當你在本回合結束階段抽取卡牌時，額外抽取4張牌";
+	}
+	if(CardID == 69){ //直面混沌
+		(*C).cardname = "直面混沌";
+		(*C).cost = 0;
+		(*C).level = 0;
+		(*C).range = 0;
+		(*C).type = 5;
+		(*C).damage = 0;
+		(*C).shield = 0;
+		(*C).require_basic_card = 0;
+		(*C).cardcode = CardID;
+		(*C).inf = "將你放置到一個與對手相鄰的格子並立即獲得3點氣";
+	}
+	if(CardID == 70){ //雷霆一擊
+		(*C).cardname = "雷霆一擊";
+		(*C).cost = 0;
+		(*C).level = 0;
+		(*C).range = 1;
+		(*C).type = 5;
+		(*C).damage = 0;
+		(*C).shield = 0;
+		(*C).require_basic_card = 0;
+		(*C).cardcode = CardID;
+		(*C).inf = "射程1\n立即花費你所有的氣來獲得傷害X\nX等於你花費的氣的量";
+	}
+
 
 }

@@ -84,7 +84,7 @@ int8_t initialization_deck(player *P){
 	
 	for(int i = 0 ; i < 5 ; i++)shuffle(&P->deck);
 				
-						
+	return 0;	
 }
 
 
