@@ -75,6 +75,7 @@ typedef struct Player{
 	int16_t starting_lv[256];//搭配持續牌等級
 	card hands_card[50];
 	int8_t hands_select[50];//手牌選取
+	int8_t Ult_deck[3];
 	
 }player;
 
@@ -84,9 +85,11 @@ typedef struct Deck{
 	card C[256];
 	int16_t size;
 }deck;
-
-
+int8_t printf_skill_shop(int8_t num);
+int8_t deal_damage(player *P , int8_t damage);
+int8_t check_starting(player *P,player *Enemy);
 int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output , int8_t *armor_output, int8_t lv ,int8_t combo_cardid, int8_t mode);
+int8_t startingskill(player* you ,player *P,int16_t card_id,int16_t lv );
 int8_t clear_select(player *P);
 void print_game_broad_9();
 int8_t action_command(player *P);
