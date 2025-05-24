@@ -118,7 +118,7 @@ int8_t inputcharacter(player *P, int8_t characternum) { //寫入角色資訊
     }
 	
     // 共通初始化
-    (*P).hp = (*P).Maxhp;
+    (*P).hp = (*P).Maxhp-17;
     (*P).armor = 0;
     (*P).power = 0;
     (*P).hands = 0;
@@ -173,12 +173,35 @@ int8_t range_counter(player *P1,player *P2,int8_t range){
 	}
 }
 
-int8_t print_hands(player *P) {
-    printf("[DEBUG] print_hands called for player %d\n", P->num);
-    return 0;
+int8_t print_hands(player *P){
+	for(int i = 0 ; i < P->hands ; i++){
+		printf("%d) %s 效果：%s\n",i+1,P->hands_card[i].cardname,P->hands_card[i].inf);
+	}
+	return 0;
 }
 
-int8_t check_starting(player *you , player *P) {
-    printf("[DEBUG] check_starting called\n");
-    return 0;
+int8_t check_starting(player *P,player *Enemy){
+	for(int i = 0 ; i < P->starting_size ; i++){
+		startingskill(P,Enemy,P->starting[i],P->starting_lv[i]);
+	}
+	initialization_starting(P);
 }
+
+int8_t initialization_starting(player *P){
+	while(P->starting_size != 0){
+		pushbackVector(&P->discard, P->starting[P->starting_size-1]);
+		pushbackVector(&P->discard, P->combo_basic[P->starting_size-1]);
+		P->combo_basic[P->starting_size-1] = 0;
+		P->starting_lv[P->starting_size-1] = 0;
+		P->starting[P->starting_size-1] = 0;
+		P->starting_size--;
+	}
+}
+
+int8_t clear_select(player *P){
+	for(int i = 0 ; i < 50 ; i++){
+		P->hands_select[i] = 0; 
+	}
+}
+
+
