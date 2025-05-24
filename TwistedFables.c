@@ -167,6 +167,24 @@ int8_t initialization_skill_shop(player *P){
 			}
 			break;
 		}
+		case 5:
+		{
+			int16_t temp16[] = {158, 73, 73, 73, 155, 72, 72, 71};
+			for (int i = 0; i < 8; ++i) {
+				skillBuyDeck[P->num][0].array[i] = temp16[i];
+			}
+
+			int16_t temp17[] = {158, 76, 76, 76, 156, 75, 75, 74};
+			for (int i = 0; i < 8; ++i) {
+				skillBuyDeck[P->num][1].array[i] = temp17[i];
+			}
+
+			int16_t temp18[] = {158, 79, 79, 79, 157, 78, 78, 77};
+			for (int i = 0; i < 8; ++i) {
+				skillBuyDeck[P->num][2].array[i] = temp18[i];
+			}
+			break;
+		}
 	}
 	return 0; // 成功
 }
@@ -280,7 +298,7 @@ int8_t skill_shop_command(player *P){
 					}
 				
 				break;
-			
+				
 				
 				default:
 					printf("不存在此選項\n");

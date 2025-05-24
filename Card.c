@@ -782,8 +782,153 @@ int16_t Card_Define(int16_t CardID , card *C){
 
 
 	//輝夜姬_技能牌-----------------------------------------------------------------
+	if(CardID == 71){ //領悟的光芒
+		(*C).cardname = "領悟的光芒";
+		(*C).cost = 0;
+		(*C).level = 1;
+		(*C).range = 1;
+		(*C).type = 4;
+		(*C).damage = 1;
+		(*C).require_basic_card = 0;
+		(*C).cardcode = CardID;
+		(*C).inf = "射程1 傷害1+O\n當前擁有3點防禦即獲得傷害+1";
+	}
+	if(CardID == 72){ //領悟的榮耀
+		(*C).cardname = "領悟的榮耀";
+		(*C).cost = 2;
+		(*C).level = 2;
+		(*C).range = 1;
+		(*C).type = 4;
+		(*C).damage = 2;
+		(*C).require_basic_card = 0;
+		(*C).cardcode = CardID;
+		(*C).inf = "購買費用 2\n射程1 傷害2+O\n當前擁有3點防禦即獲得傷害+1";
+	}
+	if(CardID == 73){ //領悟的化身
+		(*C).cardname = "領悟的化身";
+		(*C).cost = 4;
+		(*C).level = 3;
+		(*C).range = 1;
+		(*C).type = 4;
+		(*C).damage = 3;
+		(*C).require_basic_card = 0;
+		(*C).cardcode = CardID;
+		(*C).inf = "購買費用 4\n射程1 傷害3+O\n當前擁有3點防禦即獲得傷害+1";
+	}
+
+	if(CardID == 74){ //困惑的回聲
+		(*C).cardname = "困惑的回聲";
+		(*C).cost = 0;
+		(*C).level = 1;
+		(*C).type = 4;
+		(*C).shield = 1;
+		(*C).require_basic_card = 0;
+		(*C).cardcode = CardID;
+		(*C).inf = "防禦1+O\n展示你牌庫頂部的1張牌\n如果是一張防禦牌（不能是通用牌）則將他加入手牌\n否則，將他棄掉或是放回牌庫頂";
+	}
+	if(CardID == 75){ //久遠的回響
+		(*C).cardname = "久遠的回響";
+		(*C).cost = 2;
+		(*C).level = 2;
+		(*C).type = 4;
+		(*C).shield = 2;
+		(*C).require_basic_card = 0;
+		(*C).cardcode = CardID;
+		(*C).inf = "防禦2+O\n展示你牌庫頂部的2張牌\n如果是一張防禦牌（不能是通用牌）則將他加入手牌\n否則，將他棄掉或是以原本順序放回牌庫頂";
+	}
+	if(CardID == 76){ //神性的召喚
+		(*C).cardname = "神性的召喚";
+		(*C).cost = 4;
+		(*C).level = 3;
+		(*C).type = 4;
+		(*C).shield = 3;
+		(*C).require_basic_card = 0;
+		(*C).cardcode = CardID;
+		(*C).inf = "防禦3+O\n展示你牌庫頂部的3張牌\n如果是一張防禦牌（不能是通用牌）則將他加入手牌\n否則，將他棄掉或是以原本順序放回牌庫頂";
+	}
+
+	if(CardID == 77){ //專注的自省
+		(*C).cardname = "專注的自省";
+		(*C).cost = 0;
+		(*C).level = 1;
+		(*C).range = 0;
+		(*C).type = 4;
+		(*C).damage = 1;
+		(*C).require_basic_card = 0;
+		(*C).cardcode = CardID;
+		(*C).inf = "射程O 傷害1\n你可以失去1點生命來移除你手牌或棄牌堆中的一張牌";
+	}
+	if(CardID == 78){ //頓悟的決心
+		(*C).cardname = "頓悟的決心";
+		(*C).cost = 2;
+		(*C).level = 2;
+		(*C).range = 0;
+		(*C).type = 4;
+		(*C).damage = 2;
+		(*C).require_basic_card = 0;
+		(*C).cardcode = CardID;
+		(*C).inf = "購買費用 2\n射程0 傷害2\n你可以失去1點生命來移除你手牌或棄牌堆中的一張牌\n持續：在你下個回合開始階段，如果對手超出射程4-O，對他造成4點傷害";
+	}
+	if(CardID == 79){ //痛徹的淨化
+		(*C).cardname = "痛徹的淨化";
+		(*C).cost = 4;
+		(*C).level = 3;
+		(*C).range = 0;
+		(*C).type = 4;
+		(*C).damage = 3;
+		(*C).require_basic_card = 0;
+		(*C).cardcode = CardID;
+		(*C).inf = "購買費用 4\n射程0 傷害3\n你可以失去1點生命來移除你手牌或棄牌堆中的一張牌\n持續：在你下個回合開始階段，如果對手超出射程4-O，對他造成6點傷害";
+	}
 	//必殺技
+	if(CardID == 80){ //炙熱的竹刀
+		(*C).cardname = "炙熱的竹刀";
+		(*C).cost = 0;
+		(*C).type = 5;
+		(*C).cardcode = CardID;
+		(*C).inf = "持續：直到你下個回合開始時，你不會承受傷害也不會失去生命";
+	}
+	if(CardID == 81){ //注定的審判
+		(*C).cardname = "注定的審判";
+		(*C).cost = 0;
+		(*C).type = 5;
+		(*C).shield = 6;
+		(*C).cardcode = CardID;
+		(*C).inf = "防禦6\n持續：在你下個回合的開始階段，如果對手的防禦低於你的防禦\n他失去X點生命，X等於你的防禦與他的防禦之間的差值";
+	}
+	if(CardID == 82){ //躁動的血性
+		(*C).cardname = "躁動的血性";
+		(*C).cost = 0;
+		(*C).type = 5;
+		(*C).damage = 3;
+		(*C).cardcode = CardID;
+		(*C).inf = "將對手放置到一個與你相鄰的格子並造成3點傷害\n持續：在你下個回合的開始階段，你可以將對手放置到一個與你相鄰的格子並對他造成3點傷害";
+	}
 	//蛻變牌
+	if(CardID == 183){ //懲戒時刻
+		(*C).cardname = "懲戒時刻";
+		(*C).type = 6;
+		(*C).cardcode = CardID;
+		(*C).inf = "防禦上限+1\n每回合限一次\n在你的回合內，你可以將一張防禦牌當作一張相同等級的攻擊牌來使用";
+	}
+	if(CardID == 184){ //月下沉思
+		(*C).cardname = "月下沉思";
+		(*C).type = 6;
+		(*C).cardcode = CardID;
+		(*C).inf = "在你回合結束時 獲得防禦2";
+	}
+	if(CardID == 185){ //血色月光
+		(*C).cardname = "血色月光";
+		(*C).type = 6;
+		(*C).cardcode = CardID;
+		(*C).inf = "防禦值上限+1\n在你的回合的清理階段\n每重置3點防禦即抽取1張牌";
+	}
+	if(CardID == 186){ //靈性本能
+		(*C).cardname = "靈性本能";
+		(*C).type = 6;
+		(*C).cardcode = CardID;
+		(*C).inf = "防禦值上限+1\n每個自己的行動回合限一次：如果對手防禦低於你的防禦，你可已將他向任意方向移動一格";
+	}
 
 	//美人魚_技能牌-----------------------------------------------------------------
 	//必殺技
