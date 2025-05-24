@@ -149,6 +149,24 @@ int8_t initialization_skill_shop(player *P){
 			}
 			break;
 		}
+		case 4:
+		{
+			int temp13[] = {154,61,61,61,151,60,60,59};
+			for (int i = 0; i < 8; ++i) {
+			    skillBuyDeck[P->num][0].array[i] = temp4[i];
+			}
+
+			int temp14[] = {154,64,64,64,152,63,63,62};
+			for (int i = 0; i < 8; ++i) {
+			    skillBuyDeck[P->num][1].array[i] = temp5[i];
+			}
+
+			int temp15[] = {154,67,67,67,153,66,66,65};
+			for (int i = 0; i < 8; ++i) {
+			    skillBuyDeck[P->num][2].array[i] = temp6[i];
+			}
+			break;
+		}
 	}
 	return 0; // 成功
 }
