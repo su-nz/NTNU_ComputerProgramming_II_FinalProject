@@ -118,7 +118,7 @@ int8_t inputcharacter(player *P, int8_t characternum) { //寫入角色資訊
     }
 	
     // 共通初始化
-    (*P).hp = (*P).Maxhp-17;
+    (*P).hp = (*P).Maxhp;
     (*P).armor = 0;
     (*P).power = 0;
     (*P).hands = 0;
