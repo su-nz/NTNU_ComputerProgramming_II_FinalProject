@@ -68,6 +68,7 @@ typedef struct Player{
 	int8_t Scheherazade_token;
 	vector discard;
 	vector deck;
+	int16_t passive_n;
 	int16_t passive[7];//蛻變牌 美人魚多一個
 	int16_t starting_size;//持續牌數量
 	int16_t starting[256];//持續牌
@@ -89,6 +90,7 @@ int8_t printf_skill_shop(int8_t num);
 int8_t deal_damage(player *P , int8_t damage);
 int8_t check_starting(player *P,player *Enemy);
 int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output , int8_t *armor_output, int8_t lv ,int8_t combo_cardid, int8_t mode);
+int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , int8_t *armor_output, int8_t mode ,vector (*skillBuyDeck)[3]);
 int8_t startingskill(player* you ,player *P,int16_t card_id,int16_t lv );
 int8_t clear_select(player *P);
 void print_game_broad_9();
