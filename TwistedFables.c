@@ -258,6 +258,13 @@ int8_t skill_shop_command(player *P){
 						skillBuyDeck[P->num][0].SIZE--;
 						P->power -=cardtemp1.cost;
 						Card_Define(skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1], &cardtemp1);
+						if(cardtemp1.cost == 0){
+							P->passive[P->passive_n] = skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1];
+							skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1] = 0;
+							skillBuyDeck[P->num][0].SIZE--;
+							P->passive_n++;
+							Card_Define(skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1], &cardtemp1);
+						}
 						printf_skill_shop(P->num);
 					}
 				
@@ -276,6 +283,13 @@ int8_t skill_shop_command(player *P){
 						skillBuyDeck[P->num][1].SIZE--;
 						P->power -=cardtemp2.cost;
 						Card_Define(skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1], &cardtemp2);
+						if(cardtemp2.cost == 0){
+							P->passive[P->passive_n] = skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][0].SIZE-1];
+							skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1] = 0;
+							skillBuyDeck[P->num][1].SIZE--;
+							P->passive_n++;
+							Card_Define(skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1], &cardtemp2);
+						}
 						printf_skill_shop(P->num);
 					}
 				
@@ -294,6 +308,13 @@ int8_t skill_shop_command(player *P){
 						skillBuyDeck[P->num][2].SIZE--;
 						P->power -=cardtemp3.cost;
 						Card_Define(skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1], &cardtemp3);
+						if(cardtemp3.cost == 0){
+							P->passive[P->passive_n] = skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][0].SIZE-1];
+							skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1] = 0;
+							skillBuyDeck[P->num][2].SIZE--;
+							P->passive_n++;
+							Card_Define(skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1], &cardtemp2);
+						}
 						printf_skill_shop(P->num);
 					}
 				
