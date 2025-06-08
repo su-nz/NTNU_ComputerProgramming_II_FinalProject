@@ -22,7 +22,8 @@ void shuffle(vector *v) {
 }
 
 int8_t inputcharacter(player *P, int8_t characternum) { //寫入角色資訊
-    (*P).character = characternum;
+    (*P).character = characternum; 
+    (*P).passive_n = 0;
     (*P).atk_buff = 0;
     (*P).defend_buff = 0;
     (*P).speed_buff = 0;
@@ -125,6 +126,16 @@ int8_t inputcharacter(player *P, int8_t characternum) { //寫入角色資訊
   	
 
     return 0; // 成功
+}
+
+int8_t check_passive(player *P , int check_num){
+	int times=0;
+	for(int i = 0 ; i < P->passive_n ; i++){
+		if(P->passive[i] == check_num){
+			times++;
+		}
+	}
+	return times;
 }
 
 int8_t discard_back_to_deck(player *P){
