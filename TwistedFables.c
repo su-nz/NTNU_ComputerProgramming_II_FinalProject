@@ -652,7 +652,7 @@ int8_t remove_card(player *P){
 				}
 				int8_t cc=-1;
 				printf("請問你要移除哪一牌？\n");
-				printf("輸入數字：");
+				printf("輸入數字：");//TODO: wrong input
 				scanf("%hhd",&cc);
 				if(cc > P->discard.SIZE){
 					printf("沒有這張卡！\n");
@@ -1309,7 +1309,7 @@ void print_aligned_charname(const char* name, int8_t width) {
 int8_t focus(player *P){
 	system("clear");
 	int8_t focus = -1;
-	printf("\n現在是"GREEN BOLD"%s"RESET"在進行\n",P->charname);
+	printf("現在是"GREEN BOLD"%s"RESET"在進行\n",P->charname);
 	printf("請問本回合你要進行專注嘛？\n0. 要\n1. 不要\n");
 	printf(">");
 	scanf("%hhd",&focus);
