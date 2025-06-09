@@ -123,12 +123,45 @@ int8_t inputcharacter(player *P, int8_t characternum) { //寫入角色資訊
     // 共通初始化
     (*P).hp = (*P).Maxhp;
     (*P).armor = 0;
-    (*P).power = 0;
+    (*P).power = 50;
     (*P).hands = 0;
   	
 
     return 0; // 成功
 }
+
+
+
+// 交換兩個 int16_t 整數的函式
+void swap(int16_t *a, int16_t *b) {
+    int16_t temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+// 快速排序的 partition 函式
+int32_t partition(int16_t *arr, int32_t low, int32_t high) {
+    int16_t pivot = arr[high];
+    int32_t i = low - 1;
+    for (int32_t j = low; j < high; j++) {
+        if (arr[j] < pivot) {
+            i++;
+            swap(&arr[i], &arr[j]);
+        }
+    }
+    swap(&arr[i + 1], &arr[high]);
+    return i + 1;
+}
+
+// 快速排序主函式
+void quicksort(int16_t *arr, int32_t low, int32_t high) {
+    if (low < high) {
+        int32_t p = partition(arr, low, high);
+        quicksort(arr, low, p - 1);
+        quicksort(arr, p + 1, high);
+    }
+}
+
 
 int8_t check_passive(player *P , int check_num){
 	int times=0;
@@ -216,5 +249,7 @@ int8_t clear_select(player *P){
 		P->hands_select[i] = 0; 
 	}
 }
+
+
 
 
