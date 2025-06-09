@@ -206,7 +206,7 @@ int16_t Card_Define(int16_t CardID , card *C){
 		(*C).cost = 0;
 		(*C).level = 1;
 		(*C).range = 1; //for attack 0 means its doesn't need range
-		(*C).type = 1; // 0)attack 1)defend 2)movement 3) wild 4)skills 5)Ult 6)passive
+		(*C).type = 4; // 0)attack 1)defend 2)movement 3) wild 4)skills 5)Ult 6)passive
 		(*C).remain = 1;
 		(*C).power_generate = 0;
 		(*C).shield = 1;
@@ -221,7 +221,7 @@ int16_t Card_Define(int16_t CardID , card *C){
 		(*C).level = 2;
 		(*C).range = 2; //for attack 0 means its doesn't need range
 		(*C).remain = 1;
-		(*C).type = 1; // 0)attack 1)defend 2)movement 3) wild 4)skills 5)Ult 6)passive
+		(*C).type = 4; // 0)attack 1)defend 2)movement 3) wild 4)skills 5)Ult 6)passive
 		(*C).power_generate = 0;
 		(*C).shield = 1;
 		(*C).damage = 2;
@@ -234,7 +234,7 @@ int16_t Card_Define(int16_t CardID , card *C){
 		(*C).cost = 4;
 		(*C).level = 3;
 		(*C).range = 3; //for attack 0 means its doesn't need range
-		(*C).type = 1; // 0)attack 1)defend 2)movement 3) wild 4)skills 5)Ult 6)passive
+		(*C).type = 4; // 0)attack 1)defend 2)movement 3) wild 4)skills 5)Ult 6)passive
 		(*C).power_generate = 0;
 		(*C).remain = 1;
 		(*C).shield = 1;
