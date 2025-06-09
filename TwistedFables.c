@@ -23,7 +23,14 @@ int8_t turn = 0;
 int RedHoodHPtemp=0;
 
 
-
+int8_t initialize_player(player *P){
+	if(P->character == 0){
+		P->Redhoodsave[0] = -1;
+		P->Redhoodsave[1] = -1;
+		P->Redhoodsave[2] = -1;
+		RedHoodHPtemp = P->hp;
+	}
+}
 
 int8_t end_game_detection(){
 
@@ -210,28 +217,44 @@ int8_t printf_skill_shop(int8_t player_num){
 	system("clear");
 	
 	card cardtemp1;
-	Card_Define(skillBuyDeck[player_num][0].array[skillBuyDeck[player_num][0].SIZE-1], &cardtemp1);
+	if(skillBuyDeck[player_num][0].SIZE >0)Card_Define(skillBuyDeck[player_num][0].array[skillBuyDeck[player_num][0].SIZE-1], &cardtemp1);
 	card cardtemp2;
-	Card_Define(skillBuyDeck[player_num][1].array[skillBuyDeck[player_num][1].SIZE-1], &cardtemp2);
+	if(skillBuyDeck[player_num][1].SIZE >0)Card_Define(skillBuyDeck[player_num][1].array[skillBuyDeck[player_num][1].SIZE-1], &cardtemp2);
 	card cardtemp3;
-	Card_Define(skillBuyDeck[player_num][2].array[skillBuyDeck[player_num][2].SIZE-1], &cardtemp3);
+	if(skillBuyDeck[player_num][2].SIZE >0)Card_Define(skillBuyDeck[player_num][2].array[skillBuyDeck[player_num][2].SIZE-1], &cardtemp3);
 	
-	printf("1.）攻擊技能鏈   升級費用 %hhd 點能量  卡片剩餘數:%hhd\n",cardtemp1.cost ,skillBuyDeck[player_num][0].SIZE);
-	if(skillBuyDeck[player_num][0].SIZE!=0)printf("目前的卡片：%s\n效果：%s\n\n",cardtemp1.cardname,cardtemp1.inf);
-	printf("2.）防禦技能鏈   升級費用 %hhd 點能量  卡片剩餘數:%hhd\n",cardtemp2.cost ,skillBuyDeck[player_num][1].SIZE);
-	if(skillBuyDeck[player_num][1].SIZE!=0)printf("目前的卡片：%s\n效果：%s\n\n",cardtemp2.cardname,cardtemp2.inf);
-	printf("3.）移動技能鏈   升級費用 %hhd 點能量  卡片剩餘數:%hhd\n",cardtemp3.cost ,skillBuyDeck[player_num][2].SIZE);
-	if(skillBuyDeck[player_num][2].SIZE!=0)printf("目前的卡片：%s\n效果：%s\n\n",cardtemp2.cardname,cardtemp2.inf);
+	
+	if(skillBuyDeck[player_num][0].SIZE>0){
+		printf("1.）攻擊技能鏈   升級費用 %hhd 點能量  卡片剩餘數:%hhd\n",cardtemp1.cost ,skillBuyDeck[player_num][0].SIZE);
+		printf("目前的卡片：%s\n效果：%s\n\n",cardtemp1.cardname,cardtemp1.inf);
+	}else{
+		printf("1.）攻擊技能鏈  已售完\n\n");
+	}
+	
+	if(skillBuyDeck[player_num][1].SIZE>0){
+		printf("2.）防禦技能鏈   升級費用 %hhd 點能量  卡片剩餘數:%hhd\n",cardtemp2.cost ,skillBuyDeck[player_num][1].SIZE);
+		printf("目前的卡片：%s\n效果：%s\n\n",cardtemp2.cardname,cardtemp2.inf);
+	}else{
+		printf("2.）防禦技能鏈  已售完\n\n");
+	}
+	
+	if(skillBuyDeck[player_num][2].SIZE>0){
+		
+		printf("3.）移動技能鏈   升級費用 %hhd 點能量  卡片剩餘數:%hhd\n",cardtemp3.cost ,skillBuyDeck[player_num][2].SIZE);
+		printf("目前的卡片：%s\n效果：%s\n\n",cardtemp3.cardname,cardtemp3.inf);
+	}else{
+		printf("3.）移動技能鏈 已售完\n\n");
+	}
 }
 
 int8_t skill_shop_command(player *P){
 	printf_skill_shop(P->num);
 	card cardtemp1;
-	Card_Define(skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1], &cardtemp1);
+	if(skillBuyDeck[P->num][0].SIZE >0)Card_Define(skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1], &cardtemp1);
 	card cardtemp2;
-	Card_Define(skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1], &cardtemp2);
+	if(skillBuyDeck[P->num][0].SIZE >1)Card_Define(skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1], &cardtemp2);
 	card cardtemp3;
-	Card_Define(skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1], &cardtemp3);
+	if(skillBuyDeck[P->num][0].SIZE >2)Card_Define(skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1], &cardtemp3);
 	int8_t ssc =-1;
 	printf_skill_shop(P->num);
 	while(1){
@@ -264,8 +287,9 @@ int8_t skill_shop_command(player *P){
 							P->passive[P->passive_n] = skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1];
 							skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1] = 0;
 							skillBuyDeck[P->num][0].SIZE--;
+							if(skillBuyDeck[P->num][0].SIZE <=0) skillBuyDeck[P->num][0].SIZE = 0;
 							P->passive_n++;
-							Card_Define(skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1], &cardtemp1);
+							if(skillBuyDeck[P->num][0].SIZE >0)Card_Define(skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1], &cardtemp1);
 						}
 						printf_skill_shop(P->num);
 					}
@@ -289,12 +313,13 @@ int8_t skill_shop_command(player *P){
 							P->passive[P->passive_n] = skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1];
 							skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1] = 0;
 							skillBuyDeck[P->num][1].SIZE--;
+							if(skillBuyDeck[P->num][1].SIZE <=0) skillBuyDeck[P->num][1].SIZE = 0;
 							P->passive_n++;
-							Card_Define(skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1], &cardtemp2);
+							if(skillBuyDeck[P->num][1].SIZE >0)Card_Define(skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1], &cardtemp2);
 						}
 						printf_skill_shop(P->num);
 					}
-				
+		
 				break;
 				
 				case 3: // 移動
@@ -314,8 +339,9 @@ int8_t skill_shop_command(player *P){
 							P->passive[P->passive_n] = skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][2].SIZE-1];
 							skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1] = 0;
 							skillBuyDeck[P->num][2].SIZE--;
+							if(skillBuyDeck[P->num][2].SIZE <=0) skillBuyDeck[P->num][2].SIZE = 0;
 							P->passive_n++;
-							Card_Define(skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1], &cardtemp2);
+							if(skillBuyDeck[P->num][2].SIZE >0)Card_Define(skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1], &cardtemp2);
 						}
 						printf_skill_shop(P->num);
 					}
@@ -898,7 +924,41 @@ int8_t play_a_card(player *P){
 					printf("invalid input");
 				}
 				if(P->hands_card[combo_card-1].type == P->hands_card[cn-1].require_basic_card ){
-					if(range_counter(P,&Player[target(P)],P->hands_card[cn-1].range) == 1 || P->hands_card[cn-1].range == 0){
+				int rr=0;
+					if(check_passive(P , 137) != 0){
+								while(1){
+									int choices_R=0;
+									printf("使用移動/攻擊技能時，可捨棄1張技能牌獲得射程+X（X為等級）\n");
+									printf("0)不捨棄 1)捨棄\n>");
+									scanf("%d",&choices_R);
+									getchar();
+									if(choices_R!= 0 && choices_R!= 1){
+										printf("輸入錯誤！\n");
+									}else if(choices_R == 0){
+										break;
+									}else if(choices_R == 1){
+										int8_t cn = -1;
+										while(cn!=0){
+											printf("請選擇一張你要捨棄的牌\n>");
+											scanf("%hhd",&cn);
+											if(cn == 0)break;
+											if(P->hands_card[cn-1].type == 4){
+												rr += P->hands_card[cn-1].level;
+												discard_card_from_hand(P,cn-1);
+												break;
+											}else{
+												printf("這不是技能牌請重新輸入\n>");
+											}
+											
+										}
+										break;
+									}
+									
+								}
+								
+					}
+				
+					if(range_counter(P,&Player[target(P)],P->hands_card[cn-1].range-rr) == 1 || P->hands_card[cn-1].range == 0){
 						use_skill(P,&Player[target(P)], P->hands_card[cn-1].cardcode , &damage_deal , &armor_get , P->hands_card[combo_card-1].level , P->hands_card[combo_card-1].cardcode , mode);
 						
 						if(P->hands_card[combo_card-1].type == 0 || P->hands_card[combo_card-1].type == 2){
@@ -1035,7 +1095,7 @@ int8_t play_a_card(player *P){
 					}
 							
 				
-				//TODO:逃樂思	
+				
 			}else{
 				printf("這不是技能牌請重新輸入\n>");
 			}
@@ -1046,6 +1106,103 @@ int8_t play_a_card(player *P){
 		}
 	return 0;
 }
+
+int8_t Redhoodsavefile(player *P){
+	
+	while(1){
+		system("clear");
+	if(check_passive(P,138) >=1){
+		if(P->Redhoodsave[0]==-1) P->Redhoodsave[0] = 0;
+		card cardtemp1;
+		Card_Define(P->Redhoodsave[0], &cardtemp1);
+		printf("板載緩存1： %s %s\n",cardtemp1.cardname,cardtemp1.inf);
+	}
+	if(check_passive(P,138) >=2 ){
+		if(P->Redhoodsave[0]==-1) P->Redhoodsave[0] = 0;
+		card cardtemp1;
+		Card_Define(P->Redhoodsave[1], &cardtemp1);
+		printf("板載緩存2： %s %s\n",cardtemp1.cardname,cardtemp1.inf);
+	}else{
+		printf("板載緩存2： 未開啟\n");
+	}
+	if(check_passive(P,138) >=3 ){
+		if(P->Redhoodsave[0]==-1) P->Redhoodsave[0] = 0;
+		card cardtemp1;
+		Card_Define(P->Redhoodsave[2], &cardtemp1);
+		printf("板載緩存3： %s %s\n",cardtemp1.cardname,cardtemp1.inf);
+	}else{
+		printf("板載緩存3： 未開啟\n");
+	}
+	print_hands(P);
+	printf("請輸入你要存入卡片還是拿出卡片\n0)存入 1)拿出 2)取消\n");
+		int choice_r = -1;
+		scanf("%d",&choice_r);
+		getchar();
+		if(choice_r == 0){
+			printf("你要存哪一張牌？\n>");
+			int8_t cn = -1;
+					while(cn!=0){
+						scanf("%hhd",&cn);
+						if(cn>=1 && cn <= P->hands){
+							printf("你要存哪一個板載緩存？\n>");
+							int8_t s = -1;
+							scanf("%hhd",&s);
+							getchar();
+							if(s >= 1 && s <= 3){
+								if(P->Redhoodsave[s-1] == 0){
+									P->Redhoodsave[s-1] = (*P).hands_card[cn-1].cardcode;
+									Card_Define(0 , &(*P).hands_card[cn-1]);
+									for (int8_t i = cn-1; i < (*P).hands - 1; i++) {
+										Card_Define(0, &(*P).hands_card[i]);
+										Card_Define((*P).hands_card[i + 1].cardcode , &(*P).hands_card[i]);
+									}
+									(*P).hands--;
+									break;
+								}else{
+									printf("已有卡片存在\n");
+									break;
+								}
+							}else{
+								printf("錯誤數字(範圍0-2)\n");
+								break;
+							}
+						}else{
+							printf("沒有這張牌\n");
+						}
+						
+					}
+		}else if(choice_r == 1){
+		
+					while(1){
+							printf("你從哪一個板載緩存拿牌？\n>");
+							int8_t s = -1;
+							scanf("%hhd",&s);
+							getchar();
+							if(s >= 1 && s <= 3){
+								if(P->Redhoodsave[s-1] != 0){
+									Card_Define(P->Redhoodsave[s-1] , &P->hands_card[P->hands]);
+									popbackVector(&P->deck); //remove card
+									P->hands++;
+									P->Redhoodsave[s-1] = 0;
+									break;
+								}else{
+									printf("沒有卡片存在\n");
+									break;
+								}
+							}else{
+								printf("錯誤數字(範圍0-2)\n");
+								break;
+							}
+						
+					}
+		}else if(choice_r == 2){
+			return 0;
+		}							
+	}						
+	
+}
+
+
 
 int8_t action_command(player *P){
 	int8_t comm=-1;
@@ -1060,7 +1217,7 @@ int8_t action_command(player *P){
 	printf("4. 查看自己的棄牌堆\n");
 	printf("5. 查看別人的棄牌堆\n");
 	printf("6. 結束回合\n");
-	if(check_passive(P,138) !=0 ) printf("7.放入拿出板載緩存\n\n");
+	if(check_passive(P,138) !=0 ) printf("7. 放入拿出板載緩存\n\n");
 	printf("你的手牌：\n");
 	print_hands(P);
 	printf("輸入指令：");
@@ -1142,14 +1299,17 @@ int8_t action_command(player *P){
 						 
 		case 7:
 			if(check_passive(P,138) !=0 ){
-						
-		}
+				Redhoodsavefile(P);
+			
+			}
+			return -1;
 				
             	break;
 	}
 	
 	return 0;
 }
+
 
 
 
@@ -1162,6 +1322,33 @@ void print_extra_inf(player *P){
 			card cardtemp1;
 			Card_Define(P->passive[i], &cardtemp1);
 			printf("%d)%s %s\n",i+1,cardtemp1.cardname,cardtemp1.inf);
+		}
+	}
+	if(check_passive(P,138) >=1 ){
+		card cardtemp1;
+		Card_Define(P->Redhoodsave[0], &cardtemp1);
+		if(P->Redhoodsave[0] != 0){
+			printf("板載緩存1： %s\n",cardtemp1.cardname);
+		}else{
+			printf("板載緩存1： 空\n");
+		}
+	}
+	if(check_passive(P,138) >=2 ){
+		card cardtemp1;
+		Card_Define(P->Redhoodsave[1], &cardtemp1);
+		if(P->Redhoodsave[1] != 0){
+			printf("板載緩存2： %s\n",cardtemp1.cardname);
+		}else{
+			printf("板載緩存2： 空\n");
+		}
+	}
+	if(check_passive(P,138) >=3 ){
+		card cardtemp1;
+		Card_Define(P->Redhoodsave[2], &cardtemp1);
+		if(P->Redhoodsave[2] != 0){
+			printf("板載緩存3： %s\n",cardtemp1.cardname);
+		}else{
+			printf("板載緩存3： 空\n");
 		}
 	}
 	if((*P).poison != -1){
@@ -1752,11 +1939,12 @@ int main(){ //mainfuc
 	int8_t round = 0;
 	int8_t flip_coins=0;
 	flip_coins = rand()%2+1;
-	if(Player[0].character == 0){
-		RedHoodHPtemp = Player[0].hp;
-	}else if(Player[1].character == 0){
-		RedHoodHPtemp = Player[1].hp;
-	}
+	
+	initialize_player(&Player[0]);
+	initialize_player(&Player[1]);
+	initialize_player(&Player[2]);
+	initialize_player(&Player[3]);
+	
 	if(flip_coins == 1){
 		//player 1 first
 		if(mode == 1){
