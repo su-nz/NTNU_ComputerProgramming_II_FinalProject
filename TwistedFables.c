@@ -873,11 +873,11 @@ int8_t play_a_card(player *P){
 			print_hands(P);
 			
 			int8_t combo_card =-1;
-			int8_t damage_deal=1;
+			int8_t damage_deal=0;
 			int8_t armor_get=0;
 			int8_t levels = -1;
 			int8_t cn = -1;
-				
+			int8_t atk = 0;
 			while(cn!=0){
 				printf("請問你要打哪一張技能牌？(輸入0返回)\n");
 				printf(">");
@@ -898,8 +898,44 @@ int8_t play_a_card(player *P){
 				if(P->hands_card[combo_card-1].type == P->hands_card[cn-1].require_basic_card ){
 					if(range_counter(P,&Player[target(P)],P->hands_card[cn-1].range) == 1 || P->hands_card[cn-1].range == 0){
 						use_skill(P,&Player[target(P)], P->hands_card[cn-1].cardcode , &damage_deal , &armor_get , P->hands_card[combo_card-1].level , P->hands_card[combo_card-1].cardcode , mode);
-						deal_damage(&Player[target(P)], damage_deal);
-						gain_armor(P , armor_get);
+						
+						if(P->hands_card[combo_card-1].type == 0 || P->hands_card[combo_card-1].type == 2){
+							if(check_passive(P , 135) != 0){
+								while(1){
+									int choices_R=0;
+									printf("可以捨棄至多一張技能牌來獲得傷害X，X為你捨棄的技能牌等級\n");
+									printf("0)不捨棄 1)捨棄\n>");
+									scanf("%d",&choices_R);
+									getchar();
+									if(choices_R!= 0 && choices_R!= 1){
+										printf("輸入錯誤！\n");
+									}else if(choices_R == 0){
+										break;
+									}else if(choices_R == 1){
+										int8_t cn = -1;
+										while(cn!=0){
+											printf("請選擇一張你要捨棄的牌\n>");
+											scanf("%hhd",&cn);
+											if(cn == 0)break;
+											if(P->hands_card[cn-1].type == 4){
+												atk += P->hands_card[cn-1].level;
+												discard_card_from_hand(P,cn-1);
+												break;
+											}else{
+												printf("這不是技能牌請重新輸入\n>");
+											}
+											
+										}
+										break;
+									}
+									
+								}
+								
+							}
+						}
+						
+						deal_damage(&Player[target(P)], damage_deal+atk+ P->atk_buff);
+						gain_armor(P , armor_get+ P->defend_buff);
 						
 						
 						if(P->hands_card[cn-1].remain ==1){
@@ -963,8 +999,45 @@ int8_t play_a_card(player *P){
 						
 					
 					
-		}else if(select == 4){
-			//TODO:
+		}else if(select == 5){
+			system("clear");
+			print_game_broad_9();
+			print_hands(P);
+			
+			int8_t combo_card =-1;
+			int8_t damage_deal=0;
+			int8_t armor_get=0;
+			int8_t levels = -1;
+			int8_t cn = -1;
+			
+			while(cn!=0){
+				printf("請問你要打哪一張大招牌？(輸入0返回)\n");
+				printf(">");
+				scanf("%hhd",&cn);
+				if(cn == 0)return 0;
+				if(P->hands_card[cn-1].type == 5){
+					
+					if(range_counter(P,&Player[target(P)],P->hands_card[cn-1].range) == 1 || P->hands_card[cn-1].range == 0){
+						use_Ult(P,&Player[target(P)],P->hands_card[cn-1].cardcode , &damage_deal , &armor_get, mode , skillBuyDeck);
+						deal_damage(&Player[target(P)], damage_deal);
+						gain_armor(P , armor_get);
+						
+						discard_card_from_hand(P,cn-1);
+						
+						
+						return 0;
+						
+					}else{
+						printf("對手不在你的攻擊範圍！\n");
+						
+					}
+							
+				
+				//TODO:逃樂思	
+			}else{
+				printf("這不是技能牌請重新輸入\n>");
+			}
+		}
 		}	
 					
 					
@@ -984,8 +1057,8 @@ int8_t action_command(player *P){
 	printf("3. 打牌\n");
 	printf("4. 查看自己的棄牌堆\n");
 	printf("5. 查看別人的棄牌堆\n");
-	printf("6. 結束回合\n\n");
-
+	printf("6. 結束回合\n");
+	if(check_passive(P,138) !=0 ) printf("7.放入拿出板載緩存\n\n");
 	printf("你的手牌：\n");
 	print_hands(P);
 	printf("輸入指令：");
@@ -1030,6 +1103,11 @@ int8_t action_command(player *P){
             		P->end_turn = 1;
 					return -1;
 						 
+				case 7:
+					if(check_passive(P,138) !=0 ){
+						
+					}
+				
             	break;
 	}
 	
