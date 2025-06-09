@@ -86,6 +86,7 @@ typedef struct Deck{
 	card C[256];
 	int16_t size;
 }deck;
+int8_t check_passive(player *P , int check_num);
 int8_t printf_skill_shop(int8_t num);
 int8_t deal_damage(player *P , int8_t damage);
 int8_t check_starting(player *P,player *Enemy);
@@ -113,4 +114,5 @@ int8_t range_counter(player *P,player*P2 , int8_t range);
 int8_t print_hands(player *P);
 int8_t initialization_starting(player *P);
 int8_t initialization_deck(player *P);
+int8_t discard_card_from_hand(player *P,int8_t index);
 
