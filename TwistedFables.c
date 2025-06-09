@@ -20,6 +20,8 @@ int8_t player3_char = -1;
 int8_t player4_char = -1;
 int8_t turn = 0;
 
+int RedHoodHPtemp=0;
+
 
 
 
@@ -284,7 +286,7 @@ int8_t skill_shop_command(player *P){
 						P->power -=cardtemp2.cost;
 						Card_Define(skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1], &cardtemp2);
 						if(cardtemp2.cost == 0){
-							P->passive[P->passive_n] = skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][0].SIZE-1];
+							P->passive[P->passive_n] = skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1];
 							skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1] = 0;
 							skillBuyDeck[P->num][1].SIZE--;
 							P->passive_n++;
@@ -309,7 +311,7 @@ int8_t skill_shop_command(player *P){
 						P->power -=cardtemp3.cost;
 						Card_Define(skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1], &cardtemp3);
 						if(cardtemp3.cost == 0){
-							P->passive[P->passive_n] = skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][0].SIZE-1];
+							P->passive[P->passive_n] = skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][2].SIZE-1];
 							skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1] = 0;
 							skillBuyDeck[P->num][2].SIZE--;
 							P->passive_n++;
@@ -1080,7 +1082,42 @@ int8_t action_command(player *P){
             	break;
             	
             	case 3:  // 打牌
-				play_a_card(P)!=0;
+				play_a_card(P);
+				if(RedHoodHPtemp != Player[target(P)].hp && check_passive(&Player[target(P)],136) !=0){
+					
+					while(1){
+									int choices_R=0;
+									printf(GREEN BOLD"%s"RESET"你可以捨棄至多一張技能牌來將傷害減少X，X為你捨棄的技能牌等級\n",Player[target(P)].charname);
+									printf("0)不捨棄 1)捨棄\n>");
+									scanf("%d",&choices_R);
+									getchar();
+									if(choices_R!= 0 && choices_R!= 1){
+										printf("輸入錯誤！\n");
+									}else if(choices_R == 0){
+										break;
+									}else if(choices_R == 1){
+										
+										int8_t cn = -1;
+										while(cn!=0){
+											printf("請選擇一張你要捨棄的牌(輸入0取消)\n");
+											print_hands(&Player[target(P)]);
+											printf(">");
+											scanf("%hhd",&cn);
+											if(cn == 0)break;
+											if(Player[target(P)].hands_card[cn-1].type == 4){
+												Player[target(P)].hp += Player[target(P)].hands_card[cn-1].level;
+												discard_card_from_hand(&Player[target(P)],cn-1);
+												break;
+											}else{
+												printf("這不是技能牌請重新輸入\n>");
+											}
+											
+										}
+										RedHoodHPtemp = Player[target(P)].hp;
+										break;
+									}
+						}
+				}
 				return 0;
             	break;
             	
@@ -1103,10 +1140,10 @@ int8_t action_command(player *P){
             		P->end_turn = 1;
 					return -1;
 						 
-				case 7:
-					if(check_passive(P,138) !=0 ){
+		case 7:
+			if(check_passive(P,138) !=0 ){
 						
-					}
+		}
 				
             	break;
 	}
@@ -1118,6 +1155,15 @@ int8_t action_command(player *P){
 
 
 void print_extra_inf(player *P){
+	if(P-> passive_n){
+		printf("已啟動蛻變牌： \n");
+		quicksort(P->passive,0,P->passive_n -1);
+		for(int i = 0 ; i < P->passive_n ; i++){
+			card cardtemp1;
+			Card_Define(P->passive[i], &cardtemp1);
+			printf("%d)%s %s\n",i+1,cardtemp1.cardname,cardtemp1.inf);
+		}
+	}
 	if((*P).poison != -1){
 		printf("中毒牌組：%hhd\n",(*P).poison);
 	}
@@ -1340,6 +1386,41 @@ int8_t ending_phase(player *P){
 
 int8_t starting_phase(player *P){
 	check_starting(P,&Player[target(P)]);
+	if(RedHoodHPtemp != Player[target(P)].hp && check_passive(&Player[target(P)],136) !=0){
+					
+					while(1){
+									int choices_R=0;
+									printf(GREEN BOLD"%s"RESET"你可以捨棄至多一張技能牌來將傷害減少X，X為你捨棄的技能牌等級\n",Player[target(P)].charname);
+									printf("0)不捨棄 1)捨棄\n>");
+									scanf("%d",&choices_R);
+									getchar();
+									if(choices_R!= 0 && choices_R!= 1){
+										printf("輸入錯誤！\n");
+									}else if(choices_R == 0){
+										break;
+									}else if(choices_R == 1){
+										
+										int8_t cn = -1;
+										while(cn!=0){
+											printf("請選擇一張你要捨棄的牌(輸入0取消)\n");
+											print_hands(&Player[target(P)]);
+											printf(">");
+											scanf("%hhd",&cn);
+											if(cn == 0)break;
+											if(Player[target(P)].hands_card[cn-1].type == 4){
+												Player[target(P)].hp += Player[target(P)].hands_card[cn-1].level;
+												discard_card_from_hand(&Player[target(P)],cn-1);
+												break;
+											}else{
+												printf("這不是技能牌請重新輸入\n>");
+											}
+											
+										}
+										RedHoodHPtemp = Player[target(P)].hp;
+										break;
+									}
+						}
+	}
 	P->armor = 0;
 	P->end_turn = 0;
 	//TODO : 其他結算
@@ -1658,7 +1739,7 @@ int main(){ //mainfuc
 	initialization_skill_shop(&Player[1]);
 	initialization_deck(&Player[0]);
 	initialization_deck(&Player[1]);	
-
+	
 	print_header();	
 	wait_for_space();
 	
@@ -1671,6 +1752,11 @@ int main(){ //mainfuc
 	int8_t round = 0;
 	int8_t flip_coins=0;
 	flip_coins = rand()%2+1;
+	if(Player[0].character == 0){
+		RedHoodHPtemp = Player[0].hp;
+	}else if(Player[1].character == 0){
+		RedHoodHPtemp = Player[1].hp;
+	}
 	if(flip_coins == 1){
 		//player 1 first
 		if(mode == 1){
@@ -1727,13 +1813,16 @@ int main(){ //mainfuc
 						}
 						Ult_Gain(&Player[target(&Player[0])]);
 						print_game_broad_9();
-						if(round == 1) printf("玩家一先手\n");	
+						if(round == 1){
+							printf("玩家一先手\n");
+							
+						}
 						action_command(&Player[0]);
 						if( Player[0].end_turn == 1) break;
 						
 					}else{
 						if(turn == 1){
-							if(focus(&Player[1])== 1) break;
+							if(focus(&Player[1])== -1) break;
 						}
 						Ult_Gain(&Player[target(&Player[0])]);
 						print_game_broad_9();
