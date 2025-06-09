@@ -21,6 +21,8 @@ void shuffle(vector *v) {
 	}
 }
 
+
+
 int8_t inputcharacter(player *P, int8_t characternum) { //寫入角色資訊
     (*P).character = characternum; 
     (*P).passive_n = 0;
