@@ -72,11 +72,12 @@ typedef struct Player{
 	int16_t passive[7];//蛻變牌 美人魚多一個
 	int16_t starting_size;//持續牌數量
 	int16_t starting[256];//持續牌
-	int8_t combo_basic[256];//搭配持續牌
+	int16_t combo_basic[256];//搭配持續牌
 	int16_t starting_lv[256];//搭配持續牌等級
 	card hands_card[50];
-	int8_t hands_select[50];//手牌選取
-	int8_t Ult_deck[3];
+	int16_t hands_select[50];//手牌選取
+	int16_t Ult_deck[3];
+	int16_t Redhoodsave[3];
 	
 }player;
 
@@ -115,4 +116,4 @@ int8_t print_hands(player *P);
 int8_t initialization_starting(player *P);
 int8_t initialization_deck(player *P);
 int8_t discard_card_from_hand(player *P,int8_t index);
-
+void quicksort(int16_t *arr, int low, int high);
