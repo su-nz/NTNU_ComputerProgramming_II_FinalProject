@@ -51,11 +51,11 @@ int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , i
 		system("clear");
 		
 		card cardtemp1;
-		Card_Define(skillBuyDeck[you->num][0].array[skillBuyDeck[you->num][0].SIZE-1], &cardtemp1);
+		if(skillBuyDeck[P->num][0].SIZE >0)Card_Define(skillBuyDeck[you->num][0].array[skillBuyDeck[you->num][0].SIZE-1], &cardtemp1);
 		card cardtemp2;
-		Card_Define(skillBuyDeck[you->num][1].array[skillBuyDeck[you->num][1].SIZE-1], &cardtemp2);
+		if(skillBuyDeck[P->num][1].SIZE >0)Card_Define(skillBuyDeck[you->num][1].array[skillBuyDeck[you->num][1].SIZE-1], &cardtemp2);
 		card cardtemp3;
-		Card_Define(skillBuyDeck[you->num][2].array[skillBuyDeck[you->num][2].SIZE-1], &cardtemp3);
+		if(skillBuyDeck[P->num][2].SIZE >0)Card_Define(skillBuyDeck[you->num][2].array[skillBuyDeck[you->num][2].SIZE-1], &cardtemp3);
 		
 		printf_skill_shop(you->num);
 		
@@ -75,32 +75,32 @@ int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , i
 							skillBuyDeck[you->num][0].array[skillBuyDeck[you->num][0].SIZE-1] = 0;
 							skillBuyDeck[you->num][0].SIZE--;
 							if(skillBuyDeck[you->num][0].SIZE != 0){
-									Card_Define(skillBuyDeck[you->num][0].array[skillBuyDeck[you->num][0].SIZE-1], &cardtemp1);
+									if(skillBuyDeck[P->num][0].SIZE >0)Card_Define(skillBuyDeck[you->num][0].array[skillBuyDeck[you->num][0].SIZE-1], &cardtemp1);
 								
 								if(cardtemp1.cost == 0){
 									you->passive[you->passive_n] = skillBuyDeck[you->num][0].array[skillBuyDeck[you->num][0].SIZE-1];
 									skillBuyDeck[you->num][0].array[skillBuyDeck[you->num][0].SIZE-1] = 0;
 									skillBuyDeck[you->num][0].SIZE--;
 									you->passive_n++;
-									Card_Define(skillBuyDeck[you->num][0].array[skillBuyDeck[you->num][0].SIZE-1], &cardtemp1);
+									if(skillBuyDeck[P->num][0].SIZE >0)Card_Define(skillBuyDeck[you->num][0].array[skillBuyDeck[you->num][0].SIZE-1], &cardtemp1);
 								}
 							}
 							if(skillBuyDeck[you->num][0].SIZE != 0){
-								Card_Define(skillBuyDeck[you->num][0].array[skillBuyDeck[you->num][0].SIZE-1], &cardtemp1);
+								if(skillBuyDeck[P->num][0].SIZE >0)Card_Define(skillBuyDeck[you->num][0].array[skillBuyDeck[you->num][0].SIZE-1], &cardtemp1);
 								pushbackVector(&you->discard, skillBuyDeck[you->num][0].array[skillBuyDeck[you->num][0].SIZE-1]);
 								skillBuyDeck[you->num][0].array[skillBuyDeck[you->num][0].SIZE-1] = 0;
 								skillBuyDeck[you->num][0].SIZE--;
 							}
 							
 							if(skillBuyDeck[you->num][0].SIZE != 0){
-									Card_Define(skillBuyDeck[you->num][0].array[skillBuyDeck[you->num][0].SIZE-1], &cardtemp1);
+									if(skillBuyDeck[P->num][0].SIZE >0)Card_Define(skillBuyDeck[you->num][0].array[skillBuyDeck[you->num][0].SIZE-1], &cardtemp1);
 								
 								if(cardtemp1.cost == 0){
 									you->passive[you->passive_n] = skillBuyDeck[you->num][0].array[skillBuyDeck[you->num][0].SIZE-1];
 									skillBuyDeck[you->num][0].array[skillBuyDeck[you->num][0].SIZE-1] = 0;
 									skillBuyDeck[you->num][0].SIZE--;
 									you->passive_n++;
-									Card_Define(skillBuyDeck[you->num][0].array[skillBuyDeck[you->num][0].SIZE-1], &cardtemp1);
+									if(skillBuyDeck[P->num][0].SIZE >0)Card_Define(skillBuyDeck[you->num][0].array[skillBuyDeck[you->num][0].SIZE-1], &cardtemp1);
 								}
 							}
 						}
@@ -116,30 +116,30 @@ int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , i
 							skillBuyDeck[you->num][1].array[skillBuyDeck[you->num][1].SIZE-1] = 0;
 							skillBuyDeck[you->num][1].SIZE--;
 							if(skillBuyDeck[you->num][1].SIZE != 0){
-								Card_Define(skillBuyDeck[you->num][1].array[skillBuyDeck[you->num][1].SIZE-1], &cardtemp2);
+								if(skillBuyDeck[P->num][1].SIZE >0)Card_Define(skillBuyDeck[you->num][1].array[skillBuyDeck[you->num][1].SIZE-1], &cardtemp2);
 								if(cardtemp2.cost == 0){
 									you->passive[you->passive_n] = skillBuyDeck[you->num][1].array[skillBuyDeck[you->num][0].SIZE-1];
 									skillBuyDeck[you->num][1].array[skillBuyDeck[you->num][1].SIZE-1] = 0;
 									skillBuyDeck[you->num][1].SIZE--;
 									you->passive_n++;
-									Card_Define(skillBuyDeck[you->num][1].array[skillBuyDeck[you->num][1].SIZE-1], &cardtemp2);
+									if(skillBuyDeck[P->num][1].SIZE >0)Card_Define(skillBuyDeck[you->num][1].array[skillBuyDeck[you->num][1].SIZE-1], &cardtemp2);
 								}
 							}
 							if(skillBuyDeck[you->num][1].SIZE != 0){
-								Card_Define(skillBuyDeck[you->num][1].array[skillBuyDeck[you->num][1].SIZE-1], &cardtemp2);
+								if(skillBuyDeck[P->num][1].SIZE >0)Card_Define(skillBuyDeck[you->num][1].array[skillBuyDeck[you->num][1].SIZE-1], &cardtemp2);
 								pushbackVector(&you->discard, skillBuyDeck[you->num][1].array[skillBuyDeck[you->num][1].SIZE-1]);
 								skillBuyDeck[you->num][1].array[skillBuyDeck[you->num][1].SIZE-1] = 0;
 								skillBuyDeck[you->num][1].SIZE--;
 							}
 							
 							if(skillBuyDeck[you->num][1].SIZE != 0){
-								Card_Define(skillBuyDeck[you->num][1].array[skillBuyDeck[you->num][1].SIZE-1], &cardtemp2);
+								if(skillBuyDeck[P->num][1].SIZE >0)Card_Define(skillBuyDeck[you->num][1].array[skillBuyDeck[you->num][1].SIZE-1], &cardtemp2);
 								if(cardtemp2.cost == 0){
 									you->passive[you->passive_n] = skillBuyDeck[you->num][1].array[skillBuyDeck[you->num][0].SIZE-1];
 									skillBuyDeck[you->num][1].array[skillBuyDeck[you->num][1].SIZE-1] = 0;
 									skillBuyDeck[you->num][1].SIZE--;
 									you->passive_n++;
-									Card_Define(skillBuyDeck[you->num][1].array[skillBuyDeck[you->num][1].SIZE-1], &cardtemp2);
+									if(skillBuyDeck[P->num][1].SIZE >0)Card_Define(skillBuyDeck[you->num][1].array[skillBuyDeck[you->num][1].SIZE-1], &cardtemp2);
 								}
 							}
 						}
@@ -155,30 +155,30 @@ int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , i
 							skillBuyDeck[you->num][2].array[skillBuyDeck[you->num][2].SIZE-1] = 0;
 							skillBuyDeck[you->num][2].SIZE--;
 							if(skillBuyDeck[you->num][2].SIZE != 0){
-								Card_Define(skillBuyDeck[you->num][2].array[skillBuyDeck[you->num][2].SIZE-1], &cardtemp3);
+								if(skillBuyDeck[P->num][2].SIZE >0)Card_Define(skillBuyDeck[you->num][2].array[skillBuyDeck[you->num][2].SIZE-1], &cardtemp3);
 								if(cardtemp3.cost == 0){
 									you->passive[you->passive_n] = skillBuyDeck[you->num][1].array[skillBuyDeck[you->num][0].SIZE-1];
 									skillBuyDeck[you->num][2].array[skillBuyDeck[you->num][2].SIZE-1] = 0;
 									skillBuyDeck[you->num][2].SIZE--;
 									you->passive_n++;
-									Card_Define(skillBuyDeck[you->num][2].array[skillBuyDeck[you->num][2].SIZE-1], &cardtemp2);
+									if(skillBuyDeck[P->num][2].SIZE >0)Card_Define(skillBuyDeck[you->num][2].array[skillBuyDeck[you->num][2].SIZE-1], &cardtemp2);
 								}
 							}
 							if(skillBuyDeck[you->num][2].SIZE != 0){
-								Card_Define(skillBuyDeck[you->num][2].array[skillBuyDeck[you->num][2].SIZE-1], &cardtemp3);
+								if(skillBuyDeck[P->num][2].SIZE >0)Card_Define(skillBuyDeck[you->num][2].array[skillBuyDeck[you->num][2].SIZE-1], &cardtemp3);
 								pushbackVector(&you->discard, skillBuyDeck[you->num][2].array[skillBuyDeck[you->num][2].SIZE-1]);
 								skillBuyDeck[you->num][2].array[skillBuyDeck[you->num][2].SIZE-1] = 0;
 								skillBuyDeck[you->num][2].SIZE--;
 							}
 							
 							if(skillBuyDeck[you->num][2].SIZE != 0){
-								Card_Define(skillBuyDeck[you->num][2].array[skillBuyDeck[you->num][2].SIZE-1], &cardtemp3);
+								if(skillBuyDeck[P->num][2].SIZE >0)Card_Define(skillBuyDeck[you->num][2].array[skillBuyDeck[you->num][2].SIZE-1], &cardtemp3);
 								if(cardtemp3.cost == 0){
 									you->passive[you->passive_n] = skillBuyDeck[you->num][1].array[skillBuyDeck[you->num][0].SIZE-1];
 									skillBuyDeck[you->num][2].array[skillBuyDeck[you->num][2].SIZE-1] = 0;
 									skillBuyDeck[you->num][2].SIZE--;
 									you->passive_n++;
-									Card_Define(skillBuyDeck[you->num][2].array[skillBuyDeck[you->num][2].SIZE-1], &cardtemp2);
+									if(skillBuyDeck[P->num][2].SIZE >0)Card_Define(skillBuyDeck[you->num][2].array[skillBuyDeck[you->num][2].SIZE-1], &cardtemp2);
 								}
 							}
 						}
