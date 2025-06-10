@@ -24,6 +24,7 @@ typedef struct Character{
 }character;
 
 typedef struct Card{
+	int8_t clone ;
 	int8_t remain;
 	int8_t cost;
 	int8_t level;
@@ -38,6 +39,13 @@ typedef struct Card{
 	char * inf;
 	char * cardname;
 }card;
+
+typedef struct RedHoodUlt{
+	int16_t atk;
+	int16_t armor;
+	int16_t cardcode;
+	
+}RU;
 
 typedef struct Player{
 	int8_t end_turn;
@@ -56,10 +64,17 @@ typedef struct Player{
 	int8_t atk_buff;
 	int8_t defend_buff;
 	int8_t speed_buff;
-	
+	int8_t atk_bb1; //basic buff
+	int8_t atk_bb2; //basic buff
+	int8_t atk_bb3; //basic buff
+	int8_t sleep_passive1_cd;
+	int8_t sleep_passive2_cd;
+	int8_t sleep_hp;
 	int8_t poison ;
 	
 	int8_t matches;
+	int8_t sleep_token;
+	int8_t sleep_token_max;
 	int8_t sleep;
 	int8_t alice; //愛麗絲 狀態 -1代表不是愛麗絲
 	int8_t qi; //花木蘭 氣 -1代表不是花木蘭
@@ -78,8 +93,11 @@ typedef struct Player{
 	int16_t hands_select[50];//手牌選取
 	int16_t Ult_deck[3];
 	int16_t Redhoodsave[3];
+	RU RedUlt;
 	
 }player;
+
+
 
 
 
@@ -117,3 +135,7 @@ int8_t initialization_starting(player *P);
 int8_t initialization_deck(player *P);
 int8_t discard_card_from_hand(player *P,int8_t index);
 void quicksort(int16_t *arr, int low, int high);
+int8_t gain_sleeptoken(player *P , int8_t amount);
+int8_t regenerate_hp(player *P,int8_t amount);
+int8_t remove_sleeptoken(player *P , int8_t amount);
+int8_t recv_card_sleep(player *P , int8_t dama);
