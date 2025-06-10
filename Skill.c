@@ -28,6 +28,9 @@ int8_t startingskill(player* you ,player *P,int16_t card_id,int16_t lv ){
 				deal_damage(P,6);
 			}
 		}
+	}else if(card_id == 45){
+		draw_card( 6-you->sleep_hp, you);
+		you->sleep_hp = -2;
 	}
 }
 
@@ -212,7 +215,7 @@ int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , i
 		}
 		*damage_output = 3;
 		for(int i = 0 ; i < times ; i++){
-			if(P->coordinate + way <= Right_MAX  && P->coordinate + way > 0){
+			if(P->coordinate + way <= Right_MAX  && P->coordinate + way > 0 ){
 				P->coordinate += way;
 			}
 		}
@@ -240,6 +243,16 @@ int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , i
 			
 		}
 		
+	}else if(card_id == 44){
+		P->sleep =0;
+		P->sleep_token+=3;
+	}else if(card_id == 45){
+		P->sleep_hp = 6;
+		add_card_to_starting(you,45,0,0);
+	}else if(card_id == 46){
+		P->sleep =1;
+		regenerate_hp(you,you->sleep_token);
+		remove_sleeptoken(you,you->sleep_token);
 	}
 }
 
@@ -339,6 +352,132 @@ int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output ,
 			}
 		}
 		
+	}else if(card_id == 35){
+		int dama=0;
+		while(1){
+			printf("\n請輸入獻祭的血量(0-1)\n>");
+			scanf("%d",&dama);
+			getchar();
+			if(dama >= 0  && dama <= 1){
+				break;
+			}else{
+				printf("你的範圍錯誤\n");
+			}
+		}
+		*damage_output = dama+lv*1;
+		
+	}else if(card_id == 36){
+		int dama=0;
+		while(1){
+			printf("\n請輸入獻祭的血量(0-2)\n>");
+			scanf("%d",&dama);
+			getchar();
+			if(dama >= 0  && dama <= 2){
+				break;
+			}else{
+				printf("你的範圍錯誤\n");
+			}
+		}
+		*damage_output = dama+lv*2;
+		
+	}else if(card_id == 37){
+		int dama=0;
+		while(1){
+			printf("\n請輸入獻祭的血量(0-3)\n>");
+			scanf("%d",&dama);
+			getchar();
+			if(dama >= 0  && dama <= 3){
+				break;
+			}else{
+				printf("你的範圍錯誤\n");
+			}
+		}
+		*damage_output = dama+lv*3;
+		
+	}else if(card_id == 38){
+		you-> atk_bb1 += lv;
+		int dama=0;
+		if(you->sleep == 0){
+			while(1){
+				printf("\n請輸入要使用的沉睡Token數量(0-3)\n>");
+				scanf("%d",&dama);
+				getchar();
+				if(dama >= 0  && dama <= 3 && you->sleep_token >= dama){
+					remove_sleeptoken(you,dama);
+					you-> atk_bb1 += dama;
+					break;
+				}else if(you->sleep_token < dama){
+					printf("你沒有足夠的Token\n");
+				}else {
+					printf("你的範圍錯誤\n");
+				}
+			}
+		}
+		
+		
+		
+	}else if(card_id == 39){
+		you-> atk_bb2 += lv;
+		int dama=0;
+		if(you->sleep == 0){
+			while(1){
+				printf("\n請輸入要使用的沉睡Token數量(0-3)\n>");
+				scanf("%d",&dama);
+				getchar();
+				if(dama >= 0  && dama <= 3 && you->sleep_token >= dama){
+					remove_sleeptoken(you,dama);
+					you-> atk_bb2 += dama;
+					break;
+				}else if(you->sleep_token < dama){
+					printf("你沒有足夠的Token\n");
+				}else {
+					printf("你的範圍錯誤\n");
+				}
+			}
+		}
+	}else if(card_id == 40){
+		you-> atk_bb3 += lv;
+		int dama=0;
+		if(you->sleep == 0){
+			while(1){
+				printf("\n請輸入要使用的沉睡Token數量(0-3)\n>");
+				scanf("%d",&dama);
+				getchar();
+				if(dama >= 0  && dama <= 3 && you->sleep_token >= dama){
+					remove_sleeptoken(you,dama);
+					you-> atk_bb3 += dama;
+					break;
+				}else if(you->sleep_token < dama){
+					printf("你沒有足夠的Token\n");
+				}else {
+					printf("你的範圍錯誤\n");
+				}
+			}
+		}
+	}else if(card_id == 41 || card_id == 42 || card_id == 43 ){
+		int dama=0;
+		if(you->sleep == 0){
+			while(1){
+				printf("\n請輸入要使用的沉睡Token數量(0-3)\n>");
+				scanf("%d",&dama);
+				getchar();
+				if(dama >= 0  && dama <= 3 && you->sleep_token >= dama){
+					remove_sleeptoken(you,dama);
+					you-> atk_bb3 += dama;
+					break;
+				}else if(you->sleep_token < dama){
+					printf("你沒有足夠的Token\n");
+				}else {
+					printf("你的範圍錯誤\n");
+				}
+			}
+		}
+		*damage_output = lv + dama;
+		for(int i = 0 ; i < lv ; i++){
+			if(P->coordinate - way <= Right_MAX  && P->coordinate - way > 0 && P->coordinate - way != you->coordinate - way){
+				P->coordinate -= way;
+			}
+		}
 	}
 	return 0;
 }
