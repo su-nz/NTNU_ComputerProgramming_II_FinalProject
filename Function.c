@@ -24,14 +24,20 @@ void shuffle(vector *v) {
 
 
 int8_t inputcharacter(player *P, int8_t characternum) { //寫入角色資訊
-    (*P).character = characternum; 
-    (*P).passive_n = 0;
-    (*P).atk_buff = 0;
-    (*P).defend_buff = 0;
-    (*P).speed_buff = 0;
+	(*P).character = characternum; 
+	(*P).passive_n = 0;
+	(*P).atk_buff = 0;
+	(*P).defend_buff = 0;
+	(*P).speed_buff = 0;
+    	(*P).sleep_token_max =-1;
+    	(*P).sleep_token = -1;
 	(*P).poison= -1;
 	(*P).matches= -1;
 	(*P).sleep = -1;
+	P->atk_bb1=0;
+	P->atk_bb2=0;
+	P->atk_bb3=0;
+	P->sleep_hp=-1;
 	(*P).alice=-1; //愛麗絲 狀態 -1代表不是愛麗絲
 	(*P).qi=-1; //花木蘭 氣 -1代表不是花木蘭
 	(*P).combo=-1; //桃樂絲 連擊 -1代表不是桃樂絲
@@ -59,6 +65,11 @@ int8_t inputcharacter(player *P, int8_t characternum) { //寫入角色資訊
             (*P).Maxarmor = 6;
             (*P).Ult_threshold = 21;
             (*P).sleep = 1;
+            (*P).sleep_token = 0;
+            (*P).sleep_token_max = 6;
+            P->sleep_hp=-2;
+            (*P).sleep_passive1_cd = 0;
+            (*P).sleep_passive2_cd = 0;
             break;
 
         case 3: // 愛麗絲
@@ -131,6 +142,49 @@ int8_t inputcharacter(player *P, int8_t characternum) { //寫入角色資訊
 }
 
 
+int8_t recv_card_sleep(player *P , int8_t dama){
+	if(dama<2) return 0;
+	while(1){
+		system("clear");
+		print_discard(P);
+		printf("你可以從棄牌堆拿：\n");
+		if(dama >=2){
+			printf("Lv1的攻擊牌\n");
+		}
+		if(dama >=4){
+			printf("Lv2的攻擊牌\n");
+		}
+		if(dama >=6){
+			printf("Lv3的攻擊牌\n");
+		}
+		int8_t cc=-1;
+		printf("請問你要拿哪一牌？\n");
+		printf("輸入數字：");//TODO: wrong input
+		scanf("%hhd",&cc);
+		if(cc > P->discard.SIZE || cc < 0){
+			printf("沒有這張卡！\n");
+			break;
+		}else if(P->discard.array[cc] == 1 && dama >=2){
+			eraseVector(&P->discard, cc);
+			Card_Define(1 , &P->hands_card[P->hands]);
+			P->hands++;
+			break;
+		}else if(P->discard.array[cc] == 2 && dama >=4){
+			eraseVector(&P->discard, cc);
+			Card_Define(2 , &P->hands_card[P->hands]);
+			P->hands++;
+			break;
+		}else if(P->discard.array[cc] == 3 && dama >=6){
+			eraseVector(&P->discard, cc);
+			Card_Define(3 , &P->hands_card[P->hands]);
+			P->hands++;
+			break;
+		}else{
+			printf("你不能選那張卡！");
+		}
+	}
+	return 0;
+}
 
 // 交換兩個 int16_t 整數的函式
 void swap(int16_t *a, int16_t *b) {
@@ -201,6 +255,41 @@ int8_t draw_card(int8_t amount , player *P){
 	return 0;
 }
 
+
+int8_t gain_sleeptoken(player *P , int8_t amount){
+	for(int i = 0 ; i < amount ; i++){
+		if(P->sleep_token < P->sleep_token_max){
+			P->sleep_token++;
+		}
+	}
+	if(P->sleep_token >= 6 ) P->sleep = 0;
+}
+
+int8_t remove_sleeptoken(player *P , int8_t amount){
+	for(int i = 0 ; i < amount ; i++){
+		if(P->sleep_token > 0){
+			P->sleep_token--;
+		}
+	}
+	if(P->sleep_token == 0) P->sleep = 1;
+}
+
+int8_t remove_hp(player *P , int8_t damage){
+	for(int i = 0 ; i < damage ; i++){
+		if(P->hp > 0){
+			P->hp--;
+		}
+	}
+}
+
+int8_t regenerate_hp(player *P,int8_t amount){
+	for(int i = 0 ; i < amount ; i++){
+		if(P->hp < P->Maxhp){
+			P->hp++;
+		}
+	}
+}
+
 int8_t print_discard(player *P){
 	system("clear");
 	printf("%s的棄牌堆：\n",P->charname);
@@ -236,7 +325,7 @@ int8_t check_starting(player *P,player *Enemy){
 int8_t initialization_starting(player *P){
 	while(P->starting_size != 0){
 		pushbackVector(&P->discard, P->starting[P->starting_size-1]);
-		pushbackVector(&P->discard, P->combo_basic[P->starting_size-1]);
+		if( P->combo_basic[P->starting_size-1] != 0) pushbackVector(&P->discard, P->combo_basic[P->starting_size-1]);
 		P->combo_basic[P->starting_size-1] = 0;
 		P->starting_lv[P->starting_size-1] = 0;
 		P->starting[P->starting_size-1] = 0;
