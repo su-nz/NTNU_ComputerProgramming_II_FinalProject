@@ -157,6 +157,33 @@ int8_t initialization_skill_shop(player *P){
 			    skillBuyDeck[P->num][2].array[i] = temp6[i];
 			}
 			break;
+			
+			P->Ult_deck[0] = 32;
+			P->Ult_deck[1] = 33;
+			P->Ult_deck[2] = 34;
+		}
+		
+		case 2:
+		{
+			int temp7[] = {146,37,37,37,143,36,36,35};
+			for (int i = 0; i < 8; ++i) {
+			    skillBuyDeck[P->num][0].array[i] = temp7[i];
+			}
+
+			int temp8[] = {146,40,40,40,144,39,39,38};
+			for (int i = 0; i < 8; ++i) {
+			    skillBuyDeck[P->num][1].array[i] = temp8[i];
+			}
+
+			int temp9[] = {146,43,43,43,145,42,42,41};
+			for (int i = 0; i < 8; ++i) {
+			    skillBuyDeck[P->num][2].array[i] = temp9[i];
+			}
+			
+			P->Ult_deck[0] = 44;
+			P->Ult_deck[1] = 45;
+			P->Ult_deck[2] = 46;
+			break;
 		}
 		case 4:
 		{
@@ -258,6 +285,17 @@ int8_t skill_shop_command(player *P){
 	int8_t ssc =-1;
 	printf_skill_shop(P->num);
 	while(1){
+		if(check_passive(P , 146) != 0){
+				 regenerate_hp(P,5);
+				 quicksort(P->passive,0,P->passive_n -1);
+					for(int i = 0 ; i < P->passive_n ; i++){
+						if(P->passive[i]==146){
+							P->passive[i] = 0;
+							P->passive_n--;
+						}
+					}
+				 
+		}
 		printf("請輸入你要做什麼？\n");
 		printf("1. 升級技能\n");
 		printf("2. 退出商店\n");
@@ -726,12 +764,19 @@ int8_t target(player *you){
 
 
 int8_t deal_damage(player *P , int8_t damage){
+		int gap = damage - P->armor;
+		if(gap > 0 && check_passive(&Player[target(P)] , 144) != 0 && Player[target(P)].sleep_passive2_cd == 0){
+			Player[target(P)].sleep_passive2_cd = 1;
+			recv_card_sleep(&Player[target(P)],gap);
+		}
 		for(int i = 0 ; i < damage ; i++){
 			if(P->armor > 0){
 				P->armor--;
 			}else if(P->armor == 0){
 				if(P->hp > 0){
 					P->hp--;
+					if(P->sleep == 1) gain_sleeptoken(P, 1 );
+					if(P->sleep_hp >0) P->sleep_hp--;
 				}
 			}
 		}
@@ -739,10 +784,12 @@ int8_t deal_damage(player *P , int8_t damage){
 }
 
 int8_t gain_armor(player *P , int8_t def){
-	P->armor += def;
-	if(P->armor > P-> Maxarmor)	{
-		def -= (P-> Maxarmor - P-> armor);
-		P-> armor = P-> Maxarmor;
+	if(P->sleep != 0){
+		P->armor += def;
+		if(P->armor > P-> Maxarmor)	{
+			def -= (P-> Maxarmor - P-> armor);
+			P-> armor = P-> Maxarmor;
+		}
 	}
 }
 
@@ -779,9 +826,42 @@ int8_t play_a_card(player *P){
 				int power_generate =0;
 				if(range_counter(P,&Player[target(P)],1) == 1){
 					printf("請選擇所有你想打出的攻擊牌，選擇完後請輸入0\n");
+					
+					
 					int8_t cn = -1;
 					while(cn!=0){
+						if(check_passive(P , 143) != 0 && P->sleep_passive1_cd == 0)printf("你可以獻祭2/4/6點生命來視作你打出一張 Lv1/Lv2/Lv3的進攻牌（不能因此獲得能量），輸入-2/-4/-6即可\n");
 						scanf("%hhd",&cn);
+						if(check_passive(P , 143) != 0 && P->sleep_passive1_cd == 0){
+							if(cn == -2 && P->hp >2){
+								P->hp-=2;
+								atk += 1 + P->atk_buff;
+								system("clear");
+								print_game_broad_9();
+								print_hands(P);
+								P->sleep_passive1_cd = 1;
+								printf("請選擇所有你想打出的攻擊牌，選擇完後請輸入0\n");
+								continue;
+							}else if(cn == -4 && P->hp > 4){
+								P->hp-=4;
+								atk += 2 + P->atk_buff;
+								system("clear");
+								print_game_broad_9();
+								print_hands(P);
+								P->sleep_passive1_cd = 1;
+								printf("請選擇所有你想打出的攻擊牌，選擇完後請輸入0\n");
+								continue;
+							}else if(cn == -6 && P->hp > 6){
+								P->hp-=6;
+								atk += 3 + P->atk_buff;
+								system("clear");
+								print_game_broad_9();
+								print_hands(P);
+								P->sleep_passive1_cd = 1;
+								printf("請選擇所有你想打出的攻擊牌，選擇完後請輸入0\n");
+								continue;
+							}
+						}
 						if(cn == 0)break;
 						if(P->hands_card[cn-1].type == 0 || P->hands_card[cn-1].type == 3){
 							atk += P->hands_card[cn-1].value + P->atk_buff;
@@ -790,6 +870,7 @@ int8_t play_a_card(player *P){
 							system("clear");
 							print_game_broad_9();
 							print_hands(P);
+							
 							printf("請選擇所有你想打出的攻擊牌，選擇完後請輸入0\n");
 							
 						}else{
@@ -798,7 +879,17 @@ int8_t play_a_card(player *P){
 						
 					}
 				P->power += power_generate;
+				if(P->atk_bb1 !=0){
+					atk +=1;
+				}
+				if(P->atk_bb2 !=0){
+					atk +=2;
+				}
+				if(P->atk_bb3 !=0){
+					atk +=3;
+				}
 				deal_damage(&Player[target(P)] , atk);
+				
 				
 				printf("你對對手造成了\033[1;31m%hhd\033[0m點傷害\n",atk);
 				return 0;
@@ -814,7 +905,38 @@ int8_t play_a_card(player *P){
 			printf("請選擇所有你想打出的防禦牌，選擇完後請輸入0\n>");
 			int8_t cn = -1;
 			while(cn!=0){
-				scanf("%hhd",&cn);
+				if(check_passive(P , 143) != 0 && P->sleep_passive1_cd == 0)printf("你可以獻祭2/4/6點生命來視作你打出一張 Lv1/Lv2/Lv3的防禦牌（不能因此獲得能量），輸入-2/-4/-6即可\n");
+						scanf("%hhd",&cn);
+						if(check_passive(P , 143) != 0 && P->sleep_passive1_cd == 0){
+							if(cn == -2 && P->hp >2){
+								P->hp-=2;
+								def += 1 + P->defend_buff;
+								system("clear");
+								print_game_broad_9();
+								print_hands(P);
+								P->sleep_passive1_cd = 1;
+								printf("請選擇所有你想打出的防禦牌，選擇完後請輸入0\n");
+								continue;
+							}else if(cn == -4 && P->hp > 4){
+								P->hp-=4;
+								def += 2 + P->defend_buff;
+								system("clear");
+								print_game_broad_9();
+								print_hands(P);
+								P->sleep_passive1_cd = 1;
+								printf("請選擇所有你想打出的防禦牌，選擇完後請輸入0\n");
+								continue;
+							}else if(cn == -6 && P->hp > 6){
+								P->hp-=6;
+								def += 3 + P->defend_buff;
+								system("clear");
+								print_game_broad_9();
+								print_hands(P);
+								P->sleep_passive1_cd = 1;
+								printf("請選擇所有你想打出的防禦牌，選擇完後請輸入0\n");
+								continue;
+							}
+						}
 				if(cn == 0)break;
 				if(P->hands_card[cn-1].type == 1 || P->hands_card[cn-1].type == 3){
 					def += P->hands_card[cn-1].value + P->defend_buff;
@@ -830,8 +952,10 @@ int8_t play_a_card(player *P){
 					}
 				
 			}	
-			gain_armor(P , def);
+			if(P->sleep != 0) gain_armor(P , def);
 			P->power += power_generate;
+			
+			
 			
 			
 			printf("你獲得了\033[1;31m%hhd\033[0m個盾\n",def);
@@ -844,7 +968,38 @@ int8_t play_a_card(player *P){
 			printf("請選擇所有你想打出的移動牌，選擇完後請輸入0\n>");
 			int8_t cn = -1;
 			while(cn!=0){
-				scanf("%hhd",&cn);
+				if(check_passive(P , 143) != 0 && P->sleep_passive1_cd == 0)printf("你可以獻祭2/4/6點生命來視作你打出一張 Lv1/Lv2/Lv3的移動牌（不能因此獲得能量），輸入-2/-4/-6即可\n");
+						scanf("%hhd",&cn);
+						if(check_passive(P , 143) != 0 && P->sleep_passive1_cd == 0){
+							if(cn == -2 && P->hp >2){
+								P->hp-=2;
+								move += 1 + P->speed_buff;
+								system("clear");
+								print_game_broad_9();
+								print_hands(P);
+								P->sleep_passive1_cd = 1;
+								printf("請選擇所有你想打出的移動牌，選擇完後請輸入0\n");
+								continue;
+							}else if(cn == -4 && P->hp > 4){
+								P->hp-=4;
+								move += 2 + P->speed_buff;
+								system("clear");
+								print_game_broad_9();
+								print_hands(P);
+								P->sleep_passive1_cd = 1;
+								printf("請選擇所有你想打出的移動牌，選擇完後請輸入0\n");
+								continue;
+							}else if(cn == -6 && P->hp > 6){
+								P->hp-=6;
+								move += 3 + P->speed_buff;
+								system("clear");
+								print_game_broad_9();
+								print_hands(P);
+								P->sleep_passive1_cd = 1;
+								printf("請選擇所有你想打出的移動牌，選擇完後請輸入0\n");
+								continue;
+							}
+						}
 				if(cn == 0)break;
 				if(P->hands_card[cn-1].type == 2 || P->hands_card[cn-1].type == 3){
 					move += P->hands_card[cn-1].value + P->speed_buff;
@@ -906,6 +1061,8 @@ int8_t play_a_card(player *P){
 			int8_t levels = -1;
 			int8_t cn = -1;
 			int8_t atk = 0;
+			int8_t sleepbasic=-1;
+			int8_t lv=-1;
 			while(cn!=0){
 				printf("請問你要打哪一張技能牌？(輸入0返回)\n");
 				printf(">");
@@ -919,11 +1076,65 @@ int8_t play_a_card(player *P){
 				}else if(P->hands_card[cn-1].require_basic_card == 2){
 					printf("你要搭配哪一張基礎移動卡？\n>");
 				}
-				while(scanf("%hhd",&combo_card)!=1){
+				if(check_passive(P , 143) != 0 && P->sleep_passive1_cd == 0)printf("你可以獻祭2/4/6點生命來視作你打出一張 Lv1/Lv2/Lv3的基礎牌（不能因此獲得能量），輸入-2/-4/-6即可\n");
+						
+						
+				while(1){
+					scanf("%hhd",&combo_card);
+					if(combo_card>=1 && combo_card <=P->hands) break;
+					if(check_passive(P , 143) != 0 && P->sleep_passive1_cd == 0){
+							if(cn == -2 && P->hp >2){
+								P->hp-=2;
+								
+								if(P->hands_card[cn-1].require_basic_card == 0){
+									sleepbasic =1;
+									lv=1;
+								}else if(P->hands_card[cn-1].require_basic_card == 1){
+									sleepbasic =4;
+									lv=1;
+								}else if(P->hands_card[cn-1].require_basic_card == 2){
+									sleepbasic =7;
+									lv=1;
+								}
+								P->sleep_passive1_cd = 1;
+								break;
+							}else if(cn == -4 && P->hp > 4){
+								P->hp-=4;
+								if(P->hands_card[cn-1].require_basic_card == 0){
+									sleepbasic =2;
+										lv=2;
+								}else if(P->hands_card[cn-1].require_basic_card == 1){
+									sleepbasic =5;
+									lv=2;
+								}else if(P->hands_card[cn-1].require_basic_card == 2){
+									sleepbasic =8;
+									lv=2;
+								}
+								
+								P->sleep_passive1_cd = 1;
+								break;
+							}else if(cn == -6 && P->hp > 6){
+								P->hp-=6;
+								if(P->hands_card[cn-1].require_basic_card == 0){
+									sleepbasic =3;
+									lv=3;
+								}else if(P->hands_card[cn-1].require_basic_card == 1){
+									sleepbasic =6;
+									lv=3;
+								}else if(P->hands_card[cn-1].require_basic_card == 2){
+									sleepbasic =9;
+								  lv=3;
+								}
+								
+								P->sleep_passive1_cd = 1;
+								break;
+							}
+						}
+					
 					getchar();
 					printf("invalid input");
 				}
-				if(P->hands_card[combo_card-1].type == P->hands_card[cn-1].require_basic_card ){
+				if(P->hands_card[combo_card-1].type == P->hands_card[cn-1].require_basic_card && sleepbasic ==-1){
 				int rr=0;
 					if(check_passive(P , 137) != 0){
 								while(1){
@@ -961,7 +1172,7 @@ int8_t play_a_card(player *P){
 					if(range_counter(P,&Player[target(P)],P->hands_card[cn-1].range-rr) == 1 || P->hands_card[cn-1].range == 0){
 						use_skill(P,&Player[target(P)], P->hands_card[cn-1].cardcode , &damage_deal , &armor_get , P->hands_card[combo_card-1].level , P->hands_card[combo_card-1].cardcode , mode);
 						
-						if(P->hands_card[combo_card-1].type == 0 || P->hands_card[combo_card-1].type == 2){
+						if(P->hands_card[combo_card-1].require_basic_card == 0 || P->hands_card[combo_card-1].require_basic_card == 2){
 							if(check_passive(P , 135) != 0){
 								while(1){
 									int choices_R=0;
@@ -997,8 +1208,13 @@ int8_t play_a_card(player *P){
 						}
 						
 						deal_damage(&Player[target(P)], damage_deal+atk+ P->atk_buff);
-						gain_armor(P , armor_get+ P->defend_buff);
 						
+						if(P->sleep != 0) gain_armor(P , armor_get+ P->defend_buff);
+						
+						if(check_passive(&Player[target(P)],145) !=0 && P->hands_card[cn-1].require_basic_card ==3 ){
+							gain_armor(P , P->hands_card[cn-1].level);
+							
+						}
 						
 						if(P->hands_card[cn-1].remain ==1){
 							if(cn-1 > combo_card -1){
@@ -1048,6 +1264,41 @@ int8_t play_a_card(player *P){
 						
 					}
 							
+				}else if(sleepbasic >=1 && sleepbasic <=3){
+					int rr=0;
+					if(range_counter(P,&Player[target(P)],P->hands_card[cn-1].range-rr) == 1 || P->hands_card[cn-1].range == 0){
+						use_skill(P,&Player[target(P)], P->hands_card[cn-1].cardcode , &damage_deal , &armor_get , lv , sleepbasic  , mode);
+						
+						deal_damage(&Player[target(P)], damage_deal+atk+ P->atk_buff);
+						
+						if(P->sleep != 0) gain_armor(P , armor_get+ P->defend_buff);
+						
+						if(check_passive(&Player[target(P)],145) !=0 && P->hands_card[cn-1].require_basic_card ==3 ){
+							gain_armor(P , P->hands_card[cn-1].level);
+							
+						}
+						
+						if(P->hands_card[cn-1].remain ==1){
+								Card_Define(0 , &(*P).hands_card[cn-1]);
+								for (int8_t i = cn-1; i < (*P).hands - 1; i++) {
+									Card_Define(0, &(*P).hands_card[i]);
+									Card_Define((*P).hands_card[i + 1].cardcode , &(*P).hands_card[i]);
+								}
+								(*P).hands--;
+								
+								
+							
+						}else{
+							
+								discard_card_from_hand(P,cn-1); // 4 5
+							
+						}
+						return 0;
+						
+					}else{
+						printf("對手不在你的攻擊範圍！\n");
+						
+					}
 				}else{
 					printf("你所選擇的卡片並不能搭配這張卡！\n");
 					
@@ -1225,9 +1476,6 @@ int8_t action_command(player *P){
 	getchar();
 	switch(comm){
 		
-		
-            	
-            	
             	case 1:  // 購買基礎牌
 			if(basic_shop_command(P)!=0)return -1;
 			
@@ -1356,6 +1604,9 @@ void print_extra_inf(player *P){
 	}
 	if((*P).matches!= -1){
 		printf("火柴牌組：%hhd\n",(*P).matches);
+	}
+	if((*P).sleep_token != -1){
+		printf("覺醒TOKEN⬖ ：%hhd\n",(*P).sleep_token);
 	}
 	if((*P).sleep != -1){
 		if((*P).sleep == 1){ //沉睡
@@ -1567,11 +1818,19 @@ int8_t ending_phase(player *P){
 	P->power = 0;
 	discard_all_hands(P);
 	draw_card(6,P);
+	P->atk_buff = 0;
+	P->defend_buff = 0;
+	P->speed_buff = 0;
+	P->atk_bb1 = 0;
+	P->atk_bb2 = 0;
+	P->atk_bb3 = 0;
 	
 	return 0;
 }
 
 int8_t starting_phase(player *P){
+	P->sleep_passive1_cd = 0;
+	P->sleep_passive2_cd = 0;
 	check_starting(P,&Player[target(P)]);
 	if(RedHoodHPtemp != Player[target(P)].hp && check_passive(&Player[target(P)],136) !=0){
 					
