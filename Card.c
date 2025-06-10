@@ -4,6 +4,7 @@ int16_t Card_Define(int16_t CardID , card *C){
 	//初始化
 	
 	(*C).cardname = " ";
+	(*C).clone = 0;
 	(*C).cost = 0;
 	(*C).level = 0;
 	(*C).range = 0; //for attack 0 means its doesn't need range
@@ -335,7 +336,7 @@ int16_t Card_Define(int16_t CardID , card *C){
 		(*C).value = 0;
 		(*C).require_basic_card = 0;
 		(*C).cardcode = CardID;
-		(*C).inf = "當你使用一個移動技能或是攻擊技能時\n可以捨棄至多一張技能牌來獲得傷害X\nX為你捨棄的技能牌等級";
+		(*C).inf = "當你使用一個移動技能或是攻擊技能時，可以捨棄至多一張技能牌來獲得傷害X，X為你捨棄的技能牌等級";
 	}
 	if(CardID == 136){ //兜帽系統
 		(*C).cardname = "兜帽系統";
@@ -347,7 +348,7 @@ int16_t Card_Define(int16_t CardID , card *C){
 		(*C).value = 0;
 		(*C).require_basic_card = 0;
 		(*C).cardcode = CardID;
-		(*C).inf = "每當對手對你造成傷害時\n可以捨棄至多一張技能牌來將傷害減少X\nX為你捨棄的技能牌等級";
+		(*C).inf = "每當對手對你造成傷害時，可以捨棄至多一張技能牌來將傷害減少X，X為你捨棄的技能牌等級";
 	}
 	if(CardID == 137){ //變異感應
 	    (*C).cardname = "變異感應";
@@ -575,10 +576,440 @@ int16_t Card_Define(int16_t CardID , card *C){
 	
 
 	//睡美人_技能牌-----------------------------------------------------------------
+	if(CardID == 35){
+	    (*C).cardname = "心靈震顫";
+	    (*C).cost = 0;
+	    (*C).level = 1;
+	    (*C).range = 1;
+	    (*C).type = 4;
+	    (*C).power_generate = 0;
+	    (*C).damage = 1;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "射程1 傷害O 你可以同時對自己造成X點傷害來獲得傷害+X，X至多為1";
+	}
+	if(CardID == 36){
+	    (*C).cardname = "心靈之怒";
+	    (*C).cost = 2;
+	    (*C).level = 2;
+	    (*C).range = 1;
+	    (*C).type = 4;
+	    (*C).power_generate = 0;
+	    (*C).damage = 2;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "射程1 傷害2×O 你可以同時對自己造成X點傷害來獲得傷害+X，X至多為2";
+	}
+	if(CardID == 37){
+	    (*C).cardname = "心靈狂怒";
+	    (*C).cost = 4;
+	    (*C).level = 3;
+	    (*C).range = 1;
+	    (*C).type = 4;
+	    (*C).power_generate = 0;
+	    (*C).damage = 3;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "射程1 傷害3×O 你可以同時對自己造成X點傷害來獲得傷害+X，X至多為3";
+	}
+	
+	if(CardID == 38){
+	    (*C).cardname = "爆裂之鎖";
+	    (*C).cost = 0;
+	    (*C).level = 1;
+	    (*C).range = 0;
+	    (*C).type = 4;
+	    (*C).power_generate = 0;
+	    (*C).damage = 0;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 1;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "直到本回合結束之前，接下來的O＋⬖次攻擊行動每一次都會獲得傷害+1，這些行動不需要連續使用";
+	}
+	if(CardID == 39){
+	    (*C).cardname = "爆裂之骨";
+	    (*C).cost = 2;
+	    (*C).level = 2;
+	    (*C).range = 0;
+	    (*C).type = 4;
+	    (*C).power_generate = 0;
+	    (*C).damage = 1;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 1;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "直到本回合結束之前，接下來的O＋⬖次攻擊行動每一次都會獲得傷害+2，這些行動不需要連續使用";
+	}
+	if(CardID == 40){
+	    (*C).cardname = "爆裂之魂";
+	    (*C).cost = 4;
+	    (*C).level = 3;
+	    (*C).range = 0;
+	    (*C).type = 1;
+	    (*C).power_generate = 0;
+	    (*C).damage = 2;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 1;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "直到本回合結束之前，接下來的O＋⬖次攻擊行動每一次都會獲得傷害+3，這些行動不需要連續使用";
+	}
+	
+	if(CardID == 41){
+	    (*C).cardname = "黑暗碰觸";
+	    (*C).cost = 0;
+	    (*C).level = 1;
+	    (*C).range = 2;
+	    (*C).type = 4;
+	    (*C).power_generate = 0;
+	    (*C).damage = 3;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 1;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "射程2 傷害 O+⬖ 將對手向你的方向移動O格（不算對手的移動行動、不能將他穿過你）";
+	}
+	if(CardID == 42){
+	    (*C).cardname = "黑暗糾纏";
+	    (*C).cost = 2;
+	    (*C).level = 2;
+	    (*C).range = 3;
+	    (*C).type = 4;
+	    (*C).power_generate = 0;
+	    (*C).damage = 0;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 1;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "射程3 傷害 O+⬖ 將對手向你的方向移動O格（不算對手的移動行動、不能將他穿過你）";
+	}
+	if(CardID == 43){
+	    (*C).cardname = "黑暗絞殺";
+	    (*C).cost = 4;
+	    (*C).level = 3;
+	    (*C).range = 4;
+	    (*C).type = 4;
+	    (*C).power_generate = 0;
+	    (*C).damage = 0;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 1;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "射程4 傷害 O+⬖ 將對手向你的方向移動O格（不算對手的移動行動、不能將他穿過你）";
+	}
+
+
+
 	//必殺技
+	
+	if(CardID == 44){
+	    (*C).cardname = "喚醒沉睡";
+	    (*C).cost = 0;
+	    (*C).level = 0;
+	    (*C).range = 0;
+	    (*C).type = 5;
+	    (*C).power_generate = 0;
+	    (*C).damage = 0;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "無論處於哪一種狀態，立即獲得3個覺醒TOKEN（忽略上限值6），如果仍然處於沉睡狀態，你可以立即進入覺醒狀態";
+	}
+	if(CardID == 45){
+	    (*C).cardname = "白日夢魘";
+	    (*C).cost = 0;
+	    (*C).level = 0;
+	    (*C).range = 0;
+	    (*C).type = 5;
+	    (*C).power_generate = 0;
+	    (*C).damage = 0;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).remain = 1;
+	    (*C).inf = "持續：直到下個回合開始，每當你的生命因承受傷害（非失去生命）而減少時，抽取生命減少數量相同的牌（至多六張）";
+	}
+	if(CardID == 46){
+	    (*C).cardname = "血脈重鑄";
+	    (*C).cost = 0;
+	    (*C).level = 0;
+	    (*C).range = 0;
+	    (*C).type = 5;
+	    (*C).power_generate = 0;
+	    (*C).damage = 0;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "無論處於哪一種狀態，花費所有的覺醒TOKEN，每花費一個覺醒TOKEN恢復1點生命";
+	}
+
 	//蛻變牌
+	if(CardID == 143){
+	    (*C).cardname = "放血療法";
+	    (*C).cost = 0;
+	    (*C).level = 0;
+	    (*C).range = 0;
+	    (*C).type = 6;
+	    (*C).power_generate = 0;
+	    (*C).damage = 0;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "每回合限一次，當你需要為一個行動或技能打出一張基本牌時，你可以選擇失去2/4/6點生命，將其視作你打出一張 Lv1/Lv2/Lv3 的基本牌（不能因此獲得能量）";
+	}
+	if(CardID == 144){
+	    (*C).cardname = "血祭之禮";
+	    (*C).cost = 0;
+	    (*C).level = 0;
+	    (*C).range = 0;
+	    (*C).type = 6;
+	    (*C).power_generate = 0;
+	    (*C).damage = 0;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "每回合限一次，當你對對手造成至少2/4/6點傷害時，你可以將棄牌堆中一張等級不超過 Lv1/Lv2/Lv3 的攻擊牌（不能是通用牌）加入你的手牌";
+	}
+	if(CardID == 145){
+	    (*C).cardname = "精神屏障";
+	    (*C).cost = 0;
+	    (*C).level = 0;
+	    (*C).range = 0;
+	    (*C).type = 6;
+	    (*C).power_generate = 0;
+	    (*C).damage = 0;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "當你使用一個移動技能時，你可以同時獲得X點防禦，X等於這個技能的等級";
+	}
+	if(CardID == 146){
+	    (*C).cardname = "強制治療";
+	    (*C).cost = 0;
+	    (*C).level = 0;
+	    (*C).range = 0;
+	    (*C).type = 5;
+	    (*C).power_generate = 0;
+	    (*C).damage = 0;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "立即恢復5點生命，移除此牌";
+	}
+
 
 	//愛麗絲_技能牌-----------------------------------------------------------------
+	if(CardID == 47){
+	    (*C).cardname = "開啟牌局";
+	    (*C).cost = 0;
+	    (*C).level = 1;
+	    (*C).range = 1;
+	    (*C).type = 4;
+	    (*C).power_generate = 0;
+	    (*C).damage = 1;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "射程1 傷害1，對手展示3張基本牌，每有一張他不能或不願意展示你獲得傷害+O，你可以選擇一張展示的牌從基礎供應牌庫獲得相同牌放入棄牌堆，之後你的身份可以變為紅心皇后";
+	}
+	if(CardID == 48){
+	    (*C).cardname = "扭轉牌局";
+	    (*C).cost = 2;
+	    (*C).level = 2;
+	    (*C).range = 2;
+	    (*C).type = 4;
+	    (*C).power_generate = 0;
+	    (*C).damage = 2;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "射程2 傷害2，對手展示4張基本牌，每有一張他不能或不願意展示你獲得傷害+O，你可以選擇一張展示的牌從基礎供應牌庫獲得相同牌放入棄牌堆，之後你的身份可以變為紅心皇后";
+	}
+	if(CardID == 49){
+	    (*C).cardname = "操控牌局";
+	    (*C).cost = 4;
+	    (*C).level = 3;
+	    (*C).range = 3;
+	    (*C).type = 4;
+	    (*C).power_generate = 0;
+	    (*C).damage = 3;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "射程3 傷害3，對手展示5張基本牌，每有一張他不能或不願意展示你獲得傷害+O，你可以選擇一張展示的牌從基礎供應牌庫獲得相同牌放入棄牌堆，之後你的身份可以變為紅心皇后";
+	}
+	if(CardID == 50){
+	    (*C).cardname = "魔力技巧";
+	    (*C).cost = 0;
+	    (*C).level = 1;
+	    (*C).range = 0;
+	    (*C).type = 1;
+	    (*C).power_generate = 0;
+	    (*C).damage = 0;
+	    (*C).shield = 1;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "防禦1，可以從手牌、棄牌堆移除1張基本牌，每移除1張牌，將等級不高於O的基本牌從牌庫放入棄牌堆，之後可以將身份變為瘋帽子";
+	}
+	if(CardID == 51){
+	    (*C).cardname = "精神幻術";
+	    (*C).cost = 2;
+	    (*C).level = 2;
+	    (*C).range = 0;
+	    (*C).type = 1;
+	    (*C).power_generate = 0;
+	    (*C).damage = 0;
+	    (*C).shield = 2;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "防禦2，可以從手牌、棄牌堆移除1張基本牌，每移除1張牌，將等級不高於O的基本牌從牌庫放入棄牌堆，之後可以將身份變為瘋帽子";
+	}
+	if(CardID == 52){
+	    (*C).cardname = "帽子戲法";
+	    (*C).cost = 4;
+	    (*C).level = 3;
+	    (*C).range = 0;
+	    (*C).type = 1;
+	    (*C).power_generate = 0;
+	    (*C).damage = 0;
+	    (*C).shield = 3;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "防禦3，可以從手牌、棄牌堆移除1張基本牌，每移除1張牌，將等級不高於O的基本牌從牌庫放入棄牌堆，之後可以將身份變為瘋帽子";
+	}
+	if(CardID == 53){
+	    (*C).cardname = "詭異的敏捷";
+	    (*C).cost = 0;
+	    (*C).level = 1;
+	    (*C).range = 0;
+	    (*C).type = 2;
+	    (*C).power_generate = 0;
+	    (*C).damage = 0;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "向一個方向移動至多1+O格，過程中穿過對手抽1張牌，之後可以將身份變成柴郡貓";
+	}
+	if(CardID == 54){
+	    (*C).cardname = "詭異的隱蔽";
+	    (*C).cost = 2;
+	    (*C).level = 2;
+	    (*C).range = 0;
+	    (*C).type = 2;
+	    (*C).power_generate = 0;
+	    (*C).damage = 0;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "向一個方向移動至多2+O格，過程中穿過對手抽2張牌，之後可以將身份變成柴郡貓";
+	}
+	if(CardID == 55){
+	    (*C).cardname = "詭異的詭異";
+	    (*C).cost = 4;
+	    (*C).level = 3;
+	    (*C).range = 0;
+	    (*C).type = 2;
+	    (*C).power_generate = 0;
+	    (*C).damage = 0;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "向一個方向移動至多3+O格，過程中穿過對手抽3張牌，之後可以將身份變成柴郡貓";
+	}
+	if(CardID == 56){
+	    (*C).cardname = "無休止的派對";
+	    (*C).cost = 0;
+	    (*C).level = 0;
+	    (*C).range = 0;
+	    (*C).type = 5;
+	    (*C).power_generate = 0;
+	    (*C).damage = 0;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "回合結束階段抽牌後，將手牌棄至四張，立即開始新回合，連續使用不可超過三次";
+	}
+	if(CardID == 57){
+	    (*C).cardname = "精彩的奇妙日";
+	    (*C).cost = 0;
+	    (*C).level = 0;
+	    (*C).range = 0;
+	    (*C).type = 5;
+	    (*C).power_generate = 0;
+	    (*C).damage = 0;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "直到本回合結束前，你的攻擊、防禦、移動牌的值+1，可與其他效果累積";
+	}
+	if(CardID == 58){
+	    (*C).cardname = "遊戲盡在掌控";
+	    (*C).cost = 0;
+	    (*C).level = 0;
+	    (*C).range = 3;
+	    (*C).type = 5;
+	    (*C).power_generate = 0;
+	    (*C).damage = 3;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "射程3 傷害3，將手牌和/或棄牌堆中的至多5張基本牌洗入對手牌庫";
+	}
+	if(CardID == 147){
+	    (*C).cardname = "砍掉她的頭";
+	    (*C).cost = 0;
+	    (*C).level = 1;
+	    (*C).range = 0;
+	    (*C).type = 6; // 蛻變屬性卡，為被動效果
+	    (*C).power_generate = 0;
+	    (*C).damage = 0;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "蛻變1，當你的身份為紅心皇后時，每當你要通過攻擊技能將一張牌放入你的棄牌堆時，你可以將他加入手牌來代替";
+	}
+
+	if(CardID == 148){
+	    (*C).cardname = "仙境降臨";
+	    (*C).cost = 0;
+	    (*C).level = 1;
+	    (*C).range = 0;
+	    (*C).type = 6;
+	    (*C).power_generate = 0;
+	    (*C).damage = 0;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "蛻變1，當你的身份為瘋帽子時，當你將要通過一個防禦技能將牌放入你的棄牌堆時，你可以選擇將其中一張牌加入你的手牌來代替";
+	}
+
+	if(CardID == 149){
+	    (*C).cardname = "我們全是瘋子";
+	    (*C).cost = 0;
+	    (*C).level = 1;
+	    (*C).range = 0;
+	    (*C).type = 6;
+	    (*C).power_generate = 0;
+	    (*C).damage = 0;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "蛻變1，當你的身份為柴郡貓時，通過一個行動穿過對手或是對手穿過你時，可以抽1張牌";
+	}
+
+	if(CardID == 150){
+	    (*C).cardname = "開始我的表演";
+	    (*C).cost = 0;
+	    (*C).level = 2;
+	    (*C).range = 0;
+	    (*C).type = 6;
+	    (*C).power_generate = 0;
+	    (*C).damage = 0;
+	    (*C).shield = 0;
+	    (*C).require_basic_card = 0;
+	    (*C).cardcode = CardID;
+	    (*C).inf = "蛻變2，當你在回合結束階段抽取卡牌時，額外抽取一張牌，這張蛻變牌可以疊加";
+	}
+
+
 	//必殺技
 	//蛻變牌
 	
@@ -591,7 +1022,7 @@ int16_t Card_Define(int16_t CardID , card *C){
 		(*C).type = 4;
 		(*C).damage = 1;
 		(*C).shield = 0;
-		(*C).require_basic_card = 1;
+		(*C).require_basic_card = 0;
 		(*C).cardcode = CardID;
 		(*C).inf = "射程1 傷害1+O\n你可以將對手放置到你的另一個相鄰的格子\n如果對手位於戰鬥軌道邊緣的格子\n你可以從他手牌中隨機棄掉一張牌";
 	}
@@ -603,7 +1034,7 @@ int16_t Card_Define(int16_t CardID , card *C){
 		(*C).type = 4;
 		(*C).damage = 2;
 		(*C).shield = 0;
-		(*C).require_basic_card = 1;
+		(*C).require_basic_card = 0;
 		(*C).cardcode = CardID;
 		(*C).inf = "購買費用 2\n射程1 傷害2+O\n你可以將對手放置到你的另一個相鄰的格子\n如果對手位於戰鬥軌道邊緣的格子\n你可以從他手牌中隨機棄掉一張牌";
 	}
@@ -615,7 +1046,7 @@ int16_t Card_Define(int16_t CardID , card *C){
 		(*C).type = 4;
 		(*C).damage = 3;
 		(*C).shield = 0;
-		(*C).require_basic_card = 1;
+		(*C).require_basic_card = 0;
 		(*C).cardcode = CardID;
 		(*C).inf = "購買費用 4\n射程1 傷害3+O\n你可以將對手放置到你的另一個相鄰的格子\n如果對手位於戰鬥軌道邊緣的格子\n你可以從他手牌中隨機棄掉一張牌";
 	}
@@ -663,7 +1094,7 @@ int16_t Card_Define(int16_t CardID , card *C){
 		(*C).type = 4;
 		(*C).damage = 1;
 		(*C).shield = 0;
-		(*C).require_basic_card = 1;
+		(*C).require_basic_card = 2;
 		(*C).cardcode = CardID;
 		(*C).inf = "射程1 傷害1\n將對手擊退O格\n之後將你放置到一個與對手相鄰的格子\n如果對手位於戰鬥軌道的邊緣，你可以從他的手牌中隨機捨棄一張牌";
 	}
@@ -675,7 +1106,7 @@ int16_t Card_Define(int16_t CardID , card *C){
 		(*C).type = 4;
 		(*C).damage = 2;
 		(*C).shield = 0;
-		(*C).require_basic_card = 1;
+		(*C).require_basic_card = 2;
 		(*C).cardcode = CardID;
 		(*C).inf = "購買費用 2\n射程1 傷害2\n將對手擊退O格\n之後將你放置到一個與對手相鄰的格子\n如果對手位於戰鬥軌道的邊緣，你可以從他的手牌中隨機捨棄一張牌";
 	}
@@ -687,7 +1118,7 @@ int16_t Card_Define(int16_t CardID , card *C){
 		(*C).type = 4;
 		(*C).damage = 3;
 		(*C).shield = 0;
-		(*C).require_basic_card = 1;
+		(*C).require_basic_card = 2;
 		(*C).cardcode = CardID;
 		(*C).inf = "購買費用 4\n射程1 傷害3\n將對手擊退O格\n之後將你放置到一個與對手相鄰的格子\n如果對手位於戰鬥軌道的邊緣，你可以從他的手牌中隨機捨棄一張牌";
 	}
