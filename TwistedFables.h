@@ -86,6 +86,8 @@ typedef struct Player{
 	int16_t passive_n;
 	int16_t passive[7];//蛻變牌 美人魚多一個
 	int16_t starting_size;//持續牌數量
+	int16_t playcard[256];//出牌區
+	int16_t playcardnum;//出牌區數量
 	int16_t starting[256];//持續牌
 	int16_t combo_basic[256];//搭配持續牌
 	int16_t starting_lv[256];//搭配持續牌等級
@@ -139,3 +141,6 @@ int8_t gain_sleeptoken(player *P , int8_t amount);
 int8_t regenerate_hp(player *P,int8_t amount);
 int8_t remove_sleeptoken(player *P , int8_t amount);
 int8_t recv_card_sleep(player *P , int8_t dama);
+int8_t handaddplaycardnum(player *P, int16_t select);
+int8_t remove_card_from_hand(player *P , int8_t select);
+int8_t playcardnum_clear(player *P);
