@@ -866,7 +866,7 @@ int8_t play_a_card(player *P){
 						if(P->hands_card[cn-1].type == 0 || P->hands_card[cn-1].type == 3){
 							atk += P->hands_card[cn-1].value + P->atk_buff;
 							power_generate += P->hands_card[cn-1].power_generate;
-							discard_card_from_hand(P,cn-1);
+							handaddplaycardnum(P,cn-1);//handaddplaycardnum
 							system("clear");
 							print_game_broad_9();
 							print_hands(P);
@@ -941,7 +941,7 @@ int8_t play_a_card(player *P){
 				if(P->hands_card[cn-1].type == 1 || P->hands_card[cn-1].type == 3){
 					def += P->hands_card[cn-1].value + P->defend_buff;
 					power_generate += P->hands_card[cn-1].power_generate;						
-					discard_card_from_hand(P,cn-1);
+					handaddplaycardnum(P,cn-1);
 					system("clear");
 					print_game_broad_9();
 					print_hands(P);
@@ -1004,7 +1004,7 @@ int8_t play_a_card(player *P){
 				if(P->hands_card[cn-1].type == 2 || P->hands_card[cn-1].type == 3){
 					move += P->hands_card[cn-1].value + P->speed_buff;
 					power_generate += P->hands_card[cn-1].power_generate;						
-					discard_card_from_hand(P,cn-1);
+					handaddplaycardnum(P,cn-1);
 					system("clear");
 					print_game_broad_9();
 					print_hands(P);
@@ -1250,11 +1250,11 @@ int8_t play_a_card(player *P){
 							}
 						}else{
 							if(cn-1 > combo_card -1){
-								discard_card_from_hand(P,cn-1); // 4 5
-								discard_card_from_hand(P,combo_card-1);// 4
+								handaddplaycardnum(P,cn-1); // 4 5
+								handaddplaycardnum(P,combo_card-1);// 4
 							}else{
-								discard_card_from_hand(P,cn-1); // 4 5
-								discard_card_from_hand(P,combo_card);
+								handaddplaycardnum(P,cn-1); // 4 5
+								handaddplaycardnum(P,combo_card);
 							}
 						}
 						return 0;
@@ -1290,7 +1290,7 @@ int8_t play_a_card(player *P){
 							
 						}else{
 							
-								discard_card_from_hand(P,cn-1); // 4 5
+								handaddplaycardnum(P,cn-1); // 4 5
 							
 						}
 						return 0;
@@ -1335,7 +1335,7 @@ int8_t play_a_card(player *P){
 						deal_damage(&Player[target(P)], damage_deal);
 						gain_armor(P , armor_get);
 						
-						discard_card_from_hand(P,cn-1);
+						handaddplaycardnum(P,cn-1);
 						
 						
 						return 0;
@@ -1432,7 +1432,6 @@ int8_t Redhoodsavefile(player *P){
 							if(s >= 1 && s <= 3){
 								if(P->Redhoodsave[s-1] != 0){
 									Card_Define(P->Redhoodsave[s-1] , &P->hands_card[P->hands]);
-									popbackVector(&P->deck); //remove card
 									P->hands++;
 									P->Redhoodsave[s-1] = 0;
 									break;
@@ -1817,6 +1816,7 @@ int8_t discard_all_hands(player *P){
 int8_t ending_phase(player *P){
 	P->power = 0;
 	discard_all_hands(P);
+	playcardnum_clear(P);
 	draw_card(6,P);
 	P->atk_buff = 0;
 	P->defend_buff = 0;
@@ -1824,6 +1824,7 @@ int8_t ending_phase(player *P){
 	P->atk_bb1 = 0;
 	P->atk_bb2 = 0;
 	P->atk_bb3 = 0;
+
 	
 	return 0;
 }
