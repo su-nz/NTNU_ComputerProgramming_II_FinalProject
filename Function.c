@@ -8,6 +8,8 @@
 #define matches_MAX 12
 #define poison_MAX 18
 
+
+
 void shuffle(vector *v) {
     if (!v || v->SIZE <= 1) return;
 	int times = rand() % (10+ 1);
@@ -38,6 +40,15 @@ int8_t handaddplaycardnum(player *P, int16_t select){
 	return 0;
 }
 
+int8_t showplaycardnum(player *P){
+	
+	printf("出牌區：");
+	
+	for(int i = 0 ; i < P->playcardnum ; i++){
+	
+	}
+}
+
 int8_t remove_card_from_hand(player *P , int8_t select){
 	Card_Define(0 , &(*P).hands_card[select-1]);
 	for (int8_t i = select-1; i < (*P).hands - 1; i++) {
@@ -46,6 +57,19 @@ int8_t remove_card_from_hand(player *P , int8_t select){
 	}
 	(*P).hands--;
 	return 0;
+}
+
+int8_t botChoice(int16_t mode , int16_t min , int16_t  max  , int16_t situation){
+	srand((unsigned int)time(NULL));
+	if(mode ==0){
+		if (min > max) {
+			// 自動交換範圍
+			int temp = min;
+			min = max;
+			max = temp;
+	    	}
+	    return rand() % (max - min + 1) + min;
+	}
 }
 
 
