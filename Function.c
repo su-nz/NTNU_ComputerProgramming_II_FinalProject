@@ -21,6 +21,33 @@ void shuffle(vector *v) {
 	}
 }
 
+int8_t playcardnum_clear(player *P){
+	for(int i = 0 ; i < P->playcardnum ; i++){
+		pushbackVector(&P->discard,P->playcard[i]);
+		P->playcard[i] = 0;
+	}
+	P->playcardnum = 0;
+	return 0;
+}
+
+int8_t handaddplaycardnum(player *P, int16_t select){
+	
+	P->playcard[P->playcardnum] = P->hands_card[select].cardcode;
+	P->playcardnum++;
+	remove_card_from_hand(P ,select+1);
+	return 0;
+}
+
+int8_t remove_card_from_hand(player *P , int8_t select){
+	Card_Define(0 , &(*P).hands_card[select-1]);
+	for (int8_t i = select-1; i < (*P).hands - 1; i++) {
+		Card_Define(0, &(*P).hands_card[i]);
+		Card_Define((*P).hands_card[i + 1].cardcode , &(*P).hands_card[i]);
+	}
+	(*P).hands--;
+	return 0;
+}
+
 
 
 int8_t inputcharacter(player *P, int8_t characternum) { //寫入角色資訊
@@ -34,6 +61,7 @@ int8_t inputcharacter(player *P, int8_t characternum) { //寫入角色資訊
 	(*P).poison= -1;
 	(*P).matches= -1;
 	(*P).sleep = -1;
+	(*P).playcardnum=0;
 	P->atk_bb1=0;
 	P->atk_bb2=0;
 	P->atk_bb3=0;
@@ -185,6 +213,8 @@ int8_t recv_card_sleep(player *P , int8_t dama){
 	}
 	return 0;
 }
+
+
 
 // 交換兩個 int16_t 整數的函式
 void swap(int16_t *a, int16_t *b) {
