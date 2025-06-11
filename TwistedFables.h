@@ -144,3 +144,4 @@ int8_t recv_card_sleep(player *P , int8_t dama);
 int8_t handaddplaycardnum(player *P, int16_t select);
 int8_t remove_card_from_hand(player *P , int8_t select);
 int8_t playcardnum_clear(player *P);
+int8_t botChoice(int16_t mode , int16_t min , int16_t  max  , int16_t situation);
