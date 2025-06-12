@@ -40,12 +40,16 @@ typedef struct Card{
 	char * cardname;
 }card;
 
-typedef struct RedHoodUlt{
-	int16_t atk;
-	int16_t armor;
-	int16_t cardcode;
-	
-}RU;
+typedef struct Redhoodult{
+	int8_t action; // 0 
+	int8_t range;
+	int8_t atk;
+	int8_t def;
+	int8_t mov;
+	int8_t spel_buy;
+	int8_t bas_buy;
+	int8_t cardid;
+}RHU;
 
 typedef struct Player{
 	int8_t end_turn;
@@ -95,9 +99,11 @@ typedef struct Player{
 	int16_t hands_select[50];//手牌選取
 	int16_t Ult_deck[3];
 	int16_t Redhoodsave[3];
-	RU RedUlt;
+	RHU RedUlt;
 	
 }player;
+
+
 
 
 
@@ -112,7 +118,7 @@ int8_t printf_skill_shop(int8_t num);
 int8_t deal_damage(player *P , int8_t damage);
 int8_t check_starting(player *P,player *Enemy);
 int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output , int8_t *armor_output, int8_t lv ,int8_t combo_cardid, int8_t mode);
-int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , int8_t *armor_output, int8_t mode ,vector (*skillBuyDeck)[3]);
+int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , int8_t *armor_output, int8_t mode ,vector (*skillBuyDeck)[3],vector (*basicBuyDeck)[3],int8_t BotOn);
 int8_t startingskill(player* you ,player *P,int16_t card_id,int16_t lv );
 int8_t clear_select(player *P);
 void print_game_broad_9();
@@ -145,3 +151,6 @@ int8_t handaddplaycardnum(player *P, int16_t select);
 int8_t remove_card_from_hand(player *P , int8_t select);
 int8_t playcardnum_clear(player *P);
 int8_t botChoice(int16_t mode , int16_t min , int16_t  max  , int16_t situation);
+int8_t Redhoodsavefile(player *P,int BotOn);
+int8_t clearRHU(player *P);
+int8_t writeinRHU(player *P,int8_t a1,int8_t a2,int8_t a3,int8_t a4,int8_t a5,int8_t a6,int8_t a7,int8_t a8);
