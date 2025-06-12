@@ -426,7 +426,11 @@ int8_t discard_command(player *P){
 		printf("1. 查看\n");
 		printf("2. 返回\n");
 		printf("> ");
-		scanf("%hhd",&dc);
+		if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
+				dc = botChoice(0,1,2,0);
+			}else{
+				scanf("%hhd",&dc);
+			}
 		getchar();
 		if(dc == 1){
 			int8_t cc =-1;
@@ -753,7 +757,6 @@ int8_t remove_card(player *P){
 				int8_t cc=-1;
 				printf("請問你要移除哪一牌？\n");
 				printf("輸入數字：");//TODO: wrong input
-				scanf("%hhd",&cc);
 				if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
 					cc = botChoice(0,1,P->discard.SIZE,0);
 				}else{
@@ -880,7 +883,7 @@ int8_t play_a_card(player *P){
 							if(check_passive(P , 143) != 0 && P->sleep_passive1_cd == 0){
 								cn = -4;
 							}else{
-								cn = botChoice(0,1,P->hands,0);
+								cn = botChoice(0,0,P->hands,0);
 							}
 							
 							
@@ -967,7 +970,7 @@ int8_t play_a_card(player *P){
 							if(check_passive(P , 143) != 0 && P->sleep_passive1_cd == 0){
 								cn = -4;
 							}else{
-								cn = botChoice(0,1,P->hands,0);
+								cn = botChoice(0,0,P->hands,0);
 							}
 							
 							
@@ -1041,7 +1044,7 @@ int8_t play_a_card(player *P){
 							if(check_passive(P , 143) != 0 && P->sleep_passive1_cd == 0){
 								cn = -4;
 							}else{
-								cn = botChoice(0,1,P->hands,0);
+								cn = botChoice(0,0,P->hands,0);
 							}
 							
 							
@@ -1098,7 +1101,7 @@ int8_t play_a_card(player *P){
 			printf("你要向左還是向右？1.)向左 2.)向右 ：");
 			
 			if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
-								cn = botChoice(0,1,2,0);
+								way = botChoice(0,1,2,0);
 			}else{
 								scanf("%hhd",&way);
 			}
@@ -1286,7 +1289,7 @@ int8_t play_a_card(player *P){
 					}
 				
 					if(range_counter(P,&Player[target(P)],P->hands_card[cn-1].range-rr) == 1 || P->hands_card[cn-1].range == 0){
-						use_skill(P,&Player[target(P)], P->hands_card[cn-1].cardcode , &damage_deal , &armor_get , P->hands_card[combo_card-1].level , P->hands_card[combo_card-1].cardcode , mode);
+						use_skill(P,&Player[target(P)], P->hands_card[cn-1].cardcode , &damage_deal , &armor_get , P->hands_card[combo_card-1].level , P->hands_card[combo_card-1].cardcode , mode ,BotOn );
 						
 						if(P->hands_card[combo_card-1].require_basic_card == 0 || P->hands_card[combo_card-1].require_basic_card == 2){
 							if(check_passive(P , 135) != 0){
@@ -1394,7 +1397,7 @@ int8_t play_a_card(player *P){
 				}else if(sleepbasic >=1 && sleepbasic <=3){
 					int rr=0;
 					if(range_counter(P,&Player[target(P)],P->hands_card[cn-1].range-rr) == 1 || P->hands_card[cn-1].range == 0){
-						use_skill(P,&Player[target(P)], P->hands_card[cn-1].cardcode , &damage_deal , &armor_get , lv , sleepbasic  , mode);
+						use_skill(P,&Player[target(P)], P->hands_card[cn-1].cardcode , &damage_deal , &armor_get , lv , sleepbasic  , mode ,BotOn);
 						
 						deal_damage(&Player[target(P)], damage_deal+atk+ P->atk_buff);
 						
@@ -1454,7 +1457,13 @@ int8_t play_a_card(player *P){
 				printf("請問你要打哪一張大招牌？(輸入0返回)\n");
 				printf(">");
 				if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
-								cn = botChoice(0,0,P->hands,0);
+								for(int i = 0 ; i < P->hands-1 ; i++){
+									if(P->hands_card[i].type == 5){
+										cn = i+1;
+									}else{
+										cn = 0;
+									}
+								}
 								
 				}else{
 									scanf("%hhd",&cn);
@@ -1517,13 +1526,16 @@ int8_t action_command(player *P){
 	print_hands(P);
 	printf("輸入指令：");
 	if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
-										if(check_passive(P,138) !=0 ){
+								
+										if(check_passive(P,138) == 0 ){
 											comm = botChoice(0,1,6,0);
 										}else{
 											comm = botChoice(0,1,7,0);
 										}
 										
+										
 	}else{
+										
 											scanf("%hhd",&comm);
 	}
 	getchar();
@@ -1547,7 +1559,7 @@ int8_t action_command(player *P){
 									int choices_R=0;
 									printf(GREEN BOLD"%s"RESET"你可以捨棄至多一張技能牌來將傷害減少X，X為你捨棄的技能牌等級\n",Player[target(P)].charname);
 									printf("0)不捨棄 1)捨棄\n>");
-									scanf("%d",&choices_R);
+									
 									if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
 										
 											choices_R = botChoice(0,0,1,0);
@@ -1723,6 +1735,7 @@ void print_game_broad_9(){
 	if(utf8_strlen(Player[0].charname) == 3 && utf8_strlen(Player[1].charname) == 3) len = 6;
 	else len = 8;
 	system("clear");
+	//printf("%d %d",BotOn,Player[1].num);
 	printf("玩家一 │ 遊玩角色：");
 	print_aligned_charname(Player[0].charname, len);
 	printf(" 血量：%hhd 防禦值：%hhd 能量：%hhd 手牌數：%hhd 血量上限：%hhd 防禦上限：%hhd 必殺閥值:%hhd\n", Player[0].hp, Player[0].armor, Player[0].power, Player[0].hands, Player[0].Maxhp, Player[0].Maxarmor, Player[0].Ult_threshold);
@@ -1932,7 +1945,12 @@ int8_t starting_phase(player *P){
 											printf("請選擇一張你要捨棄的牌(輸入0取消)\n");
 											print_hands(&Player[target(P)]);
 											printf(">");
-											scanf("%hhd",&cn);
+											if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
+															cn = botChoice(0,0,P->hands,0);
+															
+											}else{
+																scanf("%hhd",&cn);
+											}
 											if(cn == 0)break;
 											if(Player[target(P)].hands_card[cn-1].type == 4){
 												Player[target(P)].hp += Player[target(P)].hands_card[cn-1].level;
@@ -1971,7 +1989,11 @@ int8_t Ult_Gain(player *P){
 		while(1){
 			printf(GREEN BOLD"%s"RESET"請選擇你要的必殺牌：\n>",P->charname);
 			int cho = -1;
-			scanf("%d",&cho);
+			if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
+				cho = botChoice(0,0,1,0);
+			}else{
+				scanf("%d",&cho);
+			}
 			getchar();
 			if(cho == 0){
 				Card_Define(P->Ult_deck[0], &P->hands_card[P->hands]);
@@ -2284,6 +2306,10 @@ int main(){ //mainfuc
 	initialize_player(&Player[1]);
 	initialize_player(&Player[2]);
 	initialize_player(&Player[3]);
+	if(BotOn == 1){
+	Player[1].bot = 1;
+	Player[3].bot = 1;
+	}
 	
 	if(flip_coins == 1){
 		//player 1 first
