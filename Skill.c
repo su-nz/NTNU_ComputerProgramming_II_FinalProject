@@ -35,7 +35,7 @@ int8_t startingskill(player* you ,player *P,int16_t card_id,int16_t lv ){
 }
 
 
-int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , int8_t *armor_output, int8_t mode ,vector (*skillBuyDeck)[3]){
+int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , int8_t *armor_output, int8_t mode ,vector (*skillBuyDeck)[3],vector (*basicBuyDeck)[3],int8_t BotOn){
 	int8_t Right_MAX;
 	if(mode ==1){
 		Right_MAX = 9;
@@ -200,6 +200,293 @@ int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , i
 		
 		return 0;
 	}else if(card_id == 21){
+		
+		if(you->RedUlt.action == 0){
+			*damage_output = you->RedUlt.atk;
+			*armor_output = you->RedUlt.def;
+		}else if(you->RedUlt.action == 1){
+			use_skill(you,P,you->RedUlt.cardid , damage_output , armor_output, you->RedUlt.spel_buy ,you->RedUlt.bas_buy ,  mode);
+		}else if(you->RedUlt.action == 2){
+			if(you->Redhoodsave[0]==-2 ||you->Redhoodsave[1]==-2  ||you->Redhoodsave[2]==-2 ){
+				Redhoodsavefile(you,BotOn);
+			}
+		}else if(you->RedUlt.action == 3){
+			card cardtemp1;
+			if(skillBuyDeck[P->num][0].SIZE >0)Card_Define(skillBuyDeck[you->num][0].array[skillBuyDeck[you->num][0].SIZE-1], &cardtemp1);
+			card cardtemp2;
+			if(skillBuyDeck[P->num][1].SIZE >0)Card_Define(skillBuyDeck[you->num][1].array[skillBuyDeck[you->num][1].SIZE-1], &cardtemp2);
+			card cardtemp3;
+			if(skillBuyDeck[P->num][2].SIZE >0)Card_Define(skillBuyDeck[you->num][2].array[skillBuyDeck[you->num][2].SIZE-1], &cardtemp3);
+			int cc = P->RedUlt.spel_buy;
+			
+			switch(cc){
+				case 1: // 攻擊
+					if(P->power < cardtemp1.cost){
+						printf("你的能量不夠\n") ;
+						
+					}else if(skillBuyDeck[P->num][0].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1]);
+						skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1] = 0;
+						skillBuyDeck[P->num][0].SIZE--;
+						P->power -=cardtemp1.cost;
+						Card_Define(skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1], &cardtemp1);
+						if(cardtemp1.cost == 0){
+							P->passive[P->passive_n] = skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1];
+							skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1] = 0;
+							skillBuyDeck[P->num][0].SIZE--;
+							if(skillBuyDeck[P->num][0].SIZE <=0) skillBuyDeck[P->num][0].SIZE = 0;
+							P->passive_n++;
+							if(skillBuyDeck[P->num][0].SIZE >0)Card_Define(skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1], &cardtemp1);
+						}
+						printf_skill_shop(P->num);
+					}
+					
+				break;
+				
+				case 2: // 防禦
+					if(P->power < cardtemp2.cost){
+						printf("你的能量不夠\n") ;
+						
+					}else if(skillBuyDeck[P->num][1].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1]);
+						skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1] = 0;
+						skillBuyDeck[P->num][1].SIZE--;
+						P->power -=cardtemp2.cost;
+						Card_Define(skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1], &cardtemp2);
+						if(cardtemp2.cost == 0){
+							P->passive[P->passive_n] = skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1];
+							skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1] = 0;
+							skillBuyDeck[P->num][1].SIZE--;
+							if(skillBuyDeck[P->num][1].SIZE <=0) skillBuyDeck[P->num][1].SIZE = 0;
+							P->passive_n++;
+							if(skillBuyDeck[P->num][1].SIZE >0)Card_Define(skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1], &cardtemp2);
+						}
+						printf_skill_shop(P->num);
+					}
+					
+				break;
+				
+				case 3: // 移動
+					if(P->power < cardtemp3.cost){
+						printf("你的能量不夠\n") ;
+						
+					}else if(skillBuyDeck[P->num][2].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1]);
+						skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1] = 0;
+						skillBuyDeck[P->num][2].SIZE--;
+						P->power -=cardtemp3.cost;
+						Card_Define(skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1], &cardtemp3);
+						if(cardtemp3.cost == 0){
+							P->passive[P->passive_n] = skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][2].SIZE-1];
+							skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1] = 0;
+							skillBuyDeck[P->num][2].SIZE--;
+							if(skillBuyDeck[P->num][2].SIZE <=0) skillBuyDeck[P->num][2].SIZE = 0;
+							P->passive_n++;
+							if(skillBuyDeck[P->num][2].SIZE >0)Card_Define(skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1], &cardtemp2);
+						}
+						printf_skill_shop(P->num);
+					}
+					
+				break;
+				
+				
+				default:
+					printf("不存在此選項\n");
+				break;
+			}
+		}else if(you->RedUlt.action == 4){
+			int cc = P->RedUlt.bas_buy;
+			switch(cc){
+				case 1: // 攻擊卡 1
+					if(P->power < 1){
+						printf("你的能量不夠\n") ;
+						
+					}else if(basicBuyDeck[0][0].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, basicBuyDeck[0][0].array[basicBuyDeck[0][0].SIZE-1]);
+						basicBuyDeck[0][0].array[basicBuyDeck[0][0].SIZE-1] = 0;
+						basicBuyDeck[0][0].SIZE--;
+						P->power--;
+						//printf_basic_shop();
+					}
+				
+				break;
+				
+				case 2: // 攻擊卡 2
+					if(P->power < 3){
+						printf("你的能量不夠\n") ;
+						
+					}else if(basicBuyDeck[0][1].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, basicBuyDeck[0][1].array[basicBuyDeck[0][1].SIZE-1]);
+						basicBuyDeck[0][1].array[basicBuyDeck[0][1].SIZE-1] = 0;
+						basicBuyDeck[0][1].SIZE--;
+						P->power-=3;
+						//printf_basic_shop();
+					}
+				
+				break;
+				
+				case 3: // 攻擊卡 3
+					if(P->power < 6){
+						printf("你的能量不夠\n") ;
+						
+					}else if(basicBuyDeck[0][2].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, basicBuyDeck[0][2].array[basicBuyDeck[0][2].SIZE-1]);
+						basicBuyDeck[0][2].array[basicBuyDeck[0][2].SIZE-1] = 0;
+						basicBuyDeck[0][2].SIZE--;
+						P->power-=6;
+						//printf_basic_shop();
+					}
+				
+				break;
+				
+				case 4: // 防禦卡 1
+					if(P->power < 1){
+						printf("你的能量不夠\n") ;
+						
+					}else if(basicBuyDeck[1][0].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, basicBuyDeck[1][0].array[basicBuyDeck[1][0].SIZE-1]);
+						basicBuyDeck[1][0].array[basicBuyDeck[1][0].SIZE-1] = 0;
+						basicBuyDeck[1][0].SIZE--;
+						P->power--;
+						//printf_basic_shop();
+					}
+				
+				break;
+				
+				case 5: // 防禦卡 2
+					if(P->power < 3){
+						printf("你的能量不夠\n") ;
+						
+					}else if(basicBuyDeck[1][1].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, basicBuyDeck[1][1].array[basicBuyDeck[1][1].SIZE-1]);
+						basicBuyDeck[1][1].array[basicBuyDeck[1][1].SIZE-1] = 0;
+						basicBuyDeck[1][1].SIZE--;
+						P->power-=3;
+						//printf_basic_shop();
+					}
+				
+				break;
+				
+				case 6: // 防禦卡 3
+					if(P->power < 6){
+						printf("你的能量不夠\n") ;
+						
+					}else if(basicBuyDeck[1][2].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, basicBuyDeck[1][2].array[basicBuyDeck[1][2].SIZE-1]);
+						basicBuyDeck[1][2].array[basicBuyDeck[1][2].SIZE-1] = 0;
+						basicBuyDeck[1][2].SIZE--;
+						P->power-=6;
+						//printf_basic_shop();
+					}
+				
+				break;
+				
+				case 7: // 移動卡 1
+					if(P->power < 1){
+						printf("你的能量不夠\n") ;
+						
+					}else if(basicBuyDeck[2][0].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, basicBuyDeck[2][0].array[basicBuyDeck[2][0].SIZE-1]);
+						basicBuyDeck[2][0].array[basicBuyDeck[2][0].SIZE-1] = 0;
+						basicBuyDeck[2][0].SIZE--;
+						P->power--;
+						//printf_basic_shop();
+					}
+				
+				break;
+				
+				case 8: // 移動卡 2
+					if(P->power < 3){
+						printf("你的能量不夠\n") ;
+						
+					}else if(basicBuyDeck[2][1].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, basicBuyDeck[2][1].array[basicBuyDeck[2][1].SIZE-1]);
+						basicBuyDeck[2][1].array[basicBuyDeck[2][1].SIZE-1] = 0;
+						basicBuyDeck[2][1].SIZE--;
+						P->power-=3;
+						//printf_basic_shop();
+					}
+				
+				break;
+				
+				case 9: // 移動卡 3
+					if(P->power < 6){
+						printf("你的能量不夠\n") ;
+						
+					}else if(basicBuyDeck[2][2].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, basicBuyDeck[2][2].array[basicBuyDeck[2][2].SIZE-1]);
+						basicBuyDeck[2][2].array[basicBuyDeck[2][2].SIZE-1] = 0;
+						basicBuyDeck[2][2].SIZE--;
+						P->power-=6;
+						//printf_basic_shop();
+					}
+				
+				break;
+				
+				case 10: // 通用卡 
+					if(P->power < 2){
+						printf("你的能量不夠\n") ;
+						
+					}else if(basicBuyDeck[2][2].SIZE == 0){
+						printf("此卡已經賣光了\n") ;
+						
+					}else{
+						pushbackVector(&P->discard, basicBuyDeck[3][0].array[basicBuyDeck[3][0].SIZE-1]);
+						basicBuyDeck[3][0].array[basicBuyDeck[3][0].SIZE-1] = 0;
+						basicBuyDeck[3][0].SIZE--;
+						P->power-=2;
+						//printf_basic_shop();
+					}
+				
+				break;
+				
+				default:
+					printf("不存在此選項\n");
+				break;
+			}
+			
+		}else{
+			printf("無複製對象\n");
+		}
+	
+	
+	
 	
 	}else if(card_id == 22){
 		int times=0;
