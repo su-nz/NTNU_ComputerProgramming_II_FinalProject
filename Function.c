@@ -72,6 +72,28 @@ int8_t botChoice(int16_t mode , int16_t min , int16_t  max  , int16_t situation)
 	}
 }
 
+int8_t clearRHU(player *P){
+	P->RedUlt.action =-1; // 0 
+	P->RedUlt.range =0;
+	P->RedUlt.atk=0;
+	P->RedUlt.def=0;
+	P->RedUlt.mov=0;
+	P->RedUlt.spel_buy=0;
+	P->RedUlt.bas_buy=0;
+	P->RedUlt.cardid=0;
+}
+
+int8_t writeinRHU(player *P,int8_t a1,int8_t a2,int8_t a3,int8_t a4,int8_t a5,int8_t a6,int8_t a7,int8_t a8){
+	P->RedUlt.action =a1; // 0 basic 1 skill 2 pass 3 basicbuy 4 spellbuy
+	P->RedUlt.range =a2;
+	P->RedUlt.atk=a3;
+	P->RedUlt.def=a4;
+	P->RedUlt.mov=a5;
+	P->RedUlt.spel_buy=a6;
+	P->RedUlt.bas_buy=a7;
+	P->RedUlt.cardid=a8;
+}
+
 
 
 int8_t inputcharacter(player *P, int8_t characternum) { //寫入角色資訊
@@ -193,6 +215,122 @@ int8_t inputcharacter(player *P, int8_t characternum) { //寫入角色資訊
     return 0; // 成功
 }
 
+int8_t Redhoodsavefile(player *P,int BotOn){
+	
+	while(1){
+		system("clear");
+	if(check_passive(P,138) >=1){
+		if(P->Redhoodsave[0]==-1) P->Redhoodsave[0] = 0;
+		card cardtemp1;
+		Card_Define(P->Redhoodsave[0], &cardtemp1);
+		printf("板載緩存1： %s %s\n",cardtemp1.cardname,cardtemp1.inf);
+	}
+	if(check_passive(P,138) >=2 ){
+		if(P->Redhoodsave[0]==-1) P->Redhoodsave[0] = 0;
+		card cardtemp1;
+		Card_Define(P->Redhoodsave[1], &cardtemp1);
+		printf("板載緩存2： %s %s\n",cardtemp1.cardname,cardtemp1.inf);
+	}else{
+		printf("板載緩存2： 未開啟\n");
+	}
+	if(check_passive(P,138) >=3 ){
+		if(P->Redhoodsave[0]==-1) P->Redhoodsave[0] = 0;
+		card cardtemp1;
+		Card_Define(P->Redhoodsave[2], &cardtemp1);
+		printf("板載緩存3： %s %s\n",cardtemp1.cardname,cardtemp1.inf);
+	}else{
+		printf("板載緩存3： 未開啟\n");
+	}
+	print_hands(P);
+	printf("請輸入你要存入卡片還是拿出卡片\n0)存入 1)拿出 2)取消\n");
+		int choice_r = -1;
+		if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
+								choice_r = botChoice(0,0,2,0);
+								
+		}else{
+									scanf("%d",&choice_r);
+		}
+		getchar();
+		if(choice_r == 0){
+			printf("你要存哪一張牌？(輸入0取消)\n>");
+			int8_t cn = -1;
+					while(cn!=0){
+						if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
+										cn = botChoice(0,0,P->hands,0);
+										
+						}else{
+											scanf("%hhd",&cn);
+						}
+						if(cn == 0 ) break;
+						if(cn>=1 && cn <= P->hands){
+							printf("你要存哪一個板載緩存？\n>");
+							int8_t s = -1;
+							scanf("%hhd",&s);
+							if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
+										s = botChoice(0,1,3,0);
+										
+							}else{
+												scanf("%hhd",&s);
+							}
+							getchar();
+							if(s >= 1 && s <= 3){
+								if(P->Redhoodsave[s-1] == 0){
+									P->Redhoodsave[s-1] = (*P).hands_card[cn-1].cardcode;
+									Card_Define(0 , &(*P).hands_card[cn-1]);
+									for (int8_t i = cn-1; i < (*P).hands - 1; i++) {
+										Card_Define(0, &(*P).hands_card[i]);
+										Card_Define((*P).hands_card[i + 1].cardcode , &(*P).hands_card[i]);
+									}
+									(*P).hands--;
+									break;
+								}else{
+									printf("已有卡片存在\n");
+									break;
+								}
+							}else{
+								printf("錯誤數字(範圍0-2)\n");
+								break;
+							}
+						}else{
+							printf("沒有這張牌\n");
+						}
+						
+					}
+		}else if(choice_r == 1){
+		
+					while(1){
+							printf("你從哪一個板載緩存拿牌？\n>");
+							int8_t s = -1;
+							if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
+										s = botChoice(0,1,3,0);
+										
+							}else{
+												scanf("%hhd",&s);
+							}
+							getchar();
+							if(s >= 1 && s <= 3){
+								if(P->Redhoodsave[s-1] != 0){
+									Card_Define(P->Redhoodsave[s-1] , &P->hands_card[P->hands]);
+									P->hands++;
+									P->Redhoodsave[s-1] = 0;
+									break;
+								}else{
+									printf("沒有卡片存在\n");
+									break;
+								}
+							}else{
+								printf("錯誤數字(範圍0-2)\n");
+								break;
+							}
+							writeinRHU(P,2,0,0,0,0,0,0,0);
+					}
+					
+		}else if(choice_r == 2){
+			return 0;
+		}							
+	}						
+	
+}
 
 int8_t recv_card_sleep(player *P , int8_t dama){
 	if(dama<2) return 0;
