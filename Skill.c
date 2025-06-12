@@ -67,7 +67,11 @@ int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , i
 				}
 				int8_t cc =-1;
 				printf("請輸入你要升級的技能：") ;
-				scanf("%hhd",&cc);
+				if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
+							cc = botChoice(0,1,3,0);
+						}else{
+							scanf("%hhd",&cc);
+				}
 				switch(cc){
 					case 1: // 攻擊
 						if(skillBuyDeck[you->num][0].SIZE == 0){
@@ -205,7 +209,7 @@ int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , i
 			*damage_output = you->RedUlt.atk;
 			*armor_output = you->RedUlt.def;
 		}else if(you->RedUlt.action == 1){
-			use_skill(you,P,you->RedUlt.cardid , damage_output , armor_output, you->RedUlt.spel_buy ,you->RedUlt.bas_buy ,  mode);
+			use_skill(you,P,you->RedUlt.cardid , damage_output , armor_output, you->RedUlt.spel_buy ,you->RedUlt.bas_buy ,  mode,BotOn);
 		}else if(you->RedUlt.action == 2){
 			if(you->Redhoodsave[0]==-2 ||you->Redhoodsave[1]==-2  ||you->Redhoodsave[2]==-2 ){
 				Redhoodsavefile(you,BotOn);
@@ -492,7 +496,12 @@ int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , i
 		int times=0;
 		while(1){
 			printf("\n請輸入你要擊退的距離(0-3)\n>");
-			scanf("%d",&times);
+			
+			if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
+							times = botChoice(0,0,3,0);
+						}else{
+							scanf("%d",&times);
+				}
 			getchar();
 			if(times >= 0  && times <= 3){
 				break;
@@ -518,7 +527,12 @@ int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , i
 				print_hands(P);
 				printf("請輸入你要棄置的牌\n>");
 				printf("輸入數字：");
-				scanf("%hhd",&select);
+				
+				if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
+							select = botChoice(0,1,P->hands ,0);
+						}else{
+							scanf("%hhd",&select);
+				}
 				if(select > P->hands || select <= 0 ){
 					printf("沒有這張卡！\n");
 				}else{
@@ -544,7 +558,7 @@ int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , i
 }
 
 
-int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output , int8_t *armor_output, int8_t lv , int8_t combo_cardid , int8_t mode){
+int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output , int8_t *armor_output, int8_t lv , int8_t combo_cardid , int8_t mode,int8_t BotOn){
 	int8_t Right_MAX;
 	if(mode ==1){
 		Right_MAX = 9;
@@ -586,7 +600,11 @@ int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output ,
 		int times=0;
 		while(1){
 			printf("\n請輸入你要擊退的距離(0-%d)\n>",lv);
-			scanf("%d",&times);
+			if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
+							times = botChoice(0,0,lv,0);
+						}else{
+							scanf("%d",&times);
+				}
 			getchar();
 			if(times >= 0  && times <= lv){
 				break;
@@ -605,7 +623,11 @@ int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output ,
 		int times=0;
 		while(1){
 			printf("\n請輸入你要擊退的距離(0-%d)\n>",lv);
-			scanf("%d",&times);
+			if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
+							times = botChoice(0,0,lv,0);
+						}else{
+							scanf("%d",&times);
+				}
 			getchar();
 			if(times >= 0  && times <= lv){
 				break;
@@ -624,7 +646,11 @@ int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output ,
 		int times=0;
 		while(1){
 			printf("\n請輸入你要擊退的距離(0-%d)\n>",lv);
-			scanf("%d",&times);
+			if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
+							times = botChoice(0,0,lv,0);
+						}else{
+							scanf("%d",&times);
+				}
 			getchar();
 			if(times >= 0  && times <= lv){
 				break;
@@ -643,7 +669,12 @@ int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output ,
 		int dama=0;
 		while(1){
 			printf("\n請輸入獻祭的血量(0-1)\n>");
-			scanf("%d",&dama);
+			
+			if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
+							dama = botChoice(0,0,1,0);
+						}else{
+							scanf("%d",&dama);
+				}
 			getchar();
 			if(dama >= 0  && dama <= 1){
 				break;
@@ -657,7 +688,11 @@ int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output ,
 		int dama=0;
 		while(1){
 			printf("\n請輸入獻祭的血量(0-2)\n>");
-			scanf("%d",&dama);
+			if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
+							dama = botChoice(0,0,2,0);
+						}else{
+							scanf("%d",&dama);
+				}
 			getchar();
 			if(dama >= 0  && dama <= 2){
 				break;
@@ -671,7 +706,11 @@ int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output ,
 		int dama=0;
 		while(1){
 			printf("\n請輸入獻祭的血量(0-3)\n>");
-			scanf("%d",&dama);
+			if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
+							dama = botChoice(0,0,3,0);
+						}else{
+							scanf("%d",&dama);
+				}
 			getchar();
 			if(dama >= 0  && dama <= 3){
 				break;
@@ -687,7 +726,11 @@ int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output ,
 		if(you->sleep == 0){
 			while(1){
 				printf("\n請輸入要使用的沉睡Token數量(0-3)\n>");
-				scanf("%d",&dama);
+				if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
+							dama = botChoice(0,0,3,0);
+						}else{
+							scanf("%d",&dama);
+				}
 				getchar();
 				if(dama >= 0  && dama <= 3 && you->sleep_token >= dama){
 					remove_sleeptoken(you,dama);
@@ -709,7 +752,11 @@ int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output ,
 		if(you->sleep == 0){
 			while(1){
 				printf("\n請輸入要使用的沉睡Token數量(0-3)\n>");
-				scanf("%d",&dama);
+				if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
+							dama = botChoice(0,0,3,0);
+						}else{
+							scanf("%d",&dama);
+				}
 				getchar();
 				if(dama >= 0  && dama <= 3 && you->sleep_token >= dama){
 					remove_sleeptoken(you,dama);
@@ -728,7 +775,11 @@ int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output ,
 		if(you->sleep == 0){
 			while(1){
 				printf("\n請輸入要使用的沉睡Token數量(0-3)\n>");
-				scanf("%d",&dama);
+				if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
+							dama = botChoice(0,0,3,0);
+						}else{
+							scanf("%d",&dama);
+				}
 				getchar();
 				if(dama >= 0  && dama <= 3 && you->sleep_token >= dama){
 					remove_sleeptoken(you,dama);
@@ -746,7 +797,11 @@ int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output ,
 		if(you->sleep == 0){
 			while(1){
 				printf("\n請輸入要使用的沉睡Token數量(0-3)\n>");
-				scanf("%d",&dama);
+				if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
+							dama = botChoice(0,0,3,0);
+						}else{
+							scanf("%d",&dama);
+				}
 				getchar();
 				if(dama >= 0  && dama <= 3 && you->sleep_token >= dama){
 					remove_sleeptoken(you,dama);
