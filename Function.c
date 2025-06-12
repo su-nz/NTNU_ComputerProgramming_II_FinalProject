@@ -98,6 +98,7 @@ int8_t writeinRHU(player *P,int8_t a1,int8_t a2,int8_t a3,int8_t a4,int8_t a5,in
 
 int8_t inputcharacter(player *P, int8_t characternum) { //寫入角色資訊
 	(*P).character = characternum; 
+	(*P).bot = 0;
 	(*P).passive_n = 0;
 	(*P).atk_buff = 0;
 	(*P).defend_buff = 0;
@@ -245,10 +246,10 @@ int8_t Redhoodsavefile(player *P,int BotOn){
 	printf("請輸入你要存入卡片還是拿出卡片\n0)存入 1)拿出 2)取消\n");
 		int choice_r = -1;
 		if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
-								choice_r = botChoice(0,0,2,0);
+			choice_r = botChoice(0,0,2,0);
 								
 		}else{
-									scanf("%d",&choice_r);
+			scanf("%d",&choice_r);
 		}
 		getchar();
 		if(choice_r == 0){
@@ -265,7 +266,7 @@ int8_t Redhoodsavefile(player *P,int BotOn){
 						if(cn>=1 && cn <= P->hands){
 							printf("你要存哪一個板載緩存？\n>");
 							int8_t s = -1;
-							scanf("%hhd",&s);
+							
 							if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
 										s = botChoice(0,1,3,0);
 										
@@ -350,7 +351,12 @@ int8_t recv_card_sleep(player *P , int8_t dama){
 		int8_t cc=-1;
 		printf("請問你要拿哪一牌？\n");
 		printf("輸入數字：");//TODO: wrong input
-		scanf("%hhd",&cc);
+		if(P->bot && (P->num == 1 || P->num == 3) ){
+			cc = botChoice(0,1,P->discard.SIZE-1	,0);
+								
+		}else{
+			scanf("%hhd",&cc);
+		}
 		if(cc > P->discard.SIZE || cc < 0){
 			printf("沒有這張卡！\n");
 			break;
