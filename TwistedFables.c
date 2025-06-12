@@ -314,6 +314,7 @@ int8_t skill_shop_command(player *P){
 		}else{
 			scanf("%hhd",&cc);
 		}
+		
 			switch(cc){
 				case 1: // 攻擊
 					if(P->power < cardtemp1.cost){
@@ -338,7 +339,7 @@ int8_t skill_shop_command(player *P){
 						}
 						printf_skill_shop(P->num);
 					}
-				
+					writeinRHU(P,4,0,0,0,0,0,cc,0);
 				break;
 				
 				case 2: // 防禦
@@ -364,7 +365,7 @@ int8_t skill_shop_command(player *P){
 						}
 						printf_skill_shop(P->num);
 					}
-		
+					writeinRHU(P,4,0,0,0,0,0,cc,0);
 				break;
 				
 				case 3: // 移動
@@ -390,7 +391,7 @@ int8_t skill_shop_command(player *P){
 						}
 						printf_skill_shop(P->num);
 					}
-				
+					writeinRHU(P,4,0,0,0,0,0,cc,0);
 				break;
 				
 				
@@ -478,6 +479,9 @@ int8_t basic_shop_command(player *P){
 				cc = botChoice(0,1,10,0);
 			}else{
 				scanf("%hhd",&cc);
+			}
+			if(cc >= 1 && cc<=10){
+				writeinRHU(P,3,0,0,0,0,0,cc,0);
 			}
 			switch(cc){
 				case 1: // 攻擊卡 1
@@ -917,6 +921,7 @@ int8_t play_a_card(player *P){
 						if(P->hands_card[cn-1].type == 0 || P->hands_card[cn-1].type == 3){
 							atk += P->hands_card[cn-1].value + P->atk_buff;
 							power_generate += P->hands_card[cn-1].power_generate;
+							
 							handaddplaycardnum(P,cn-1);//handaddplaycardnum
 							system("clear");
 							print_game_broad_9();
@@ -940,7 +945,7 @@ int8_t play_a_card(player *P){
 					atk +=3;
 				}
 				deal_damage(&Player[target(P)] , atk);
-				
+				writeinRHU(P,0,1,atk,0,0,0,0,0);
 				
 				printf("你對對手造成了\033[1;31m%hhd\033[0m點傷害\n",atk);
 				return 0;
@@ -1016,7 +1021,7 @@ int8_t play_a_card(player *P){
 			}	
 			if(P->sleep != 0) gain_armor(P , def);
 			P->power += power_generate;
-			
+			writeinRHU(P,0,1,0,def,0,0,0,0);
 			
 			
 			
@@ -1100,7 +1105,7 @@ int8_t play_a_card(player *P){
 			while(move !=0){
 							
 						if(way == 1){ //左
-						
+							writeinRHU(P,0,1,0,0,move*(-1),0,0,0);
 							if(P->coordinate -1 != 0){
 								if(P->coordinate -1 == Player[target(P)].coordinate && P->coordinate - 2 != 0 && move >= 2 ){
 										P->coordinate-=2 ;
@@ -1112,6 +1117,7 @@ int8_t play_a_card(player *P){
 							}
 							
 						}else{
+							writeinRHU(P,0,1,0,0,move,0,0,0);
 							if(P->coordinate +1 != Right_MAX){
 								if(P->coordinate +1 == Player[target(P)].coordinate && P->coordinate + 2 != Right_MAX && move >= 2 ){
 										P->coordinate+=2 ;
@@ -1331,7 +1337,7 @@ int8_t play_a_card(player *P){
 						deal_damage(&Player[target(P)], damage_deal+atk+ P->atk_buff);
 						
 						if(P->sleep != 0) gain_armor(P , armor_get+ P->defend_buff);
-						
+						writeinRHU(P,0,1,damage_deal+atk+ P->atk_buff,armor_get+ P->defend_buff,0,P->hands_card[combo_card-1].level,P->hands_card[combo_card-1].cardcode,P->hands_card[cn-1].cardcode);
 						if(check_passive(&Player[target(P)],145) !=0 && P->hands_card[cn-1].require_basic_card ==3 ){
 							gain_armor(P , P->hands_card[cn-1].level);
 							
@@ -1454,10 +1460,15 @@ int8_t play_a_card(player *P){
 									scanf("%hhd",&cn);
 				}
 				if(cn == 0)return 0;
+				
+				
+				
 				if(P->hands_card[cn-1].type == 5){
-					
+					if(P->hands_card[cn-1].cardcode == 21){
+						P->hands_card[cn-1].range = P->RedUlt.range;
+					}
 					if(range_counter(P,&Player[target(P)],P->hands_card[cn-1].range) == 1 || P->hands_card[cn-1].range == 0){
-						use_Ult(P,&Player[target(P)],P->hands_card[cn-1].cardcode , &damage_deal , &armor_get, mode , skillBuyDeck);
+						use_Ult(P,&Player[target(P)],P->hands_card[cn-1].cardcode , &damage_deal , &armor_get, mode , skillBuyDeck , basicBuyDeck,BotOn);
 						deal_damage(&Player[target(P)], damage_deal);
 						gain_armor(P , armor_get);
 						
@@ -1484,121 +1495,7 @@ int8_t play_a_card(player *P){
 	return 0;
 }
 
-int8_t Redhoodsavefile(player *P){
-	
-	while(1){
-		system("clear");
-	if(check_passive(P,138) >=1){
-		if(P->Redhoodsave[0]==-1) P->Redhoodsave[0] = 0;
-		card cardtemp1;
-		Card_Define(P->Redhoodsave[0], &cardtemp1);
-		printf("板載緩存1： %s %s\n",cardtemp1.cardname,cardtemp1.inf);
-	}
-	if(check_passive(P,138) >=2 ){
-		if(P->Redhoodsave[0]==-1) P->Redhoodsave[0] = 0;
-		card cardtemp1;
-		Card_Define(P->Redhoodsave[1], &cardtemp1);
-		printf("板載緩存2： %s %s\n",cardtemp1.cardname,cardtemp1.inf);
-	}else{
-		printf("板載緩存2： 未開啟\n");
-	}
-	if(check_passive(P,138) >=3 ){
-		if(P->Redhoodsave[0]==-1) P->Redhoodsave[0] = 0;
-		card cardtemp1;
-		Card_Define(P->Redhoodsave[2], &cardtemp1);
-		printf("板載緩存3： %s %s\n",cardtemp1.cardname,cardtemp1.inf);
-	}else{
-		printf("板載緩存3： 未開啟\n");
-	}
-	print_hands(P);
-	printf("請輸入你要存入卡片還是拿出卡片\n0)存入 1)拿出 2)取消\n");
-		int choice_r = -1;
-		if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
-								choice_r = botChoice(0,0,2,0);
-								
-		}else{
-									scanf("%d",&choice_r);
-		}
-		getchar();
-		if(choice_r == 0){
-			printf("你要存哪一張牌？(輸入0取消)\n>");
-			int8_t cn = -1;
-					while(cn!=0){
-						if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
-										cn = botChoice(0,0,P->hands,0);
-										
-						}else{
-											scanf("%hhd",&cn);
-						}
-						if(cn == 0 ) break;
-						if(cn>=1 && cn <= P->hands){
-							printf("你要存哪一個板載緩存？\n>");
-							int8_t s = -1;
-							scanf("%hhd",&s);
-							if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
-										s = botChoice(0,1,3,0);
-										
-							}else{
-												scanf("%hhd",&s);
-							}
-							getchar();
-							if(s >= 1 && s <= 3){
-								if(P->Redhoodsave[s-1] == 0){
-									P->Redhoodsave[s-1] = (*P).hands_card[cn-1].cardcode;
-									Card_Define(0 , &(*P).hands_card[cn-1]);
-									for (int8_t i = cn-1; i < (*P).hands - 1; i++) {
-										Card_Define(0, &(*P).hands_card[i]);
-										Card_Define((*P).hands_card[i + 1].cardcode , &(*P).hands_card[i]);
-									}
-									(*P).hands--;
-									break;
-								}else{
-									printf("已有卡片存在\n");
-									break;
-								}
-							}else{
-								printf("錯誤數字(範圍0-2)\n");
-								break;
-							}
-						}else{
-							printf("沒有這張牌\n");
-						}
-						
-					}
-		}else if(choice_r == 1){
-		
-					while(1){
-							printf("你從哪一個板載緩存拿牌？\n>");
-							int8_t s = -1;
-							if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
-										s = botChoice(0,1,3,0);
-										
-							}else{
-												scanf("%hhd",&s);
-							}
-							getchar();
-							if(s >= 1 && s <= 3){
-								if(P->Redhoodsave[s-1] != 0){
-									Card_Define(P->Redhoodsave[s-1] , &P->hands_card[P->hands]);
-									P->hands++;
-									P->Redhoodsave[s-1] = 0;
-									break;
-								}else{
-									printf("沒有卡片存在\n");
-									break;
-								}
-							}else{
-								printf("錯誤數字(範圍0-2)\n");
-								break;
-							}
-						
-					}
-		}else if(choice_r == 2){
-			return 0;
-		}							
-	}						
-	
-}
+
 
 
 
@@ -1716,7 +1613,7 @@ int8_t action_command(player *P){
 						 
 		case 7:
 			if(check_passive(P,138) !=0 ){
-				Redhoodsavefile(P);
+				Redhoodsavefile(P,BotOn);
 			
 			}
 			return -1;
@@ -1990,6 +1887,7 @@ int8_t discard_all_hands(player *P){
 }
 
 int8_t ending_phase(player *P){
+	clearRHU(P);
 	P->power = 0;
 	discard_all_hands(P);
 	playcardnum_clear(P);
