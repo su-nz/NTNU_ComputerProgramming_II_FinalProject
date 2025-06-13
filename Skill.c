@@ -497,7 +497,7 @@ int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , i
 		while(1){
 			printf("\n請輸入你要擊退的距離(0-3)\n>");
 			
-			if(BotOn == 1 && (P->num == 1 || P->num == 3) ){
+			if(BotOn == 1 && (you->num == 1 || you->num == 3) ){
 							times = botChoice(0,0,3,0);
 						}else{
 							scanf("%d",&times);
@@ -545,13 +545,13 @@ int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , i
 		}
 		
 	}else if(card_id == 44){
-		P->sleep =0;
-		P->sleep_token+=3;
+		you->sleep =0;
+		you->sleep_token+=3;
 	}else if(card_id == 45){
-		P->sleep_hp = 6;
+		you->sleep_hp = 6;
 		add_card_to_starting(you,45,0,0);
 	}else if(card_id == 46){
-		P->sleep =1;
+		you->sleep =1;
 		regenerate_hp(you,you->sleep_token);
 		remove_sleeptoken(you,you->sleep_token);
 	}
