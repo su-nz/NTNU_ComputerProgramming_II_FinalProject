@@ -8,6 +8,8 @@
 #define matches_MAX 12
 #define poison_MAX 18
 
+
+
 void shuffle(vector *v) {
     if (!v || v->SIZE <= 1) return;
 	int times = rand() % (10+ 1);
@@ -67,9 +69,9 @@ int8_t botChoice(int16_t mode , int16_t min , int16_t  max  , int16_t situation)
 			max = temp;
 	    	}
 	    	int r = rand() % (max - min + 1) + min;
-	    printf(BLUE"%d\n"RESET, r);
-	    usleep(2000000);
-	    return r;	    
+	    printf("%d!!!!!!%d\n",r,situation);
+	    return r;
+	    
 	}
 }
 
@@ -228,7 +230,7 @@ int8_t Redhoodsavefile(player *P,int BotOn){
 		printf("板載緩存1： %s %s\n",cardtemp1.cardname,cardtemp1.inf);
 	}
 	if(check_passive(P,138) >=2 ){
-		if(P->Redhoodsave[0]==-1) P->Redhoodsave[0] = 0;
+		if(P->Redhoodsave[1]==-1) P->Redhoodsave[1] = 0;
 		card cardtemp1;
 		Card_Define(P->Redhoodsave[1], &cardtemp1);
 		printf("板載緩存2： %s %s\n",cardtemp1.cardname,cardtemp1.inf);
@@ -236,7 +238,7 @@ int8_t Redhoodsavefile(player *P,int BotOn){
 		printf("板載緩存2： 未開啟\n");
 	}
 	if(check_passive(P,138) >=3 ){
-		if(P->Redhoodsave[0]==-1) P->Redhoodsave[0] = 0;
+		if(P->Redhoodsave[2]==-1) P->Redhoodsave[2] = 0;
 		card cardtemp1;
 		Card_Define(P->Redhoodsave[2], &cardtemp1);
 		printf("板載緩存3： %s %s\n",cardtemp1.cardname,cardtemp1.inf);
@@ -541,3 +543,7 @@ int8_t clear_select(player *P){
 		P->hands_select[i] = 0; 
 	}
 }
+
+
+
+
