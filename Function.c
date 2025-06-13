@@ -209,7 +209,7 @@ int8_t inputcharacter(player *P, int8_t characternum) { //寫入角色資訊
     // 共通初始化
     (*P).hp = (*P).Maxhp;
     (*P).armor = 0;
-    (*P).power = 50;
+    (*P).power = 0;
     (*P).hands = 0;
   	
 
@@ -349,7 +349,7 @@ int8_t recv_card_sleep(player *P , int8_t dama){
 			printf("Lv3的攻擊牌\n");
 		}
 		int8_t cc=-1;
-		printf("請問你要拿哪一牌？\n");
+		printf("請問你要拿哪一牌？（輸入0取消）\n");
 		printf("輸入數字：");//TODO: wrong input
 		if(P->bot && (P->num == 1 || P->num == 3) ){
 			cc = botChoice(0,1,P->discard.SIZE-1	,0);
@@ -357,6 +357,7 @@ int8_t recv_card_sleep(player *P , int8_t dama){
 		}else{
 			scanf("%hhd",&cc);
 		}
+		if(cc==0) break;
 		if(cc > P->discard.SIZE || cc < 0){
 			printf("沒有這張卡！\n");
 			break;
