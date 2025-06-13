@@ -501,8 +501,9 @@ int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , i
 							times = botChoice(0,0,3,0);
 						}else{
 							scanf("%d",&times);
+							getchar();
 				}
-			getchar();
+			
 			if(times >= 0  && times <= 3){
 				break;
 			}else{
@@ -604,8 +605,9 @@ int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output ,
 							times = botChoice(0,0,lv,0);
 						}else{
 							scanf("%d",&times);
+							getchar();
 				}
-			getchar();
+			
 			if(times >= 0  && times <= lv){
 				break;
 			}else{
@@ -627,8 +629,9 @@ int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output ,
 							times = botChoice(0,0,lv,0);
 						}else{
 							scanf("%d",&times);
+							getchar();
 				}
-			getchar();
+			
 			if(times >= 0  && times <= lv){
 				break;
 			}else{
@@ -650,8 +653,9 @@ int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output ,
 							times = botChoice(0,0,lv,0);
 						}else{
 							scanf("%d",&times);
+							getchar();
 				}
-			getchar();
+			
 			if(times >= 0  && times <= lv){
 				break;
 			}else{
@@ -674,8 +678,9 @@ int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output ,
 							dama = botChoice(0,0,1,0);
 						}else{
 							scanf("%d",&dama);
+							getchar();
 				}
-			getchar();
+			
 			if(dama >= 0  && dama <= 1){
 				break;
 			}else{
@@ -692,8 +697,9 @@ int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output ,
 							dama = botChoice(0,0,2,0);
 						}else{
 							scanf("%d",&dama);
+							getchar();
 				}
-			getchar();
+			
 			if(dama >= 0  && dama <= 2){
 				break;
 			}else{
@@ -710,8 +716,9 @@ int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output ,
 							dama = botChoice(0,0,3,0);
 						}else{
 							scanf("%d",&dama);
+							getchar();
 				}
-			getchar();
+			
 			if(dama >= 0  && dama <= 3){
 				break;
 			}else{
@@ -730,8 +737,9 @@ int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output ,
 							dama = botChoice(0,0,3,0);
 						}else{
 							scanf("%d",&dama);
+							getchar();
 				}
-				getchar();
+				
 				if(dama >= 0  && dama <= 3 && you->sleep_token >= dama){
 					remove_sleeptoken(you,dama);
 					you-> atk_bb1 += dama;
@@ -756,8 +764,9 @@ int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output ,
 							dama = botChoice(0,0,3,0);
 						}else{
 							scanf("%d",&dama);
+							getchar();
 				}
-				getchar();
+				
 				if(dama >= 0  && dama <= 3 && you->sleep_token >= dama){
 					remove_sleeptoken(you,dama);
 					you-> atk_bb2 += dama;
@@ -779,8 +788,9 @@ int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output ,
 							dama = botChoice(0,0,3,0);
 						}else{
 							scanf("%d",&dama);
+							getchar();
 				}
-				getchar();
+				
 				if(dama >= 0  && dama <= 3 && you->sleep_token >= dama){
 					remove_sleeptoken(you,dama);
 					you-> atk_bb3 += dama;
@@ -801,8 +811,9 @@ int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output ,
 							dama = botChoice(0,0,3,0);
 						}else{
 							scanf("%d",&dama);
+							getchar();
 				}
-				getchar();
+				
 				if(dama >= 0  && dama <= 3 && you->sleep_token >= dama){
 					remove_sleeptoken(you,dama);
 					you-> atk_bb3 += dama;
