@@ -68,7 +68,10 @@ int8_t botChoice(int16_t mode , int16_t min , int16_t  max  , int16_t situation)
 			min = max;
 			max = temp;
 	    	}
-	    return rand() % (max - min + 1) + min;
+	    	int r = rand() % (max - min + 1) + min;
+	    printf("%d!!!!!!%d\n",r,situation);
+	    return r;
+	    
 	}
 }
 
@@ -250,8 +253,9 @@ int8_t Redhoodsavefile(player *P,int BotOn){
 								
 		}else{
 			scanf("%d",&choice_r);
+			getchar();
 		}
-		getchar();
+		
 		if(choice_r == 0){
 			printf("你要存哪一張牌？(輸入0取消)\n>");
 			int8_t cn = -1;
@@ -272,8 +276,9 @@ int8_t Redhoodsavefile(player *P,int BotOn){
 										
 							}else{
 												scanf("%hhd",&s);
+												getchar();
 							}
-							getchar();
+							
 							if(s >= 1 && s <= 3){
 								if(P->Redhoodsave[s-1] == 0){
 									P->Redhoodsave[s-1] = (*P).hands_card[cn-1].cardcode;
@@ -307,8 +312,9 @@ int8_t Redhoodsavefile(player *P,int BotOn){
 										
 							}else{
 												scanf("%hhd",&s);
+												getchar();
 							}
-							getchar();
+							
 							if(s >= 1 && s <= 3){
 								if(P->Redhoodsave[s-1] != 0){
 									Card_Define(P->Redhoodsave[s-1] , &P->hands_card[P->hands]);
