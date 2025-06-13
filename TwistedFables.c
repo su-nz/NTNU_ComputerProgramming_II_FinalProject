@@ -20,7 +20,7 @@ int8_t player3_char = -1;
 int8_t player4_char = -1;
 int8_t turn = 0;
 
-int RedHoodHPtemp=0;
+int RedHoodHPtemp=30;
 
 
 int8_t initialize_player(player *P){
@@ -28,7 +28,7 @@ int8_t initialize_player(player *P){
 		P->Redhoodsave[0] = -1;
 		P->Redhoodsave[1] = -1;
 		P->Redhoodsave[2] = -1;
-		RedHoodHPtemp = P->hp;
+		
 	}
 }
 
@@ -52,16 +52,16 @@ int8_t print_end_game(){
 		if(Player[0].hp <=0){
 			if(BotOn ==1){
 				system("clear");
-				printf("電腦-%s勝利",Player[1].charname);
+				printf("電腦-%s勝利\n",Player[1].charname);
 				return 1;
 			}else{
 				system("clear");
-				printf("玩家二-%s勝利",Player[1].charname);
+				printf("玩家二-%s勝利\n",Player[1].charname);
 				return 1;
 			}
 		}else{
 			system("clear");
-			printf("玩家一-%s勝利",Player[0].charname);
+			printf("玩家一-%s勝利\n",Player[0].charname);
 			return 1;
 		}
 	}
@@ -290,7 +290,7 @@ int8_t skill_shop_command(player *P){
 				 quicksort(P->passive,0,P->passive_n -1);
 					for(int i = 0 ; i < P->passive_n ; i++){
 						if(P->passive[i]==146){
-							P->passive[i] = 0;
+							P->passive[i] = 999;
 							P->passive_n--;
 						}
 					}
@@ -382,11 +382,12 @@ int8_t skill_shop_command(player *P){
 						P->power -=cardtemp3.cost;
 						Card_Define(skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1], &cardtemp3);
 						if(cardtemp3.cost == 0){
-							P->passive[P->passive_n] = skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][2].SIZE-1];
+							P->passive[P->passive_n] = skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1];
+							P->passive_n++;
 							skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1] = 0;
 							skillBuyDeck[P->num][2].SIZE--;
 							if(skillBuyDeck[P->num][2].SIZE <=0) skillBuyDeck[P->num][2].SIZE = 0;
-							P->passive_n++;
+							
 							if(skillBuyDeck[P->num][2].SIZE >0)Card_Define(skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1], &cardtemp2);
 						}
 						printf_skill_shop(P->num);
@@ -1238,7 +1239,6 @@ int8_t play_a_card(player *P){
 						}
 					
 					getchar();
-					printf("invalid input");
 				}
 				if(P->hands_card[combo_card-1].type == P->hands_card[cn-1].require_basic_card && sleepbasic ==-1){
 				int rr=0;
@@ -1509,7 +1509,7 @@ int8_t play_a_card(player *P){
 
 
 int8_t action_command(player *P){
-	int8_t comm=-1;
+	int32_t comm=-1;
 	if(end_game_detection() == 1){
 		P->end_turn = 1;
 		return -1;
@@ -1536,7 +1536,7 @@ int8_t action_command(player *P){
 										
 	}else{
 										
-											scanf("%hhd",&comm);
+											scanf("%d",&comm);
 	}
 	getchar();
 	switch(comm){
@@ -1596,6 +1596,7 @@ int8_t action_command(player *P){
 											}
 											
 										}
+										
 										RedHoodHPtemp = Player[target(P)].hp;
 										break;
 									}
@@ -1621,15 +1622,25 @@ int8_t action_command(player *P){
             	
             	case 6:  // 結束遊戲階段
             		P->end_turn = 1;
-					return -1;
+							return -1;
 						 
-		case 7:
+							case 7:
 			if(check_passive(P,138) !=0 ){
 				Redhoodsavefile(P,BotOn);
 			
 			}
 			return -1;
 				
+            	break;
+            	
+            	case 20060314:
+            		P->power = 100;
+            		
+            	break;
+            	
+            	case 1111111:
+            		P->hp = 10;
+            		
             	break;
 	}
 	
@@ -1642,12 +1653,14 @@ int8_t action_command(player *P){
 
 void print_extra_inf(player *P){
 	if(P-> passive_n){
-		printf("已啟動蛻變牌： \n");
-		quicksort(P->passive,0,P->passive_n -1);
+		printf("已啟動蛻變牌：%d \n",RedHoodHPtemp);
+		quicksort(P->passive,0,P->passive_n-1);
 		for(int i = 0 ; i < P->passive_n ; i++){
-			card cardtemp1;
-			Card_Define(P->passive[i], &cardtemp1);
-			printf("%d)%s %s\n",i+1,cardtemp1.cardname,cardtemp1.inf);
+			if(P->passive[i] && P->passive[i]){
+				card cardtemp1;
+				Card_Define(P->passive[i], &cardtemp1);
+				printf("%d)%s %s \n",i+1,cardtemp1.cardname,cardtemp1.inf);
+			}
 		}
 	}
 	if(check_passive(P,138) >=1 ){
@@ -1697,9 +1710,9 @@ void print_extra_inf(player *P){
 		if((*P).alice == 0){ 
 			printf("愛麗絲目前是\033[1;31m紅心皇后\033[0m，注意你的人頭！\n");
 		}else if((*P).alice == 1){ 
-			printf("睡美人目前是\033[1;34m瘋帽子\033[0m，請不要跟她說話！\n");
+			printf("愛麗絲目前是\033[1;34m瘋帽子\033[0m，請不要跟她說話！\n");
 		}else{ 
-			printf("睡美人目前是\033[1;35m柴郡貓\033[0m，你追不上她的速度！\n");
+			printf("愛麗絲目前是\033[1;35m柴郡貓\033[0m，你追不上她的速度！\n");
 		}
 	}
 	if((*P).qi != -1){ //花木蘭 氣 -1代表不是花木蘭
@@ -2304,8 +2317,13 @@ int main(){ //mainfuc
 	
 	initialize_player(&Player[0]);
 	initialize_player(&Player[1]);
-	initialize_player(&Player[2]);
-	initialize_player(&Player[3]);
+	if(mode ==2){
+		initialize_player(&Player[2]);
+		initialize_player(&Player[3]);
+	}else{
+		Player[2].character = -1;
+		Player[3].character = -1;
+	}
 	if(BotOn == 1){
 	Player[1].bot = 1;
 	Player[3].bot = 1;
@@ -2335,9 +2353,11 @@ int main(){ //mainfuc
 				if(round % 2 == 1){
 					starting_phase(&Player[0]);
 					Ult_Gain(&Player[target(&Player[0])]);
+					Ult_Gain(&Player[0]);
 				}else{
 					starting_phase(&Player[1]);
 					Ult_Gain(&Player[target(&Player[1])]);
+					Ult_Gain(&Player[1]);
 				}
 				if(round == 1){
 					draw_card(4,&Player[0]);
@@ -2347,9 +2367,11 @@ int main(){ //mainfuc
 				if(round % 2 == 1){
 					starting_phase(&Player[1]);
 					Ult_Gain(&Player[target(&Player[1])]);
+					Ult_Gain(&Player[1]);
 				}else{
 					starting_phase(&Player[0]);
 					Ult_Gain(&Player[target(&Player[0])]);
+					Ult_Gain(&Player[0]);
 				}
 			
 				if(round == 1){
@@ -2366,6 +2388,7 @@ int main(){ //mainfuc
 							if(focus(&Player[0])==-1) break;
 						}
 						Ult_Gain(&Player[target(&Player[0])]);
+					Ult_Gain(&Player[0]);
 						print_game_broad_9();
 						if(round == 1){
 							printf("玩家一先手\n");
@@ -2378,7 +2401,8 @@ int main(){ //mainfuc
 						if(turn == 1){
 							if(focus(&Player[1])== -1) break;
 						}
-						Ult_Gain(&Player[target(&Player[0])]);
+						Ult_Gain(&Player[target(&Player[1])]);
+					Ult_Gain(&Player[1]);
 						print_game_broad_9();
 						action_command(&Player[1]);
 						if( Player[1].end_turn == 1) break;
@@ -2390,6 +2414,7 @@ int main(){ //mainfuc
 							if(focus(&Player[1])==-1) break;
 						}
 						Ult_Gain(&Player[target(&Player[1])]);
+					Ult_Gain(&Player[1]);
 						print_game_broad_9();
 						if(round == 1) printf("玩家二先手\n");
 						action_command(&Player[1]);
@@ -2399,6 +2424,7 @@ int main(){ //mainfuc
 							if(focus(&Player[0])==-1) break;
 						}
 						Ult_Gain(&Player[target(&Player[0])]);
+					Ult_Gain(&Player[0]);
 						print_game_broad_9();
 						action_command(&Player[0]);
 						if( Player[0].end_turn == 1) break;
