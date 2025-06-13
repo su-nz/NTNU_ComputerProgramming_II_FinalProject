@@ -8,8 +8,6 @@
 #define matches_MAX 12
 #define poison_MAX 18
 
-
-
 void shuffle(vector *v) {
     if (!v || v->SIZE <= 1) return;
 	int times = rand() % (10+ 1);
@@ -69,9 +67,9 @@ int8_t botChoice(int16_t mode , int16_t min , int16_t  max  , int16_t situation)
 			max = temp;
 	    	}
 	    	int r = rand() % (max - min + 1) + min;
-	    printf("%d!!!!!!%d\n",r,situation);
-	    return r;
-	    
+	    printf(BLUE"%d\n"RESET, r);
+	    usleep(2000000);
+	    return r;	    
 	}
 }
 
@@ -543,7 +541,3 @@ int8_t clear_select(player *P){
 		P->hands_select[i] = 0; 
 	}
 }
-
-
-
-

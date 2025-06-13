@@ -496,6 +496,7 @@ int8_t basic_shop_command(player *P){
 		printf("> ");
 		if(P->bot ==1 ){
 				bsc = botChoice(0,1,2,4);
+				printf("%d", bsc);
 			}else{
 				scanf("%hhd",&bsc);
 				getchar();
@@ -747,9 +748,9 @@ int8_t remove_card(player *P){
 	printf("2. 返回\n");
 	printf("> ");
 	if(P->bot ==1 ){
-				comm = botChoice(0,0,2,6);
-			}else{
-				scanf("%hhd",&comm);
+		comm = botChoice(0,0,2,6);
+	}else{
+		scanf("%hhd",&comm);
 	}
 	switch(comm){
 		case 0:
