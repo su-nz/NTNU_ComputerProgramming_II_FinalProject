@@ -1722,7 +1722,7 @@ int8_t action_command(player *P){
 
 void print_extra_inf(player *P){
 	if(P-> passive_n){
-		printf("已啟動蛻變牌：\n");
+		printf("已啟動蛻變牌： \n");
 		quicksort(P->passive,0,P->passive_n-1);
 		for(int i = 0 ; i < P->passive_n ; i++){
 			if(P->passive[i] && P->passive[i]){
@@ -1821,11 +1821,51 @@ void print_game_broad_9(){
 	printf("玩家一 │ 遊玩角色：");
 	print_aligned_charname(Player[0].charname, len);
 	printf(" 血量：%hhd 防禦值：%hhd 能量：%hhd 手牌數：%hhd 血量上限：%hhd 防禦上限：%hhd 必殺閥值:%hhd\n", Player[0].hp, Player[0].armor, Player[0].power, Player[0].hands, Player[0].Maxhp, Player[0].Maxarmor, Player[0].Ult_threshold);
+	printf("出牌區：");
+	for(int i = 0 ; i < Player[0].playcardnum ; i++){
+			if(Player[0].playcardnum){
+				card cardtemp1;
+				Card_Define(Player[0].playcard[i], &cardtemp1);
+				printf("%d.%s ",i+1,cardtemp1.cardname);
+			}
+		}
+	printf("\n");
+	printf("持續牌區：");
+	for(int i = 0 ; i < Player[0].starting_size ; i++){
+			if(Player[0].starting_size){
+				card cardtemp1;
+				Card_Define(Player[0].starting[i], &cardtemp1);
+				card cardtemp2;
+				Card_Define(Player[1].combo_basic[i], &cardtemp2);
+				printf("%d.%s -%s  ",i+1,cardtemp1.cardname, cardtemp2.cardname);
+			}
+		}
+	printf("\n");
 	print_extra_inf(&Player[0]);
 
 	printf("玩家二 │ 遊玩角色：");
 	print_aligned_charname(Player[1].charname, len);
 	printf(" 血量：%hhd 防禦值：%hhd 能量：%hhd 手牌數：%hhd 血量上限：%hhd 防禦上限：%hhd 必殺閥值:%hhd\n", Player[1].hp, Player[1].armor, Player[1].power, Player[1].hands, Player[1].Maxhp, Player[1].Maxarmor, Player[1].Ult_threshold);
+	printf("出牌區：");
+	for(int i = 0 ; i < Player[1].playcardnum ; i++){
+			if(Player[1].playcardnum){
+				card cardtemp1;
+				Card_Define(Player[1].playcard[i], &cardtemp1);
+				printf("%d.%s ",i+1,cardtemp1.cardname);
+			}
+		}
+	printf("\n");
+	printf("持續牌區：");
+	for(int i = 0 ; i < Player[1].starting_size ; i++){
+			if(Player[1].starting_size){
+				card cardtemp1;
+				Card_Define(Player[1].starting[i], &cardtemp1);
+				card cardtemp2;
+				Card_Define(Player[1].combo_basic[i], &cardtemp2);
+				printf("%d.%s -%s  ",i+1,cardtemp1.cardname, cardtemp2.cardname);
+			}
+		}
+	printf("\n");
 	print_extra_inf(&Player[1]);
 
 	printf("          ┌───────────────────┐           \n");
