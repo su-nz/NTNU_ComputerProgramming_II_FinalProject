@@ -1722,7 +1722,7 @@ int8_t action_command(player *P){
 
 void print_extra_inf(player *P){
 	if(P-> passive_n){
-		printf("已啟動蛻變牌：%d \n",RedHoodHPtemp);
+		printf("已啟動蛻變牌：\n");
 		quicksort(P->passive,0,P->passive_n-1);
 		for(int i = 0 ; i < P->passive_n ; i++){
 			if(P->passive[i] && P->passive[i]){
