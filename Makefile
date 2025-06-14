@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS =  -O2 --std=c99
+CFLAGS =  --std=c99
 
 SRC = TwistedFables.c Function.c Skill.c Card.c vector.c
 OBJ = $(SRC:.c=.o)

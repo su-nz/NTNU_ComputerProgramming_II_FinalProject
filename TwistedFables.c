@@ -289,16 +289,18 @@ int8_t printf_skill_shop(int8_t player_num){
 }
 
 int8_t skill_shop_command(player *P){
-	printf_skill_shop(P->num);
-	card cardtemp1;
-	if(skillBuyDeck[P->num][0].SIZE >0)Card_Define(skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1], &cardtemp1);
-	card cardtemp2;
-	if(skillBuyDeck[P->num][0].SIZE >1)Card_Define(skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1], &cardtemp2);
-	card cardtemp3;
-	if(skillBuyDeck[P->num][0].SIZE >2)Card_Define(skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1], &cardtemp3);
 	int8_t ssc =-1;
-	printf_skill_shop(P->num);
+
 	while(1){
+		// 將卡片資訊的讀取與商店介面的刷新都放到迴圈內
+		// 這樣每次購買後都能顯示最新的狀態
+		card cardtemp1, cardtemp2, cardtemp3;
+		if(skillBuyDeck[P->num][0].SIZE > 0) Card_Define(skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1], &cardtemp1);
+		if(skillBuyDeck[P->num][1].SIZE > 0) Card_Define(skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1], &cardtemp2);
+		if(skillBuyDeck[P->num][2].SIZE > 0) Card_Define(skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1], &cardtemp3);
+
+		printf_skill_shop(P->num);
+
 		if(check_passive(P , 146) != 0){
 				 regenerate_hp(P,5);
 				 quicksort(P->passive,0,P->passive_n -1);
@@ -307,136 +309,149 @@ int8_t skill_shop_command(player *P){
 							P->passive[i] = 999;
 							P->passive_n--;
 						}
-					}				 
+					}
 		}
 		printf("目前剩餘能量："BOLD GREEN"%d"RESET"\n", P->power);
 		printf("請輸入你要做什麼？\n");
 		printf("1. 升級技能\n");
 		printf("2. 退出商店\n");
 		printf("> ");
-		if(P->bot ==1 ){
-			ssc = botChoice(0,1,2,0);
-		}else{
+
+		if(P->bot == 1) {
+			// === 機器人邏輯：決定要「升級」還是「退出」 ===
+			int8_t num_valid_upgrades = 0;
+			if (skillBuyDeck[P->num][0].SIZE > 0 && P->power >= cardtemp1.cost) num_valid_upgrades++;
+			if (skillBuyDeck[P->num][1].SIZE > 0 && P->power >= cardtemp2.cost) num_valid_upgrades++;
+			if (skillBuyDeck[P->num][2].SIZE > 0 && P->power >= cardtemp3.cost) num_valid_upgrades++;
+
+			if (num_valid_upgrades > 0) {
+				ssc = 1; // 如果有可買的選項，就決定要去升級
+			} else {
+				ssc = 2; // 如果沒有，就必須退出
+			}
+			printf("%hhd\n", ssc);
+			usleep(1000000);
+		} else {
 			scanf("%hhd",&ssc);
 			getchar();
 		}
-		
+
 		if(ssc == 1){
 			int8_t cc =-1;
-			printf("請輸入你要升級的技能：") ;
-		if(P->bot ==1 ){
-			cc = botChoice(0,1,3,1);
-		}else{
-			scanf("%hhd",&cc);
-		}
-		
+
+			if(P->bot == 1){
+				// === 機器人邏輯：從「有效選項」中決定要買哪一個 ===
+				int8_t valid_options[3];
+				int8_t num_valid_options = 0;
+
+				// 建立可購買選項的陣列
+				if (skillBuyDeck[P->num][0].SIZE > 0 && P->power >= cardtemp1.cost) {
+					valid_options[num_valid_options++] = 1;
+				}
+				if (skillBuyDeck[P->num][1].SIZE > 0 && P->power >= cardtemp2.cost) {
+					valid_options[num_valid_options++] = 2;
+				}
+				if (skillBuyDeck[P->num][2].SIZE > 0 && P->power >= cardtemp3.cost) {
+					valid_options[num_valid_options++] = 3;
+				}
+
+				// 從有效選項陣列中隨機挑一個
+				int random_index = botChoice(0, 0, num_valid_options - 1, 1);
+				cc = valid_options[random_index];
+
+				printf("請輸入你要升級的技能：%hhd\n", cc);
+				usleep(1000000);
+			} else {
+				printf("請輸入你要升級的技能：") ;
+				scanf("%hhd",&cc);
+			}
+
 			switch(cc){
 				case 1: // 攻擊
 					if(P->power < cardtemp1.cost){
 						printf(BOLD RED"你的能量不夠\n"RESET) ;
 						wait_for_space();
-						printf_skill_shop(P->num);
 					}else if(skillBuyDeck[P->num][0].SIZE == 0){
 						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
 						wait_for_space();
-						printf_skill_shop(P->num);
 					}else{
 						pushbackVector(&P->discard, skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1]);
 						skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1] = 0;
 						skillBuyDeck[P->num][0].SIZE--;
 						P->power -=cardtemp1.cost;
-						Card_Define(skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1], &cardtemp1);
-						if(cardtemp1.cost == 0){
+						if(skillBuyDeck[P->num][0].SIZE > 0 && cardtemp1.cost == 0){
 							P->passive[P->passive_n] = skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1];
 							skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1] = 0;
 							skillBuyDeck[P->num][0].SIZE--;
 							if(skillBuyDeck[P->num][0].SIZE <=0) skillBuyDeck[P->num][0].SIZE = 0;
 							P->passive_n++;
-							if(skillBuyDeck[P->num][0].SIZE >0)Card_Define(skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1], &cardtemp1);
 						}
-						printf_skill_shop(P->num);
 					}
 					writeinRHU(P,4,0,0,0,0,0,cc,0);
 				break;
-				
+
 				case 2: // 防禦
 					if(P->power < cardtemp2.cost){
 						printf(BOLD RED"你的能量不夠\n"RESET) ;
 						wait_for_space();
-                                                printf_skill_shop(P->num);
 					}else if(skillBuyDeck[P->num][1].SIZE == 0){
 						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
 						wait_for_space();
-                                                printf_skill_shop(P->num);
 					}else{
 						pushbackVector(&P->discard, skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1]);
 						skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1] = 0;
 						skillBuyDeck[P->num][1].SIZE--;
 						P->power -=cardtemp2.cost;
-						Card_Define(skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1], &cardtemp2);
-						if(cardtemp2.cost == 0){
+						if(skillBuyDeck[P->num][1].SIZE > 0 && cardtemp2.cost == 0){
 							P->passive[P->passive_n] = skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1];
 							skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1] = 0;
 							skillBuyDeck[P->num][1].SIZE--;
 							if(skillBuyDeck[P->num][1].SIZE <=0) skillBuyDeck[P->num][1].SIZE = 0;
 							P->passive_n++;
-							if(skillBuyDeck[P->num][1].SIZE >0)Card_Define(skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1], &cardtemp2);
 						}
-						printf_skill_shop(P->num);
 					}
 					writeinRHU(P,4,0,0,0,0,0,cc,0);
 				break;
-				
+
 				case 3: // 移動
 					if(P->power < cardtemp3.cost){
 						printf(BOLD RED"你的能量不夠\n"RESET) ;
 						wait_for_space();
-                                                printf_skill_shop(P->num);
 					}else if(skillBuyDeck[P->num][2].SIZE == 0){
 						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
 						wait_for_space();
-                                                printf_skill_shop(P->num);
 					}else{
 						pushbackVector(&P->discard, skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1]);
 						skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1] = 0;
 						skillBuyDeck[P->num][2].SIZE--;
 						P->power -=cardtemp3.cost;
-						Card_Define(skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1], &cardtemp3);
-						if(cardtemp3.cost == 0){
+						if(skillBuyDeck[P->num][2].SIZE > 0 && cardtemp3.cost == 0){
 							P->passive[P->passive_n] = skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1];
 							P->passive_n++;
 							skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1] = 0;
 							skillBuyDeck[P->num][2].SIZE--;
 							if(skillBuyDeck[P->num][2].SIZE <=0) skillBuyDeck[P->num][2].SIZE = 0;
-							
-							if(skillBuyDeck[P->num][2].SIZE >0)Card_Define(skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1], &cardtemp2);
 						}
-						printf_skill_shop(P->num);
 					}
 					writeinRHU(P,4,0,0,0,0,0,cc,0);
 				break;
-				
-				
+
 				default:
 					printf(BOLD RED"不存在此選項\n"RESET);
 					wait_for_space();
-                                        printf_skill_shop(P->num);
 				break;
 			}
-		}else if (ssc == 2){
-			
+		} else if (ssc == 2){
 			if(mode == 1){
 				print_game_broad_9();
 				return 0;
 			}else{
-				
+				// other mode logic here
 			}
-			
 			return 0;
-		}else{
+		} else {
 			printf(BOLD RED"不合法輸入！！\n"RESET) ;
 			wait_for_space();
-                        printf_skill_shop(P->num);
 		}
 	}
 	return 0;
