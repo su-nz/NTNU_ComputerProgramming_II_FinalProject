@@ -1836,7 +1836,7 @@ void print_game_broad_9(){
 				card cardtemp1;
 				Card_Define(Player[0].starting[i], &cardtemp1);
 				card cardtemp2;
-				Card_Define(Player[1].combo_basic[i], &cardtemp2);
+				Card_Define(Player[0].combo_basic[i], &cardtemp2);
 				printf("%d.%s -%s  ",i+1,cardtemp1.cardname, cardtemp2.cardname);
 			}
 		}
