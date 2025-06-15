@@ -1679,33 +1679,14 @@ int8_t action_command(player *P){
 	printf("輸入指令：");
 	if(P->bot == 1){
 								
-										if(check_passive(P,138) == 0 ){
-											
-											while(1){
-												comm = botChoice(0,1,6,19);
-												if(comm == 4 || comm == 5){
-													comm = botChoice(0,1,6,19);
-												}else{
-													break;
-												}
-											}
-											
-										}else{
-											while(1){
-												comm = botChoice(0,1,6,19);
-												if(comm == 4 || comm == 5){
-													comm = botChoice(0,1,6,19);
-												}else{
-													break;
-												}
-												}
-										}
-										
-										
+		do {
+			comm = botChoice(0, 1, 6, 19);
+		} while (comm == 4 || comm == 5);
+		
 	}else{
 										
-											scanf("%d",&comm);
-											getchar();
+		scanf("%d",&comm);
+		getchar();
 	}
 	
 	switch(comm){
