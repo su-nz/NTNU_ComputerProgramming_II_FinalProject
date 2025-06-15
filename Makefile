@@ -8,8 +8,8 @@ TARGET = TwistedFables
 
 LIBS = \
   raylib/build/raylib/libraylib.a \
-  external/SDL/build/libSDL2.a \
-  external/SDL_mixer/build/libSDL2_mixer.a \
+  external/libSDL2.a \
+  external/libSDL2_mixer.a \
   -lGL -lm -lpthread -ldl -lrt -lX11
 
 .PHONY: all clean run
