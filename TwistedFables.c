@@ -2539,6 +2539,34 @@ int8_t Ult_Gain(player *P){
 
 
 int main(){ //mainfuc
+
+	SetTraceLogLevel(LOG_NONE);
+	printf("是否要使用圖形介面（GUI）？\n");
+	printf("1. 是\n");
+	printf("2. 否（預設使用文字介面）\n");
+	printf("> ");
+	while (scanf("%hhd", &gui_mode) != 1 || !(gui_mode == 1 || gui_mode == 2)) {
+		getchar(); // 清除錯誤輸入
+		printf("輸入錯誤，請重新輸入（1 或 2）：\n> ");
+	}
+	if (gui_mode == 1) {
+	#ifdef __linux__
+		// 可加強偵測是否是 Ubuntu
+		char *desktop_env = getenv("XDG_CURRENT_DESKTOP");
+		if (desktop_env && (strstr(desktop_env, "Ubuntu") || strstr(desktop_env, "GNOME") || strstr(desktop_env, "ubuntu:GNOME"))) {
+ 
+			printf("檢測到 Ubuntu 環境，啟用 GUI 模式...\n");
+		} else {
+			printf("警告：你選擇了 GUI 模式，但未檢測到 Ubuntu 環境，可能會發生相容性問題。\n");
+			wait_for_space();
+		}
+	#else
+		printf("目前僅支援 Ubuntu 環境的 GUI 模式，將使用文字介面（TUI）進行遊戲。\n");
+		wait_for_space();
+		gui_mode = 2;
+	#endif
+	}
+	
 	Player[0].starting_size = 0;
 	Player[1].starting_size = 0;
 	Player[2].starting_size = 0;
@@ -2797,7 +2825,15 @@ int main(){ //mainfuc
 	initialization_skill_shop(&Player[1]);
 	initialization_deck(&Player[0]);
 	initialization_deck(&Player[1]);	
-	
+
+	// GUI 開始前 → 更新角色圖與位置
+	if (gui_mode == 1) {
+		update_coordinates(Player[0].coordinate, Player[1].coordinate);
+		update_characters(player1_char, player2_char);
+		update_characters_info(Player[0], Player[1]);
+		start_board_gui();
+	}
+
 	print_header();	
 	wait_for_space();
 	
