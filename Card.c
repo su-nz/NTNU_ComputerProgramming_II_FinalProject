@@ -574,6 +574,12 @@ int16_t Card_Define(int16_t CardID , card *C){
 		(*C).inf = "當一張中毒牌進入對手的棄牌堆時 他額外失去1點生命\n此蛻變牌可以累積";
 	}
 	
+	if(CardID == POISON_CARD_ID){
+    (*C).cardname = "中毒";
+    (*C).type = -1; // 特殊類型
+    (*C).inf = "一張無用的卡牌，會稀釋你的牌庫。";
+    (*C).cardcode = CardID;
+}
 
 	//睡美人_技能牌-----------------------------------------------------------------
 	if(CardID == 35){

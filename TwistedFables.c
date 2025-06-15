@@ -326,7 +326,9 @@ int8_t skill_shop_command(player *P){
 			if (skillBuyDeck[P->num][2].SIZE > 0 && P->power >= cardtemp3.cost) num_valid_upgrades++;
 
 			if (num_valid_upgrades > 0) {
-				ssc = 1; // 如果有可買的選項，就決定要去升級
+				// 如果有東西可買，讓機器人隨機決定要不要買 (1=買, 2=不買/退出)
+				// 這讓機器人有機會存錢，而不是無腦花光
+				ssc = botChoice(0, 1, 2, 0); 
 			} else {
 				ssc = 2; // 如果沒有，就必須退出
 			}
@@ -860,24 +862,34 @@ int8_t remove_card(player *P){
 
 
 
-int8_t deal_damage(player *P , int8_t damage){
-		int gap = damage - P->armor;
-		if(gap > 0 && check_passive(&Player[target(P)] , 144) != 0 && Player[target(P)].sleep_passive2_cd == 0){
-			Player[target(P)].sleep_passive2_cd = 1;
-			recv_card_sleep(&Player[target(P)],gap);
-		}
-		for(int i = 0 ; i < damage ; i++){
-			if(P->armor > 0){
-				P->armor--;
-			}else if(P->armor == 0){
-				if(P->hp > 0){
-					P->hp--;
-					if(P->sleep == 1) gain_sleeptoken(P, 1 );
-					if(P->sleep_hp >0) P->sleep_hp--;
-				}
-			}
-		}
-	return 0;
+int8_t deal_damage(player *attacker, player *target, int8_t damage){
+    int gap = damage - target->armor;
+
+    // 檢查睡美人的被動技能 ID 144 (血祭之禮)，這裡要直接使用 target 變數
+    if(gap > 0 && check_passive(target, 144) != 0 && target->sleep_passive2_cd == 0){
+        target->sleep_passive2_cd = 1;
+        recv_card_sleep(target, gap);
+    }
+
+    for(int i = 0; i < damage; i++){
+        if(target->armor > 0){
+            target->armor--;
+        } else if(target->armor == 0){
+            if(target->hp > 0){
+                target->hp--;
+                if(target->sleep == 1) gain_sleeptoken(target, 1);
+                if(target->sleep_hp > 0) target->sleep_hp--;
+            }
+        }
+    }
+
+    // 檢查白雪公主的被動技能 ID 139 (水晶之棺)
+    if (attacker != NULL && damage >= 2 && check_passive(attacker, 139) > 0) {
+        printf("觸發了水晶之棺的效果！\n");
+        add_poison_to_discard(attacker, target, 1);
+    }
+
+    return 0;
 }
 
 int8_t gain_armor(player *P , int8_t def){
@@ -1002,7 +1014,7 @@ int8_t play_a_card(player *P){
 				if(P->atk_bb3 !=0){
 					atk +=3;
 				}
-				deal_damage(&Player[target(P)] , atk);
+				deal_damage(P, &Player[target(P)], atk);
 				writeinRHU(P,0,1,atk,0,0,0,0,0);
 				
 				printf("你對對手造成了\033[1;31m%hhd\033[0m點傷害\n",atk);
@@ -1394,7 +1406,7 @@ int8_t play_a_card(player *P){
 							}
 						}
 						
-						deal_damage(&Player[target(P)], damage_deal+atk+ P->atk_buff);
+						deal_damage(P, &Player[target(P)], damage_deal+atk+ P->atk_buff);
 						
 						if(P->sleep != 0) gain_armor(P , armor_get+ P->defend_buff);
 						writeinRHU(P,0,1,damage_deal+atk+ P->atk_buff,armor_get+ P->defend_buff,0,P->hands_card[combo_card-1].level,P->hands_card[combo_card-1].cardcode,P->hands_card[cn-1].cardcode);
@@ -1456,7 +1468,7 @@ int8_t play_a_card(player *P){
 					if(range_counter(P,&Player[target(P)],P->hands_card[cn-1].range-rr) == 1 || P->hands_card[cn-1].range == 0){
 						use_skill(P,&Player[target(P)], P->hands_card[cn-1].cardcode , &damage_deal , &armor_get , lv , sleepbasic  , mode ,BotOn);
 						
-						deal_damage(&Player[target(P)], damage_deal+atk+ P->atk_buff);
+						deal_damage(P, &Player[target(P)], damage_deal+atk+ P->atk_buff);
 						
 						if(P->sleep != 0) gain_armor(P , armor_get+ P->defend_buff);
 						
@@ -1536,7 +1548,7 @@ int8_t play_a_card(player *P){
 					}
 					if(range_counter(P,&Player[target(P)],P->hands_card[cn-1].range) == 1 || P->hands_card[cn-1].range == 0){
 						use_Ult(P,&Player[target(P)],P->hands_card[cn-1].cardcode , &damage_deal , &armor_get, mode , skillBuyDeck , basicBuyDeck,BotOn);
-						deal_damage(&Player[target(P)], damage_deal);
+						deal_damage(P, &Player[target(P)], damage_deal);
 						gain_armor(P , armor_get);
 						
 						handaddplaycardnum(P,cn-1);
