@@ -711,3 +711,58 @@ int8_t move_adjacent_to_player(player* you, player* target) {
     }
     return 0;
 }
+
+// 新函式1: 將一張牌放到指定玩家牌庫的頂部
+void add_card_to_deck_top(player* target, int16_t card_id) {
+    if (target->deck.SIZE >= 256) {
+        printf("牌庫已滿，無法加入！\n");
+        return;
+    }
+    // 將所有牌往後移一格
+    for (uint32_t i = target->deck.SIZE; i > 0; --i) {
+        target->deck.array[i] = target->deck.array[i - 1];
+    }
+    // 將新牌放到最前面 (牌庫頂)
+    target->deck.array[0] = card_id;
+    target->deck.SIZE++;
+}
+
+// 新函式2: 從對手棄牌堆回收火柴
+int8_t reclaim_matches_from_discard(player* you, player* opponent, int8_t max_reclaim) {
+    int reclaimed_count = 0;
+    for (int k = 0; k < max_reclaim; ++k) {
+        // 檢查對手棄牌堆是否有火柴
+        int match_index = -1;
+        for (uint32_t i = 0; i < opponent->discard.SIZE; ++i) {
+            if (opponent->discard.array[i] == MATCH_CARD_ID) {
+                match_index = i;
+                break;
+            }
+        }
+
+        if (match_index != -1) {
+            printf("%s 的棄牌堆有火柴，是否要回收？ (1:是, 0:否)\n> ", opponent->charname);
+            int8_t choice = 0;
+            if (you->bot == 1) {
+                choice = 1; // Bot 永遠回收
+                printf("1\n");
+            } else {
+                scanf("%hhd", &choice);
+                getchar();
+            }
+
+            if (choice == 1) {
+                eraseVector(&opponent->discard, match_index);
+                you->matches++;
+                reclaimed_count++;
+                printf("你回收了一根火柴。\n");
+            } else {
+                break; // 玩家選擇不回收
+            }
+        } else {
+            printf("%s 的棄牌堆沒有火柴了。\n", opponent->charname);
+            break; // 沒有火柴可回收
+        }
+    }
+    return reclaimed_count;
+}

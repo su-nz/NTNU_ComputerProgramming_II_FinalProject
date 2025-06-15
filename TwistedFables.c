@@ -339,6 +339,28 @@ int8_t initialization_skill_shop(player *P){
 			}
 			break;
 		}
+		case 7: // 火柴女孩
+		{
+			int16_t temp_atk[] = {156, 85, 85, 85, 155, 84, 84, 83};
+			for (int i = 0; i < 8; ++i) {
+				skillBuyDeck[P->num][0].array[i] = temp_atk[i];
+			}
+
+			int16_t temp_def[] = {158, 88, 88, 88, 157, 87, 87, 86};
+			for (int i = 0; i < 8; ++i) {
+				skillBuyDeck[P->num][1].array[i] = temp_def[i];
+			}
+
+			int16_t temp_mov[] = {160, 91, 91, 91, 159, 90, 90, 89};
+			for (int i = 0; i < 8; ++i) {
+				skillBuyDeck[P->num][2].array[i] = temp_mov[i];
+			}
+
+			P->Ult_deck[0] = 92;
+			P->Ult_deck[1] = 93;
+			P->Ult_deck[2] = 94;
+			break;
+		}
 	}
 	return 0; // 成功
 }
@@ -887,7 +909,14 @@ int8_t play_a_card(player *P){
 			
 	}
 	print_hands(P);
-	
+	// 尋找場上的火柴女孩玩家
+	player* match_girl = NULL;
+	for (int i=0; i<4; ++i) {
+		if (Player[i].character == 7) {
+			match_girl = &Player[i];
+			break;
+		}
+	}
 	printf("\n1.)攻擊牌\n2.)防禦牌\n3.)移動牌\n4.)技能牌\n5.)大招牌\n");
 	printf("你要打哪一種張牌？（輸入0返回）\n>");
 	while(1){
@@ -984,6 +1013,16 @@ int8_t play_a_card(player *P){
 						}
 						if(cn == 0)break;
 						if(P->hands_card[cn-1].type == 0 || P->hands_card[cn-1].type == 3){
+							if (P->hands_card[cn-1].cardcode == MATCH_CARD_ID) {
+								if (match_girl != NULL && check_passive(match_girl, 156) > 0) { // 火焰的捉弄
+									printf("火柴牌不能作為攻擊牌使用！ %s 獲得 1 點能量。\n", match_girl->charname);
+									match_girl->power++;
+								} else {
+									printf("你點燃了一根火柴，但什麼也沒發生...\n");
+								}
+								handaddplaycardnum(P, cn-1); // 消耗掉火柴牌
+								continue; // 繼續選擇下一張牌
+							}
 							atk += P->hands_card[cn-1].value + P->atk_buff;
 							power_generate += P->hands_card[cn-1].power_generate;
 							
@@ -1087,6 +1126,7 @@ int8_t play_a_card(player *P){
 						}
 				if(cn == 0)break;
 				if(P->hands_card[cn-1].type == 1 || P->hands_card[cn-1].type == 3){
+					
 					def += P->hands_card[cn-1].value + P->defend_buff;
 					power_generate += P->hands_card[cn-1].power_generate;						
 					handaddplaycardnum(P,cn-1);
@@ -1682,7 +1722,7 @@ int8_t action_command(player *P){
 		do {
 			comm = botChoice(0, 1, 6, 19);
 		} while (comm == 4 || comm == 5);
-		
+
 	}else{
 										
 		scanf("%d",&comm);
@@ -1944,6 +1984,9 @@ void print_extra_inf(player *P){
 	}
 	if((*P).Scheherazade_token != -1){
 		printf("Token數量：%hhd\n",(*P).Scheherazade_token);
+	}
+	if((*P).matches != -1){ //火柴女孩
+		printf("火柴牌庫剩餘：%hhd\n",(*P).matches);
 	}
 }
 

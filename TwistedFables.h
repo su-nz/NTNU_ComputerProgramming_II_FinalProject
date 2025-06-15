@@ -23,6 +23,7 @@
 #define ANSI_RESET "\033[0m"
 
 #define POISON_CARD_ID 900
+#define MATCH_CARD_ID 901
 
 typedef struct Character{
 	int8_t Maxhp;
@@ -116,7 +117,6 @@ typedef struct Player{
 	int immune;
 	RHU RedUlt;
 	int8_t mulan_draw_buff; //花木蘭抽牌buff 
-
 	
 }player;
 
@@ -181,3 +181,6 @@ int8_t check_location(int8_t coor);
 int8_t swap_place(player *P1 ,player *P2);
 
 int get_affordable_card_choices(player *P, int* choices_out);
+
+void add_card_to_deck_top(player* target, int16_t card_id); 
+int8_t reclaim_matches_from_discard(player* you, player* opponent, int8_t max_reclaim); 

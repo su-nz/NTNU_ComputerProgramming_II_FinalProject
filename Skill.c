@@ -631,6 +631,46 @@ int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , i
         printf("%s 發動了雷霆一擊，花費了 %d 點氣，造成 %d 點傷害！\n", you->charname, you->qi, *damage_output);
         you->qi = 0;
     }
+	 // --- 火柴女孩必殺技 ---
+    if (card_id == 92) { // 地獄烈焰
+        *damage_output = (int)ceil(you->power / 2.0);
+		printf("%s 召喚地獄烈焰，造成 %d 點傷害！\n", you->charname, *damage_output);
+    }
+    else if (card_id == 93) { // 厄運降臨
+        int match_count = 0;
+        printf("%s 翻開了對手的牌庫...\n", you->charname);
+        for(int i=0; i<6; ++i) {
+            if (P->deck.SIZE > 0) {
+                int16_t milled_card = BottomVector(&P->deck);
+                card C_temp;
+                Card_Define(milled_card, &C_temp);
+                printf("棄掉了 %s\n", C_temp.cardname);
+                if (milled_card == MATCH_CARD_ID) {
+                    match_count++;
+                }
+                discard_from_top_of_deck(P, 1);
+            } else {
+                break;
+            }
+        }
+        *damage_output = match_count;
+		printf("共翻到 %d 根火柴，造成 %d 點傷害。\n", match_count, *damage_output);
+    }
+    else if (card_id == 94) { // 貪婪詛咒
+        printf("你要將幾根火柴放到對手牌庫頂？(0-3)\n");
+        int8_t amount = 0;
+        // ... (加入 bot 或玩家輸入邏輯)
+        scanf("%hhd", &amount); getchar();
+        if (amount < 0) amount = 0;
+        if (amount > 3) amount = 3;
+        if (amount > you->matches) amount = you->matches;
+        
+        for(int i=0; i<amount; ++i) {
+            add_card_to_deck_top(P, MATCH_CARD_ID);
+        }
+        you->matches -= amount;
+        printf("你將 %d 根火柴放到了 %s 的牌庫頂。\n", amount, P->charname);
+    }
 	return 0;
 }
 
@@ -1037,5 +1077,70 @@ int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output ,
             }
         }
     }
+	// --- 火柴女孩技能 ---
+	if (card_id >= 83 && card_id <= 85) { // 攻擊技能鏈
+		card C;
+        Card_Define(card_id, &C);
+        *damage_output = C.damage + lv;
+		
+		if (check_passive(you, 155) > 0) { // 蛻變1: 痛苦的儀式
+			printf("你擁有'痛苦的儀式'，是否要從對手棄牌堆回收1根火柴使本次傷害+2？(1:是, 0:否)\n");
+			int8_t choice = 0;
+			//... (加入 bot 或玩家輸入邏輯)
+			scanf("%hhd", &choice); getchar();
+			if (choice == 1 && reclaim_matches_from_discard(you, P, 1) > 0) {
+				*damage_output += 2;
+			}
+		}
+
+		while (you->power >= 3) {
+			printf("你可以花費3點能量使傷害+1，是否花費？(剩餘能量:%d) (1:是, 0:否)\n", you->power);
+			int8_t choice = 0;
+			//... (加入 bot 或玩家輸入邏輯)
+			scanf("%hhd", &choice); getchar();
+			if (choice == 1) {
+				you->power -= 3;
+				(*damage_output)++;
+			} else {
+				break;
+			}
+		}
+	}
+	else if (card_id >= 86 && card_id <= 88) { // 防禦技能鏈
+		*armor_output = 1;
+		int max_draw = 0;
+		if (card_id == 86) max_draw = 1;
+		if (card_id == 87) max_draw = 2;
+		if (card_id == 88) max_draw = 3;
+
+		printf("你可以失去X點生命來抽X張牌 (X至多為%d)，要失去多少生命？(0-%d)\n", max_draw, max_draw);
+		int8_t cost_hp = 0;
+		//... (加入 bot 或玩家輸入邏輯)
+		scanf("%hhd", &cost_hp); getchar();
+		if (cost_hp > 0 && cost_hp <= max_draw && you->hp > cost_hp) {
+			you->hp -= cost_hp;
+			draw_card(cost_hp, you);
+		}
+		
+		if (check_passive(you, 157) > 0) { // 蛻變1: 放縱的渴望
+			printf("你擁有'放縱的渴望'，是否從對手棄牌堆回收1根火柴來額外抽1張牌？(1:是, 0:否)\n");
+			int8_t choice = 0;
+			//... (加入 bot 或玩家輸入邏輯)
+			scanf("%hhd", &choice); getchar();
+			if (choice == 1 && reclaim_matches_from_discard(you, P, 1) > 0) {
+				draw_card(1, you);
+			}
+		}
+	}
+	else if (card_id >= 89 && card_id <= 91) { // 移動技能鏈
+		card C;
+        Card_Define(card_id, &C);
+        *damage_output = C.damage;
+
+		int reclaimed = reclaim_matches_from_discard(you, P, lv);
+		if (card_id == 89) you->power += reclaimed * 1;
+		if (card_id == 90) { you->power += reclaimed * 2; regenerate_hp(you, reclaimed * 1); }
+		if (card_id == 91) { you->power += reclaimed * 3; regenerate_hp(you, reclaimed * 2); }
+	}
 	return 0;
 }

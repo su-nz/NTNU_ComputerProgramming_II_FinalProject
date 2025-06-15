@@ -1374,7 +1374,175 @@ int16_t Card_Define(int16_t CardID , card *C){
 	//火柴女孩_技能牌-----------------------------------------------------------------
 	//必殺技
 	//蛻變牌
+// 火柴牌本身
+	if(CardID == MATCH_CARD_ID){
+		(*C).cardname = "火柴";
+		(*C).type = 3; // 視為通用牌，但有特殊規則
+		(*C).level = 0; // 等級為0
+		(*C).inf = "一張會觸發火柴女孩能力的特殊卡牌。";
+		(*C).cardcode = CardID;
+	}
 
+	// 火柴女孩_技能牌-----------------------------------------------------------------
+	if(CardID == 83){ // 虛幻的願望
+		(*C).cardname = "虛幻的願望";
+		(*C).cost = 0;
+		(*C).level = 1;
+		(*C).range = 1;
+		(*C).type = 4;
+		(*C).damage = 1;
+		(*C).require_basic_card = 0;
+		(*C).cardcode = CardID;
+		(*C).inf = "射程1 傷害1+O\n你可以花費能量強化此傷害，每花費三點能量傷害+1";
+	}
+	if(CardID == 84){ // 隱密的期望
+		(*C).cardname = "隱密的期望";
+		(*C).cost = 2;
+		(*C).level = 2;
+		(*C).range = 1;
+		(*C).type = 4;
+		(*C).damage = 2;
+		(*C).require_basic_card = 0;
+		(*C).cardcode = CardID;
+		(*C).inf = "購買費用 2\n射程1 傷害2+O\n你可以花費能量強化此傷害，每花費三點能量傷害+1";
+	}
+	if(CardID == 85){ // 無厭的奢望
+		(*C).cardname = "無厭的奢望";
+		(*C).cost = 4;
+		(*C).level = 3;
+		(*C).range = 1;
+		(*C).type = 4;
+		(*C).damage = 3;
+		(*C).require_basic_card = 0;
+		(*C).cardcode = CardID;
+		(*C).inf = "購買費用 4\n射程1 傷害3+O\n你可以花費能量強化此傷害，每花費三點能量傷害+1";
+	}
+	if(CardID == 86){ // 惡魔的祭品
+		(*C).cardname = "惡魔的祭品";
+		(*C).cost = 0;
+		(*C).level = 1;
+		(*C).range = 0;
+		(*C).type = 4;
+		(*C).shield = 1;
+		(*C).require_basic_card = 1;
+		(*C).cardcode = CardID;
+		(*C).inf = "防禦1\n可以失去X點生命來抽取X張牌，X至多為1";
+	}
+	if(CardID == 87){ // 惡魔的賭注
+		(*C).cardname = "惡魔的賭注";
+		(*C).cost = 2;
+		(*C).level = 2;
+		(*C).range = 0;
+		(*C).type = 4;
+		(*C).shield = 1;
+		(*C).require_basic_card = 1;
+		(*C).cardcode = CardID;
+		(*C).inf = "購買費用 2\n防禦1\n可以失去X點生命來抽取X張牌，X至多為2";
+	}
+	if(CardID == 88){ // 惡魔的契約
+		(*C).cardname = "惡魔的契約";
+		(*C).cost = 4;
+		(*C).level = 3;
+		(*C).range = 0;
+		(*C).type = 4;
+		(*C).shield = 1;
+		(*C).require_basic_card = 1;
+		(*C).cardcode = CardID;
+		(*C).inf = "購買費用 4\n防禦1\n可以失去X點生命來抽取X張牌，X至多為3";
+	}
+	if(CardID == 89){ // 失重的靈魂
+		(*C).cardname = "失重的靈魂";
+		(*C).cost = 0;
+		(*C).level = 1;
+		(*C).range = 1;
+		(*C).type = 4;
+		(*C).damage = 1;
+		(*C).require_basic_card = 2;
+		(*C).cardcode = CardID;
+		(*C).inf = "射程1 傷害1\n你可以從對手棄牌堆中將至多O張火柴放回到火柴牌庫\n每以此放回一張，獲得1點能量";
+	}
+	if(CardID == 90){ // 虧欠的靈魂
+		(*C).cardname = "虧欠的靈魂";
+		(*C).cost = 2;
+		(*C).level = 2;
+		(*C).range = 2;
+		(*C).type = 4;
+		(*C).damage = 2;
+		(*C).require_basic_card = 2;
+		(*C).cardcode = CardID;
+		(*C).inf = "購買費用 2\n射程2 傷害2\n你可以從對手棄牌堆中將至多O張火柴放回到火柴牌庫\n每以此放回一張，獲得2點能量，恢復1點生命";
+	}
+	if(CardID == 91){ // 殘破的靈魂
+		(*C).cardname = "殘破的靈魂";
+		(*C).cost = 4;
+		(*C).level = 3;
+		(*C).range = 3;
+		(*C).type = 4;
+		(*C).damage = 3;
+		(*C).require_basic_card = 2;
+		(*C).cardcode = CardID;
+		(*C).inf = "購買費用 4\n射程3 傷害3\n你可以從對手棄牌堆中將至多O張火柴放回到火柴牌庫\n每以此放回一張，獲得3點能量，恢復2點生命";
+	}
+
+	// 必殺技
+	if(CardID == 92){ // 地獄烈焰
+		(*C).cardname = "地獄烈焰";
+		(*C).type = 5;
+		(*C).range = 1;
+		(*C).cardcode = CardID;
+		(*C).inf = "射程1 傷害X\nX為你當前擁有的能量數的一半（向上取整）";
+	}
+	if(CardID == 93){ // 厄運降臨
+		(*C).cardname = "厄運降臨";
+		(*C).type = 5;
+		(*C).range = 3;
+		(*C).cardcode = CardID;
+		(*C).inf = "射程3\n棄掉對手牌庫頂部6張牌\n每有一張火柴 造成一點傷害";
+	}
+	if(CardID == 94){ // 貪婪詛咒
+		(*C).cardname = "貪婪詛咒";
+		(*C).type = 5;
+		(*C).cardcode = CardID;
+		(*C).inf = "將火柴牌庫至多三張火柴放至對手牌庫頂";
+	}
+
+	// 蛻變牌
+	if(CardID == 155){ // 痛苦的儀式
+		(*C).cardname = "痛苦的儀式";
+		(*C).type = 6;
+		(*C).cardcode = CardID;
+		(*C).inf = "蛻變1(攻)\n當你使用攻擊行動或是攻擊技能時，\n可以從對手棄牌堆將至多一張火柴放回火柴牌庫，該次傷害+2";
+	}
+	if(CardID == 156){ // 火焰的捉弄
+		(*C).cardname = "火焰的捉弄";
+		(*C).type = 6;
+		(*C).cardcode = CardID;
+		(*C).inf = "蛻變2(攻)\n當對手使用一張火柴牌時 額外獲得一點能量\n火柴牌不能作為攻擊牌使用";
+	}
+	if(CardID == 157){ // 放縱的渴望
+		(*C).cardname = "放縱的渴望";
+		(*C).type = 6;
+		(*C).cardcode = CardID;
+		(*C).inf = "蛻變1(防)\n當你使用一個防禦技能時，\n可以從對手棄牌堆將至多1張火柴放回火柴牌庫來額外抽一張牌";
+	}
+	if(CardID == 158){ // 欲望的捉弄
+		(*C).cardname = "欲望的捉弄";
+		(*C).type = 6;
+		(*C).cardcode = CardID;
+		(*C).inf = "蛻變2(防)\n當對手使用一張火柴牌時 額外獲得一點能量\n火柴牌不能作為防禦牌使用";
+	}
+	if(CardID == 159){ // 魔鬼的凝視
+		(*C).cardname = "魔鬼的凝視";
+		(*C).type = 6;
+		(*C).cardcode = CardID;
+		(*C).inf = "蛻變1(移)\n在你的生命因承受傷害而減少後(非失去生命)\n可以從對手棄牌堆將至多1張火柴放回火柴牌庫\n向任意方向移動一格";
+	}
+	if(CardID == 160){ // 命運的捉弄
+		(*C).cardname = "命運的捉弄";
+		(*C).type = 6;
+		(*C).cardcode = CardID;
+		(*C).inf = "蛻變2(移)\n當對手使用一張火柴牌時 額外獲得一點能量\n火柴牌不能作為移動牌使用";
+	}
 	//桃樂絲_技能牌-----------------------------------------------------------------
 	//必殺技
 	//蛻變牌
