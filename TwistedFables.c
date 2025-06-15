@@ -19,7 +19,7 @@ int8_t player2_char = -1;
 int8_t player3_char = -1;
 int8_t player4_char = -1;
 int8_t turn = 0;
-int8_t gui_mode = 0;
+int8_t gui_mode = 1;
 
 
 int RedHoodHPtemp=30;
@@ -2632,7 +2632,9 @@ int main(){ //mainfuc
 		gui_mode = 2;
 	#endif
 	}
+
 	
+
 	
 	Player[0].starting_size = 0;
 	Player[1].starting_size = 0;
@@ -2909,6 +2911,12 @@ int main(){ //mainfuc
 	
 	initialize_player(&Player[0]);
 	initialize_player(&Player[1]);
+	if (gui_mode == 1) {
+		update_coordinates(Player[0].coordinate, Player[1].coordinate);
+		update_characters(player1_char, player2_char);
+		update_characters_info(Player[0], Player[1]);
+		start_board_gui();
+	}
 	if(mode ==2){
 		initialization_skill_shop(&Player[2]);
 		initialization_skill_shop(&Player[3]);
@@ -3107,9 +3115,9 @@ int main(){ //mainfuc
             
 		}
 			}
-			 Mix_HaltMusic();
+	Mix_HaltMusic();
 	Mix_FreeMusic(bgm);
-	    Mix_CloseAudio();
-	    SDL_Quit();	
-			return 0;
+	Mix_CloseAudio();
+	SDL_Quit();	
+	return 0;
 }
