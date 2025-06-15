@@ -5,7 +5,9 @@ int8_t add_card_to_starting(player *P,int16_t card_id  ,int16_t combo_cardid ,in
 	P->starting[P->starting_size] = card_id;
 	P->combo_basic[P->starting_size] = combo_cardid;
 	P->starting_lv[P->starting_size] = lv;
+	P->clone[P->starting_size]=0;
 	P->starting_size++;
+	
 }
 
 
@@ -209,8 +211,9 @@ int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , i
 			*damage_output = you->RedUlt.atk;
 			*armor_output = you->RedUlt.def;
 		}else if(you->RedUlt.action == 1){
-		int8_t a , b;
+		int8_t a , b =-100;
 			use_skill(you,P,you->RedUlt.cardid , &a ,& b, you->RedUlt.spel_buy ,you->RedUlt.bas_buy ,  mode,BotOn);
+			you->clone[you->starting_size-1]=1;
 			*damage_output = you->RedUlt.atk;
 			*armor_output = you->RedUlt.def;
 		}else if(you->RedUlt.action == 2){
