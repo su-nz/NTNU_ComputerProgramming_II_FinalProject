@@ -43,3 +43,4 @@ void eraseVector(vector* vec, int index) {
 int32_t BottomVector(vector* vec){
 	return vec->array[vec->SIZE-1];
 }
+

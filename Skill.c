@@ -7,8 +7,6 @@ int8_t add_card_to_starting(player *P,int16_t card_id  ,int16_t combo_cardid ,in
 	P->starting_lv[P->starting_size] = lv;
 	P->clone[P->starting_size]=0;
 	P->starting_size++;
-
-	return 0;
 	
 }
 
@@ -17,26 +15,25 @@ int8_t startingskill(player* you ,player *P,int16_t card_id,int16_t lv ){
 	if(card_id == 14){
 		if(you->armor !=0 ){
 			if(range_counter(you,P,1) == 1){
-				deal_damage(you, P, 2);
+				deal_damage(P,2);
 			}
 		}
 	}else if(card_id == 15){
 		if(you->armor !=0 ){
 			if(range_counter(you,P,2) == 1){
-				deal_damage(you, P, 4);
+				deal_damage(P,4);
 			}
 		}
 	}else if(card_id == 16){
 		if(you->armor !=0 ){
 			if(range_counter(you,P,3) == 1){
-				deal_damage(you, P, 6);
+				deal_damage(P,6);
 			}
 		}
 	}else if(card_id == 45){
 		draw_card( 6-you->sleep_hp, you);
 		you->sleep_hp = -2;
 	}
-	return 0;
 }
 
 
@@ -527,34 +524,6 @@ int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , i
 		regenerate_hp(you,you->sleep_token);
 		remove_sleeptoken(you,you->sleep_token);
 	}
-		if (card_id == 32) { // 七蛇之怒
-        int8_t poison_count = 0;
-        printf("對手的棄牌堆中有：\n");
-        for (int i = 0; i < P->discard.SIZE; i++) {
-            if (P->discard.array[i] == POISON_CARD_ID) {
-                poison_count++;
-            }
-        }
-        printf("%d 張中毒牌。\n", poison_count);
-        *damage_output = poison_count;
-    } 
-    else if (card_id == 33) { // 魔鏡之雨
-        *damage_output = 3;
-        printf("對手棄掉了所有手牌，並重新抽取 4 張。\n");
-        discard_all_hands(P);
-        draw_card(4, P);
-    }
-    else if (card_id == 34) { // 醞釀之災
-        *damage_output = 3;
-        // 這個效果比較複雜，需要額外的UI互動讓玩家選擇。
-        // 作為初步實作，我們先印出提示訊息
-		//(選擇棄牌堆卡牌洗回牌庫的功能待實作)。
-        printf("發動了醞釀之災！\n");
-        // 可以在此處呼叫一個未來的函式，如: discard_to_deck_interactive(you, P, 3);
-    }
-
-
-	return 0;
 }
 
 

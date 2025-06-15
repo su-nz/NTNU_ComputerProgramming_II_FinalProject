@@ -574,12 +574,6 @@ int16_t Card_Define(int16_t CardID , card *C){
 		(*C).inf = "當一張中毒牌進入對手的棄牌堆時 他額外失去1點生命\n此蛻變牌可以累積";
 	}
 	
-	if(CardID == POISON_CARD_ID){
-    (*C).cardname = "中毒";
-    (*C).type = -1; // 特殊類型
-    (*C).inf = "一張無用的卡牌，會稀釋你的牌庫。";
-    (*C).cardcode = CardID;
-}
 
 	//睡美人_技能牌-----------------------------------------------------------------
 	if(CardID == 35){
@@ -671,7 +665,7 @@ int16_t Card_Define(int16_t CardID , card *C){
 	    (*C).power_generate = 0;
 	    (*C).damage = 3;
 	    (*C).shield = 0;
-	    (*C).require_basic_card = 1;
+	    (*C).require_basic_card = 2;
 	    (*C).cardcode = CardID;
 	    (*C).inf = "射程2 傷害 O+⬖ 將對手向你的方向移動O格（不算對手的移動行動、不能將他穿過你）";
 	}
@@ -684,7 +678,7 @@ int16_t Card_Define(int16_t CardID , card *C){
 	    (*C).power_generate = 0;
 	    (*C).damage = 0;
 	    (*C).shield = 0;
-	    (*C).require_basic_card = 1;
+	    (*C).require_basic_card = 2;
 	    (*C).cardcode = CardID;
 	    (*C).inf = "射程3 傷害 O+⬖ 將對手向你的方向移動O格（不算對手的移動行動、不能將他穿過你）";
 	}
@@ -697,7 +691,7 @@ int16_t Card_Define(int16_t CardID , card *C){
 	    (*C).power_generate = 0;
 	    (*C).damage = 0;
 	    (*C).shield = 0;
-	    (*C).require_basic_card = 1;
+	    (*C).require_basic_card = 2;
 	    (*C).cardcode = CardID;
 	    (*C).inf = "射程4 傷害 O+⬖ 將對手向你的方向移動O格（不算對手的移動行動、不能將他穿過你）";
 	}
@@ -1382,5 +1376,6 @@ int16_t Card_Define(int16_t CardID , card *C){
 	//山魯佐德_技能牌-----------------------------------------------------------------
 	//必殺技
 	//蛻變牌
-	return	 0;
+
 }
+
