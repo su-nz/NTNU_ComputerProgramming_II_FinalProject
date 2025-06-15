@@ -31,6 +31,7 @@ int8_t initialize_player(player *P){
 		P->Redhoodsave[2] = -1;
 		
 	}
+	return 0;
 }
 
 int8_t target(player *you){
@@ -45,6 +46,7 @@ int8_t target(player *you){
 		if(Player[2].coordinate < 0 && Player[2].coordinate != you->coordinate) return Player[2].num;
 		if(Player[3].coordinate < 0 && Player[3].coordinate != you->coordinate) return Player[3].num;
 	}
+	return 0;
 }
 
 int8_t end_game_detection(){
@@ -176,6 +178,7 @@ int8_t initialization_skill_shop(player *P){
 			P->Ult_deck[0] = 32;
 			P->Ult_deck[1] = 33;
 			P->Ult_deck[2] = 34;
+			break;
 		}
 		
 		case 2:
@@ -252,6 +255,7 @@ int8_t printf_basic_shop(){
 	printf("8.） 移動卡 Lv2 費用 3 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[2][1].SIZE);
 	printf("9.） 移動卡 Lv3 費用 6 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[2][2].SIZE);
 	printf("10.）通用卡 Lv1 費用 2 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[3][0].SIZE);
+	return 0;
 }
 
 int8_t printf_skill_shop(int8_t player_num){
@@ -287,6 +291,7 @@ int8_t printf_skill_shop(int8_t player_num){
 	}else{
 		printf("3.）移動技能鏈 已售完\n\n");
 	}
+	return 0;
 }
 
 int8_t skill_shop_command(player *P){
@@ -754,6 +759,7 @@ int8_t discard_card_from_hand(player *P,int8_t index){
 		Card_Define((*P).hands_card[i + 1].cardcode , &(*P).hands_card[i]);
 	}
 	(*P).hands--;
+	return 0;
 }
 	
 int8_t remove_card(player *P){
@@ -857,6 +863,7 @@ int8_t remove_card(player *P){
 		break;
 		
 	}
+	return 0;
 }
 
 
@@ -900,6 +907,7 @@ int8_t gain_armor(player *P , int8_t def){
 			P-> armor = P-> Maxarmor;
 		}
 	}
+	return 0;
 }
 
 int8_t play_a_card(player *P){
@@ -2178,6 +2186,7 @@ int8_t Ult_Gain(player *P){
 			}
 		}
 	}
+	return 0;
 }
 
 

@@ -6,6 +6,8 @@ int8_t add_card_to_starting(player *P,int16_t card_id  ,int16_t combo_cardid ,in
 	P->combo_basic[P->starting_size] = combo_cardid;
 	P->starting_lv[P->starting_size] = lv;
 	P->starting_size++;
+
+	return 0;
 }
 
 
@@ -32,6 +34,7 @@ int8_t startingskill(player* you ,player *P,int16_t card_id,int16_t lv ){
 		draw_card( 6-you->sleep_hp, you);
 		you->sleep_hp = -2;
 	}
+	return 0;
 }
 
 
@@ -577,10 +580,13 @@ int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , i
     else if (card_id == 34) { // 醞釀之災
         *damage_output = 3;
         // 這個效果比較複雜，需要額外的UI互動讓玩家選擇。
-        // 作為初步實作，我們先印出提示訊息。
-        printf("發動了醞釀之災！(選擇棄牌堆卡牌洗回牌庫的功能待實作)\n");
+        // 作為初步實作，我們先印出提示訊息
+		//(選擇棄牌堆卡牌洗回牌庫的功能待實作)。
+        printf("發動了醞釀之災！\n");
         // 可以在此處呼叫一個未來的函式，如: discard_to_deck_interactive(you, P, 3);
     }
+
+	return 0;
 }
 
 

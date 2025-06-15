@@ -47,6 +47,7 @@ int8_t showplaycardnum(player *P){
 	for(int i = 0 ; i < P->playcardnum ; i++){
 	
 	}
+	return 0;
 }
 
 int8_t remove_card_from_hand(player *P , int8_t select){
@@ -73,6 +74,7 @@ int8_t botChoice(int16_t mode , int16_t min , int16_t  max  , int16_t situation)
 	    usleep(2000000);
 	    return r;	    
 	}
+	return 0;
 }
 
 int8_t clearRHU(player *P){
@@ -84,6 +86,7 @@ int8_t clearRHU(player *P){
 	P->RedUlt.spel_buy=0;
 	P->RedUlt.bas_buy=0;
 	P->RedUlt.cardid=0;
+	return 0;
 }
 
 int8_t writeinRHU(player *P,int8_t a1,int8_t a2,int8_t a3,int8_t a4,int8_t a5,int8_t a6,int8_t a7,int8_t a8){
@@ -95,6 +98,7 @@ int8_t writeinRHU(player *P,int8_t a1,int8_t a2,int8_t a3,int8_t a4,int8_t a5,in
 	P->RedUlt.spel_buy=a6;
 	P->RedUlt.bas_buy=a7;
 	P->RedUlt.cardid=a8;
+	return 0;
 }
 
 
@@ -468,6 +472,7 @@ int8_t gain_sleeptoken(player *P , int8_t amount){
 		}
 	}
 	if(P->sleep_token >= 6 ) P->sleep = 0;
+	return 0;
 }
 
 int8_t remove_sleeptoken(player *P , int8_t amount){
@@ -477,6 +482,7 @@ int8_t remove_sleeptoken(player *P , int8_t amount){
 		}
 	}
 	if(P->sleep_token == 0) P->sleep = 1;
+	return 0;
 }
 
 int8_t remove_hp(player *P , int8_t damage){
@@ -485,6 +491,7 @@ int8_t remove_hp(player *P , int8_t damage){
 			P->hp--;
 		}
 	}
+	return 0;
 }
 
 int8_t regenerate_hp(player *P,int8_t amount){
@@ -493,6 +500,7 @@ int8_t regenerate_hp(player *P,int8_t amount){
 			P->hp++;
 		}
 	}
+	return 0;
 }
 
 int8_t print_discard(player *P){
@@ -503,6 +511,7 @@ int8_t print_discard(player *P){
 		Card_Define(P->discard.array[i] , &temp_card);
 		printf("%d.)%s ",i+1,temp_card.cardname);
 	}
+	return 0;
 }
 
 int8_t range_counter(player *P1,player *P2,int8_t range){
@@ -525,6 +534,7 @@ int8_t check_starting(player *P,player *Enemy){
 		startingskill(P,Enemy,P->starting[i],P->starting_lv[i]);
 	}
 	initialization_starting(P);
+	return 0;
 }
 
 int8_t initialization_starting(player *P){
@@ -536,12 +546,14 @@ int8_t initialization_starting(player *P){
 		P->starting[P->starting_size-1] = 0;
 		P->starting_size--;
 	}
+	return 0;
 }
 
 int8_t clear_select(player *P){
 	for(int i = 0 ; i < 50 ; i++){
 		P->hands_select[i] = 0; 
 	}
+	return 0;
 }
 
 /**

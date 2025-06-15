@@ -165,3 +165,4 @@ int8_t writeinRHU(player *P,int8_t a1,int8_t a2,int8_t a3,int8_t a4,int8_t a5,in
 int8_t discard_from_top_of_deck(player* target, int8_t amount);
 int8_t add_poison_to_discard(player* you, player* target, int8_t amount);
 int8_t move_adjacent_to_player(player* you, player* target);
+
