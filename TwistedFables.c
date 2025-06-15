@@ -19,6 +19,7 @@ int8_t player2_char = -1;
 int8_t player3_char = -1;
 int8_t player4_char = -1;
 int8_t turn = 0;
+int8_t gui_mode = 0;
 
 int RedHoodHPtemp=30;
 
@@ -311,7 +312,7 @@ int8_t skill_shop_command(player *P){
 						}
 					}
 		}
-		printf("目前剩餘能量："BOLD GREEN"%d"RESET"\n", P->power);
+		printf("目前剩餘能量："ANSI_BOLD ANSI_GREEN"%d"ANSI_RESET"\n", P->power);
 		printf("請輸入你要做什麼？\n");
 		printf("1. 升級技能\n");
 		printf("2. 退出商店\n");
@@ -369,10 +370,10 @@ int8_t skill_shop_command(player *P){
 			switch(cc){
 				case 1: // 攻擊
 					if(P->power < cardtemp1.cost){
-						printf(BOLD RED"你的能量不夠\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
 						wait_for_space();
 					}else if(skillBuyDeck[P->num][0].SIZE == 0){
-						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n"ANSI_RESET) ;
 						wait_for_space();
 					}else{
 						pushbackVector(&P->discard, skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1]);
@@ -392,10 +393,10 @@ int8_t skill_shop_command(player *P){
 
 				case 2: // 防禦
 					if(P->power < cardtemp2.cost){
-						printf(BOLD RED"你的能量不夠\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
 						wait_for_space();
 					}else if(skillBuyDeck[P->num][1].SIZE == 0){
-						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n"ANSI_RESET) ;
 						wait_for_space();
 					}else{
 						pushbackVector(&P->discard, skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1]);
@@ -415,10 +416,10 @@ int8_t skill_shop_command(player *P){
 
 				case 3: // 移動
 					if(P->power < cardtemp3.cost){
-						printf(BOLD RED"你的能量不夠\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
 						wait_for_space();
 					}else if(skillBuyDeck[P->num][2].SIZE == 0){
-						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n"ANSI_RESET) ;
 						wait_for_space();
 					}else{
 						pushbackVector(&P->discard, skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1]);
@@ -437,7 +438,7 @@ int8_t skill_shop_command(player *P){
 				break;
 
 				default:
-					printf(BOLD RED"不存在此選項\n"RESET);
+					printf(ANSI_BOLD ANSI_RED"不存在此選項\n"ANSI_RESET);
 					wait_for_space();
 				break;
 			}
@@ -450,7 +451,7 @@ int8_t skill_shop_command(player *P){
 			}
 			return 0;
 		} else {
-			printf(BOLD RED"不合法輸入！！\n"RESET) ;
+			printf(ANSI_BOLD ANSI_RED"不合法輸入！！\n"ANSI_RESET) ;
 			wait_for_space();
 		}
 	}
@@ -504,7 +505,7 @@ int8_t basic_shop_command(player *P){
 	int8_t bsc =-1;
 	printf_basic_shop();
 	while(1){
-		printf("目前剩餘能量："BOLD GREEN"%d"RESET"\n", P->power);
+		printf("目前剩餘能量："ANSI_BOLD ANSI_GREEN"%d"ANSI_RESET"\n", P->power);
 		printf("請輸入你要做什麼？\n");
 		printf("1. 購買卡片\n");
 		printf("2. 退出商店\n");
@@ -531,11 +532,11 @@ int8_t basic_shop_command(player *P){
 			switch(cc){
 				case 1: // 攻擊卡 1
 					if(P->power < 1){
-						printf(BOLD RED"你的能量不夠\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
 						wait_for_space();
 						printf_basic_shop();
 					}else if(basicBuyDeck[0][0].SIZE == 0){
-						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n"ANSI_RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else{
@@ -550,11 +551,11 @@ int8_t basic_shop_command(player *P){
 				
 				case 2: // 攻擊卡 2
 					if(P->power < 3){
-						printf(BOLD RED"你的能量不夠\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else if(basicBuyDeck[0][1].SIZE == 0){
-						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n"ANSI_RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else{
@@ -569,11 +570,11 @@ int8_t basic_shop_command(player *P){
 				
 				case 3: // 攻擊卡 3
 					if(P->power < 6){
-						printf(BOLD RED"你的能量不夠\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else if(basicBuyDeck[0][2].SIZE == 0){
-						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n"ANSI_RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else{
@@ -588,11 +589,11 @@ int8_t basic_shop_command(player *P){
 				
 				case 4: // 防禦卡 1
 					if(P->power < 1){
-						printf(BOLD RED"你的能量不夠\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else if(basicBuyDeck[1][0].SIZE == 0){
-						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n"ANSI_RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else{
@@ -607,11 +608,11 @@ int8_t basic_shop_command(player *P){
 				
 				case 5: // 防禦卡 2
 					if(P->power < 3){
-						printf(BOLD RED"你的能量不夠\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else if(basicBuyDeck[1][1].SIZE == 0){
-						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n"ANSI_RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else{
@@ -626,11 +627,11 @@ int8_t basic_shop_command(player *P){
 				
 				case 6: // 防禦卡 3
 					if(P->power < 6){
-						printf(BOLD RED"你的能量不夠\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else if(basicBuyDeck[1][2].SIZE == 0){
-						printf(BOLD RED"此卡已經賣光了\n" RESET) ;
+						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n" ANSI_RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else{
@@ -645,11 +646,11 @@ int8_t basic_shop_command(player *P){
 				
 				case 7: // 移動卡 1
 					if(P->power < 1){
-						printf(BOLD RED"你的能量不夠\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else if(basicBuyDeck[2][0].SIZE == 0){
-						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n"ANSI_RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else{
@@ -664,11 +665,11 @@ int8_t basic_shop_command(player *P){
 				
 				case 8: // 移動卡 2
 					if(P->power < 3){
-						printf(BOLD RED"你的能量不夠\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else if(basicBuyDeck[2][1].SIZE == 0){
-						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n"ANSI_RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else{
@@ -683,11 +684,11 @@ int8_t basic_shop_command(player *P){
 				
 				case 9: // 移動卡 3
 					if(P->power < 6){
-						printf(BOLD RED"你的能量不夠\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else if(basicBuyDeck[2][2].SIZE == 0){
-						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n"ANSI_RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else{
@@ -702,11 +703,11 @@ int8_t basic_shop_command(player *P){
 				
 				case 10: // 通用卡 
 					if(P->power < 2){
-						printf(BOLD RED"你的能量不夠\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else if(basicBuyDeck[2][2].SIZE == 0){
-						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
+						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n"ANSI_RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else{
@@ -720,7 +721,7 @@ int8_t basic_shop_command(player *P){
 				break;
 				
 				default:
-					printf(BOLD RED"不存在此選項\n"RESET);
+					printf(ANSI_BOLD ANSI_RED"不存在此選項\n"ANSI_RESET);
 					wait_for_space();
                                         printf_basic_shop();
 				break;
@@ -736,7 +737,7 @@ int8_t basic_shop_command(player *P){
 			
 			return 0;
 		}else{
-			printf(BOLD RED"不合法輸入！！\n"RESET) ;
+			printf(ANSI_BOLD ANSI_RED"不合法輸入！！\n"ANSI_RESET) ;
 			wait_for_space();
                         printf_basic_shop();
 		}
@@ -756,7 +757,7 @@ int8_t discard_card_from_hand(player *P,int8_t index){
 int8_t remove_card(player *P){
 	system("clear");
 	int8_t comm=-1;
-	printf("現在是"GREEN BOLD"%s"RESET"在進行\n",P->charname);
+	printf("現在是"ANSI_GREEN ANSI_BOLD"%s"ANSI_RESET"在進行\n",P->charname);
 	printf("請問你要對哪一個地方使用專注？\n");
 	printf("0. 手牌\n");
 	printf("1. 棄牌堆\n");
@@ -1571,7 +1572,7 @@ int8_t action_command(player *P){
 		P->end_turn = 1;
 		return -1;
 	}
-	printf("現在是"GREEN BOLD"%s"RESET"的回合，現在是你的執行階段請從以下的動作中選一個執行\n",(*P).charname);
+	printf("現在是"ANSI_GREEN ANSI_BOLD"%s"ANSI_RESET"的回合，現在是你的執行階段請從以下的動作中選一個執行\n",(*P).charname);
 	printf("1. 購買基礎牌\n");
 	printf("2. 購買技能牌\n");
 	printf("3. 打牌\n");
@@ -1633,7 +1634,7 @@ int8_t action_command(player *P){
 					
 					while(1){
 									int choices_R=0;
-									printf(GREEN BOLD"%s"RESET"你可以捨棄至多一張技能牌來將傷害減少X，X為你捨棄的技能牌等級\n",Player[target(P)].charname);
+									printf(ANSI_GREEN ANSI_BOLD"%s"ANSI_RESET"你可以捨棄至多一張技能牌來將傷害減少X，X為你捨棄的技能牌等級\n",Player[target(P)].charname);
 									printf("0)不捨棄 1)捨棄\n>");
 									
 									if(P->bot ==1 ){
@@ -1835,6 +1836,7 @@ void print_game_broad_9(){
 	//printf("%d %d",BotOn,Player[1].num);
 	printf("玩家一 │ 遊玩角色：");
 	print_aligned_charname(Player[0].charname, len);
+	update_characters(Player[0].character, Player[1].character);
 	printf(" 血量：%hhd 防禦值：%hhd 能量：%hhd 手牌數：%hhd 血量上限：%hhd 防禦上限：%hhd 必殺閥值:%hhd\n", Player[0].hp, Player[0].armor, Player[0].power, Player[0].hands, Player[0].Maxhp, Player[0].Maxarmor, Player[0].Ult_threshold);
 	printf("出牌區：");
 	for(int i = 0 ; i < Player[0].playcardnum ; i++){
@@ -1899,6 +1901,8 @@ void print_game_broad_9(){
 	printf("          ├───────────────────┤           \n");
 	printf("Coordinate│ 1 2 3 4 5 6 7 8 9 │座標                   \n");
 	printf("          └───────────────────┘           \n");
+
+	update_coordinates(Player[0].coordinate, Player[1].coordinate);
 	return ;
 }
 
@@ -1971,6 +1975,7 @@ void disable_raw_mode() {
 }
 
 void wait_for_space() {
+	if (BotOn == 1) return;
 	enable_raw_mode();
 	printf("按下空白鍵繼續遊戲");
 	int8_t ch;
@@ -2009,15 +2014,16 @@ void print_aligned_charname(const char* name, int8_t width) {
 int8_t focus(player *P){
 	system("clear");
 	int8_t focus = -1;
-	printf("現在是"GREEN BOLD"%s"RESET"在進行\n",P->charname);
+	printf("現在是"ANSI_GREEN ANSI_BOLD"%s"ANSI_RESET"在進行\n",P->charname);
 	printf("請問本回合你要進行專注嘛？\n0. 要\n1. 不要\n");
 	printf(">");
 
-	if(P->bot ==1 ){
-						focus = botChoice(0,0,1,23);
-																
+	if(P->bot == 1){
+		focus = botChoice(0, 0, 1, 23);
+		printf("%d\n", focus);
 	}else{
-						scanf("%hhd",&focus);
+		scanf("%hhd", &focus);
+		getchar(); // 吃掉換行
 	}
 	if(focus == 0){
 		if(remove_card(P) ==-1){
@@ -2061,7 +2067,7 @@ int8_t starting_phase(player *P){
 					
 					while(1){
 									int choices_R=0;
-									printf(GREEN BOLD"%s"RESET"你可以捨棄至多一張技能牌來將傷害減少X，X為你捨棄的技能牌等級\n",Player[target(P)].charname);
+									printf(ANSI_GREEN ANSI_BOLD"%s"ANSI_RESET"你可以捨棄至多一張技能牌來將傷害減少X，X為你捨棄的技能牌等級\n",Player[target(P)].charname);
 									printf("0)不捨棄 1)捨棄\n>");
 									
 									if(P->bot ==1 ){
@@ -2125,7 +2131,7 @@ int8_t Ult_Gain(player *P){
 		Card_Define(P->Ult_deck[2], &cardtemp3);
 		printf("%d) %s 效果：%s\n",2,cardtemp3.cardname,cardtemp3.inf);
 		while(1){
-			printf(GREEN BOLD"%s"RESET"請選擇你要的必殺牌：\n>",P->charname);
+			printf(ANSI_GREEN ANSI_BOLD"%s"ANSI_RESET"請選擇你要的必殺牌：\n>",P->charname);
 			int cho = -1;
 			if(P->bot ==1 ){
 				cho = botChoice(0,0,1,26);
@@ -2164,10 +2170,39 @@ int8_t Ult_Gain(player *P){
 
 
 
-
+//=====================================================
 
 
 int main(){ //mainfuc
+	SetTraceLogLevel(LOG_NONE);
+	printf("是否要使用圖形介面（GUI）？\n");
+	printf("1. 是\n");
+	printf("2. 否（預設使用文字介面）\n");
+	printf("> ");
+	while (scanf("%hhd", &gui_mode) != 1 || !(gui_mode == 1 || gui_mode == 2)) {
+		getchar(); // 清除錯誤輸入
+		printf("輸入錯誤，請重新輸入（1 或 2）：\n> ");
+	}
+	if (gui_mode == 1) {
+	#ifdef __linux__
+		// 可加強偵測是否是 Ubuntu
+		char *desktop_env = getenv("XDG_CURRENT_DESKTOP");
+		if (desktop_env && (strstr(desktop_env, "Ubuntu") || strstr(desktop_env, "GNOME") || strstr(desktop_env, "ubuntu:GNOME"))) {
+ 
+			printf("檢測到 Ubuntu 環境，啟用 GUI 模式...\n");
+		} else {
+			printf("警告：你選擇了 GUI 模式，但未檢測到 Ubuntu 環境，可能會發生相容性問題。\n");
+			wait_for_space();
+		}
+	#else
+		printf("目前僅支援 Ubuntu 環境的 GUI 模式，將使用文字介面（TUI）進行遊戲。\n");
+		wait_for_space();
+		gui_mode = 2;
+	#endif
+	}
+	if (gui_mode == 1) {
+		start_board_gui();
+	}
 	Player[0].starting_size = 0;
 	Player[1].starting_size = 0;
 	Player[2].starting_size = 0;
@@ -2427,7 +2462,7 @@ int main(){ //mainfuc
 	initialization_skill_shop(&Player[1]);
 	initialization_deck(&Player[0]);
 	initialization_deck(&Player[1]);	
-	
+
 	print_header();	
 	wait_for_space();
 	
@@ -2436,6 +2471,7 @@ int main(){ //mainfuc
 	}else{
 		Right_MAX = 11;
 	}
+
 	//遊戲開始
 	int8_t round = 0;
 	int8_t flip_coins=0;
@@ -2472,6 +2508,7 @@ int main(){ //mainfuc
 	}
 	while(1){
 		 round++;
+		 update_characters_info(Player[0], Player[1]);
 		 turn = 0;
 		if(mode == 1){//單人模式
 			

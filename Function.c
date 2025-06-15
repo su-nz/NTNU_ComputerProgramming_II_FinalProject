@@ -7,6 +7,8 @@
 #define Scheherazade_token_MAX 6
 #define matches_MAX 12
 #define poison_MAX 18
+#define STR_RESET   "\033[0m"
+#define STR_BLUE    "\033[34m"
 
 void shuffle(vector *v) {
     if (!v || v->SIZE <= 1) return;
@@ -67,7 +69,7 @@ int8_t botChoice(int16_t mode , int16_t min , int16_t  max  , int16_t situation)
 			max = temp;
 	    	}
 	    	int r = rand() % (max - min + 1) + min;
-	    printf(BLUE"%d\n"RESET, r);
+	    printf("%s%d%s\n", STR_BLUE, r, STR_RESET);
 	    usleep(2000000);
 	    return r;	    
 	}
@@ -541,3 +543,4 @@ int8_t clear_select(player *P){
 		P->hands_select[i] = 0; 
 	}
 }
+
