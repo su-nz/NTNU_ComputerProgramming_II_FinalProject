@@ -8,17 +8,14 @@
 #include <unistd.h>
 #include <termios.h>
 #include "vector.h"
-#include <raylib.h>
 #define Ult_threshold Ultt
 #define Maxpower 25
 #define DeckMax 200
-#define ANSI_GREEN "\033[32m"
-#define ANSI_RED   "\033[31m"
-#define ANSI_BLUE  "\033[34m"
-#define ANSI_BOLD  "\033[1m"
-#define ANSI_RESET "\033[0m"
-
-#define POISON_CARD_ID 999
+#define GREEN "\033[32m"
+#define RED   "\033[31m"
+#define BLUE  "\033[34m"
+#define BOLD  "\033[1m"
+#define RESET "\033[0m"
 
 typedef struct Character{
 	int8_t Maxhp;
@@ -102,6 +99,7 @@ typedef struct Player{
 	int16_t playcard[256];//出牌區
 	int16_t playcardnum;//出牌區數量
 	int16_t starting[256];//持續牌
+	int16_t clone[256];
 	int16_t combo_basic[256];//搭配持續牌
 	int16_t starting_lv[256];//搭配持續牌等級
 	card hands_card[50];
@@ -124,7 +122,7 @@ typedef struct Deck{
 }deck;
 int8_t check_passive(player *P , int check_num);
 int8_t printf_skill_shop(int8_t num);
-int8_t deal_damage(player *attacker, player *target, int8_t damage);
+int8_t deal_damage(player *P , int8_t damage);
 int8_t check_starting(player *P,player *Enemy);
 int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output , int8_t *armor_output, int8_t lv ,int8_t combo_cardid, int8_t mode,int8_t BotOn);
 int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , int8_t *armor_output, int8_t mode ,vector (*skillBuyDeck)[3],vector (*basicBuyDeck)[3],int8_t BotOn);
