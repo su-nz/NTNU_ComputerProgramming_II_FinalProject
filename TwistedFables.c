@@ -21,6 +21,7 @@ int8_t player4_char = -1;
 int8_t turn = 0;
 int8_t gui_mode = 0;
 
+
 int RedHoodHPtemp=30;
 
 
@@ -32,6 +33,56 @@ int8_t initialize_player(player *P){
 		
 	}
 	return 0;
+}
+int8_t check_location(int8_t coor){
+	if(coor == Player[0].coordinate){
+		return -1;
+	}else if(coor == Player[1].coordinate){
+		return -1;
+	}else if(coor == Player[2].coordinate){
+		return -1;
+	}else if(coor == Player[3].coordinate){
+		return -1;
+	}
+	return 0;
+}
+int get_next_player(int prev, player Player[4]) {
+	int team0_alive[2], team1_alive[2];
+	int t0_count = 0, t1_count = 0;
+
+	// 分別找出每隊的存活玩家
+	for (int i = 0; i < 4; i++) {
+		if (Player[i].alive) {
+			if (Player[i].team == 0)
+				team0_alive[t0_count++] = i;
+			else
+				team1_alive[t1_count++] = i;
+		}
+	}
+
+	// 1v1
+	if (t0_count == 1 && t1_count == 1) {
+		// 交替進行，prev = 上一位，下一位就是另一隊的人
+		if (Player[prev].team == 0) return team1_alive[0];
+		else return team0_alive[0];
+	}
+
+	// 若有隊伍只剩一人，該人執行兩次（模擬死隊友的輪次）
+	if (t0_count == 1) {
+		if (Player[prev].team == 1) return team0_alive[0]; // 敵人剛動完，換該隊唯一生存者
+		else return team1_alive[(team1_alive[0] != prev) ? 0 : 1]; // 換敵隊其他人
+	}
+
+	if (t1_count == 1) {
+		if (Player[prev].team == 0) return team1_alive[0];
+		else return team0_alive[(team0_alive[0] != prev) ? 0 : 1];
+	}
+
+	// 四人都活著 → 正常順時針循環（P0→P1→P2→P3→P0）
+	int next = (prev + 1) % 4;
+	while (!Player[next].alive)
+		next = (next + 1) % 4;
+	return next;
 }
 
 int8_t target(player *you){
@@ -51,6 +102,22 @@ int8_t target(player *you){
 
 int8_t end_game_detection(){
 
+	if(Player[0].hp ==0){
+		Player[0].alive = 0;
+		Player[0].coordinate = 99;
+	}
+	if(Player[1].hp ==0){
+		Player[1].alive = 0;
+		Player[1].coordinate = 99;
+	}
+	if(Player[2].hp ==0){
+		Player[2].alive = 0;
+		Player[2].coordinate = 99;
+	}
+	if(Player[3].hp ==0){
+		Player[3].alive = 0;
+		Player[3].coordinate = 99;
+	}
 	if(mode == 1){
 		if(Player[0].hp <=0){
 			
@@ -59,10 +126,19 @@ int8_t end_game_detection(){
 		}else if(Player[1].hp <=0){
 			
 			return 1;
+		}}else{
+		if(Player[0].hp <=0 && Player[2].hp <=0){
+			
+			return 1;
+			
+		}else if(Player[3].hp <=0 && Player[1].hp <=0){
+			
+			return 1;
 		}
 	}
 	return 0;
 }
+	
 
 int8_t print_end_game(){
 	if(mode == 1){
@@ -79,6 +155,22 @@ int8_t print_end_game(){
 		}else{
 			system("clear");
 			printf("玩家一-%s勝利\n",Player[0].charname);
+			return 1;
+		}
+	}else{
+			if(Player[0].hp <=0 && Player[2].hp <=0){
+			if(BotOn ==1){
+				system("clear");
+				printf("電腦 勝利\n");
+				return 1;
+			}else{
+				system("clear");
+				printf("玩家二-%s 和 玩家四-%s 勝利\n",Player[1].charname,Player[3].charname);
+				return 1;
+			}
+		}else if(Player[1].hp <=0 && Player[3].hp <=0){
+			system("clear");
+			printf("玩家一-%s 和 玩家三-%s 勝利\n",Player[0].charname,Player[2].charname);
 			return 1;
 		}
 	}
@@ -387,6 +479,8 @@ int8_t skill_shop_command(player *P){
 						skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1] = 0;
 						skillBuyDeck[P->num][0].SIZE--;
 						P->power -=cardtemp1.cost;
+						Card_Define(skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1], &cardtemp1);
+						writeinRHU(P,4,0,0,0,0,cc,0,0);
 						if(skillBuyDeck[P->num][0].SIZE > 0 && cardtemp1.cost == 0){
 							P->passive[P->passive_n] = skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1];
 							skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1] = 0;
@@ -395,7 +489,7 @@ int8_t skill_shop_command(player *P){
 							P->passive_n++;
 						}
 					}
-					writeinRHU(P,4,0,0,0,0,0,cc,0);
+					
 				break;
 
 				case 2: // 防禦
@@ -418,7 +512,7 @@ int8_t skill_shop_command(player *P){
 							P->passive_n++;
 						}
 					}
-					writeinRHU(P,4,0,0,0,0,0,cc,0);
+					writeinRHU(P,4,0,0,0,0,cc,0,0);
 				break;
 
 				case 3: // 移動
@@ -441,7 +535,7 @@ int8_t skill_shop_command(player *P){
 							if(skillBuyDeck[P->num][2].SIZE <=0) skillBuyDeck[P->num][2].SIZE = 0;
 						}
 					}
-					writeinRHU(P,4,0,0,0,0,0,cc,0);
+					writeinRHU(P,4,0,0,0,0,cc,0,0);
 				break;
 
 				default:
@@ -500,7 +594,8 @@ int8_t discard_command(player *P){
 				print_game_broad_9();
 				return 0;
 			}else{
-				
+				print_game_broad_11();
+				return 0;
 			}
 			
 			return 0;
@@ -739,7 +834,8 @@ int8_t basic_shop_command(player *P){
 				print_game_broad_9();
 				return 0;
 			}else{
-				
+				print_game_broad_11();
+				return 0;
 			}
 			
 			return 0;
@@ -786,7 +882,7 @@ int8_t remove_card(player *P){
 						print_game_broad_9();
 						
 					}else{
-							
+						print_game_broad_11();
 					}
 					printf("你沒有手牌了！\n");
 					
@@ -823,7 +919,7 @@ int8_t remove_card(player *P){
 						print_game_broad_9();
 						
 					}else{
-							
+						print_game_broad_11();
 					}
 					printf("你的棄牌堆沒有牌！\n");
 					
@@ -855,7 +951,7 @@ int8_t remove_card(player *P){
 			print_game_broad_9();
 			
 		}else{
-				
+			print_game_broad_11();	
 		}
 		
 		return 0;
@@ -912,7 +1008,13 @@ int8_t gain_armor(player *P , int8_t def){
 
 int8_t play_a_card(player *P){
 	system("clear");
-	print_game_broad_9();
+	if(mode == 1){
+				print_game_broad_9();
+						
+				}else{		
+				print_game_broad_11();
+			
+	}
 	print_hands(P);
 	
 	printf("\n1.)攻擊牌\n2.)防禦牌\n3.)移動牌\n4.)技能牌\n5.)大招牌\n");
@@ -923,7 +1025,8 @@ int8_t play_a_card(player *P){
 			if(mode == 1){
 				print_game_broad_9();
 						
-				}else{			
+				}else{	
+				print_game_broad_11();
 			}
 			printf("你沒有手牌了！\n");
 			
@@ -939,7 +1042,8 @@ int8_t play_a_card(player *P){
 					print_game_broad_9();
 					return 0;
 				}else{
-					//TODO: 2v2
+					print_game_broad_11();
+					return 0;
 				}
 				
 				return 0;
@@ -970,7 +1074,11 @@ int8_t play_a_card(player *P){
 								P->hp-=2;
 								atk += 1 + P->atk_buff;
 								system("clear");
-								print_game_broad_9();
+								if(mode == 1){
+									print_game_broad_9();	
+								}else{		
+									print_game_broad_11();
+								}
 								print_hands(P);
 								P->sleep_passive1_cd = 1;
 								printf("請選擇所有你想打出的攻擊牌，選擇完後請輸入0\n");
@@ -979,7 +1087,11 @@ int8_t play_a_card(player *P){
 								P->hp-=4;
 								atk += 2 + P->atk_buff;
 								system("clear");
-								print_game_broad_9();
+								if(mode == 1){
+									print_game_broad_9();	
+								}else{		
+									print_game_broad_11();
+								}
 								print_hands(P);
 								P->sleep_passive1_cd = 1;
 								printf("請選擇所有你想打出的攻擊牌，選擇完後請輸入0\n");
@@ -988,7 +1100,11 @@ int8_t play_a_card(player *P){
 								P->hp-=6;
 								atk += 3 + P->atk_buff;
 								system("clear");
-								print_game_broad_9();
+								if(mode == 1){
+									print_game_broad_9();	
+								}else{		
+									print_game_broad_11();
+								}
 								print_hands(P);
 								P->sleep_passive1_cd = 1;
 								printf("請選擇所有你想打出的攻擊牌，選擇完後請輸入0\n");
@@ -1002,7 +1118,11 @@ int8_t play_a_card(player *P){
 							
 							handaddplaycardnum(P,cn-1);//handaddplaycardnum
 							system("clear");
-							print_game_broad_9();
+							if(mode == 1){
+									print_game_broad_9();	
+								}else{		
+									print_game_broad_11();
+								}
 							print_hands(P);
 							
 							printf("請選擇所有你想打出的攻擊牌，選擇完後請輸入0\n");
@@ -1057,7 +1177,11 @@ int8_t play_a_card(player *P){
 								P->hp-=2;
 								def += 1 + P->defend_buff;
 								system("clear");
-								print_game_broad_9();
+								if(mode == 1){
+									print_game_broad_9();	
+								}else{		
+									print_game_broad_11();
+								}
 								print_hands(P);
 								P->sleep_passive1_cd = 1;
 								printf("請選擇所有你想打出的防禦牌，選擇完後請輸入0\n");
@@ -1066,7 +1190,11 @@ int8_t play_a_card(player *P){
 								P->hp-=4;
 								def += 2 + P->defend_buff;
 								system("clear");
-								print_game_broad_9();
+								if(mode == 1){
+									print_game_broad_9();	
+								}else{		
+									print_game_broad_11();
+								}
 								print_hands(P);
 								P->sleep_passive1_cd = 1;
 								printf("請選擇所有你想打出的防禦牌，選擇完後請輸入0\n");
@@ -1075,7 +1203,11 @@ int8_t play_a_card(player *P){
 								P->hp-=6;
 								def += 3 + P->defend_buff;
 								system("clear");
-								print_game_broad_9();
+								if(mode == 1){
+									print_game_broad_9();	
+								}else{		
+									print_game_broad_11();
+								}
 								print_hands(P);
 								P->sleep_passive1_cd = 1;
 								printf("請選擇所有你想打出的防禦牌，選擇完後請輸入0\n");
@@ -1088,7 +1220,11 @@ int8_t play_a_card(player *P){
 					power_generate += P->hands_card[cn-1].power_generate;						
 					handaddplaycardnum(P,cn-1);
 					system("clear");
-					print_game_broad_9();
+					if(mode == 1){
+									print_game_broad_9();	
+								}else{		
+									print_game_broad_11();
+								}
 					print_hands(P);
 					printf("請選擇所有你想打出的防禦牌，選擇完後請輸入0\n>");
 					
@@ -1099,7 +1235,7 @@ int8_t play_a_card(player *P){
 			}	
 			if(P->sleep != 0) gain_armor(P , def);
 			P->power += power_generate;
-			writeinRHU(P,0,1,0,def,0,0,0,0);
+			writeinRHU(P,0,0,0,def,0,0,0,0);
 			
 			
 			
@@ -1131,7 +1267,11 @@ int8_t play_a_card(player *P){
 								P->hp-=2;
 								move += 1 + P->speed_buff;
 								system("clear");
-								print_game_broad_9();
+								if(mode == 1){
+									print_game_broad_9();	
+								}else{		
+									print_game_broad_11();
+								}
 								print_hands(P);
 								P->sleep_passive1_cd = 1;
 								printf("請選擇所有你想打出的移動牌，選擇完後請輸入0\n");
@@ -1140,7 +1280,11 @@ int8_t play_a_card(player *P){
 								P->hp-=4;
 								move += 2 + P->speed_buff;
 								system("clear");
-								print_game_broad_9();
+								if(mode == 1){
+									print_game_broad_9();	
+								}else{		
+									print_game_broad_11();
+								}
 								print_hands(P);
 								P->sleep_passive1_cd = 1;
 								printf("請選擇所有你想打出的移動牌，選擇完後請輸入0\n");
@@ -1149,7 +1293,11 @@ int8_t play_a_card(player *P){
 								P->hp-=6;
 								move += 3 + P->speed_buff;
 								system("clear");
-								print_game_broad_9();
+								if(mode == 1){
+									print_game_broad_9();	
+								}else{		
+									print_game_broad_11();
+								}
 								print_hands(P);
 								P->sleep_passive1_cd = 1;
 								printf("請選擇所有你想打出的移動牌，選擇完後請輸入0\n");
@@ -1162,7 +1310,11 @@ int8_t play_a_card(player *P){
 					power_generate += P->hands_card[cn-1].power_generate;						
 					handaddplaycardnum(P,cn-1);
 					system("clear");
-					print_game_broad_9();
+					if(mode == 1){
+						print_game_broad_9();	
+					}else{		
+						print_game_broad_11();
+					}
 					print_hands(P);
 					printf("請選擇所有你想打出的移動牌，選擇完後請輸入0\n>");
 					
@@ -1195,7 +1347,7 @@ int8_t play_a_card(player *P){
 							}
 							
 						}else{
-							writeinRHU(P,0,1,0,0,move,0,0,0);
+							writeinRHU(P,0,0,0,0,move,0,0,0);
 							if(P->coordinate +1 != Right_MAX){
 								if(P->coordinate +1 == Player[target(P)].coordinate && P->coordinate + 2 != Right_MAX && move >= 2 ){
 										P->coordinate+=2 ;
@@ -1214,7 +1366,11 @@ int8_t play_a_card(player *P){
 			
 			
 			system("clear");
-			print_game_broad_9();
+			if(mode == 1){
+				print_game_broad_9();	
+			}else{		
+				print_game_broad_11();
+			}
 			print_hands(P);
 			
 			int8_t combo_card =-1;
@@ -1417,7 +1573,7 @@ int8_t play_a_card(player *P){
 						deal_damage(P, &Player[target(P)], damage_deal+atk+ P->atk_buff);
 						
 						if(P->sleep != 0) gain_armor(P , armor_get+ P->defend_buff);
-						writeinRHU(P,0,1,damage_deal+atk+ P->atk_buff,armor_get+ P->defend_buff,0,P->hands_card[combo_card-1].level,P->hands_card[combo_card-1].cardcode,P->hands_card[cn-1].cardcode);
+						writeinRHU(P,1,0,damage_deal+atk+ P->atk_buff,armor_get+ P->defend_buff,0,P->hands_card[combo_card-1].level,P->hands_card[combo_card-1].cardcode,P->hands_card[cn-1].cardcode);
 						if(check_passive(&Player[target(P)],145) !=0 && P->hands_card[cn-1].require_basic_card ==2 ){
 							gain_armor(P , P->hands_card[cn-1].level);
 							
@@ -1521,7 +1677,11 @@ int8_t play_a_card(player *P){
 					
 		}else if(select == 5){
 			system("clear");
-			print_game_broad_9();
+			if(mode == 1){
+				print_game_broad_9();	
+			}else{		
+				print_game_broad_11();
+			}
 			print_hands(P);
 			
 			int8_t combo_card =-1;
@@ -1593,6 +1753,7 @@ int8_t action_command(player *P){
 		return -1;
 	}
 	printf("現在是"ANSI_GREEN ANSI_BOLD"%s"ANSI_RESET"的回合，現在是你的執行階段請從以下的動作中選一個執行\n",(*P).charname);
+	if(mode == 2) printf("0. 與隊友換位置\n");
 	printf("1. 購買基礎牌\n");
 	printf("2. 購買技能牌\n");
 	printf("3. 打牌\n");
@@ -1635,7 +1796,16 @@ int8_t action_command(player *P){
 	}
 	
 	switch(comm){
-		
+				case 0:  // 購買基礎牌
+							if(P->num ==1 || P->num ==3){
+							swap_place(&Player[1],&Player[3]);
+							}else if(P->num ==0 || P->num ==2){
+								swap_place(&Player[0],&Player[2]);
+							}
+							return 0;
+			
+            	break;
+						
             	case 1:  // 購買基礎牌
 							basic_shop_command(P);
 							return 0;
@@ -1728,7 +1898,7 @@ int8_t action_command(player *P){
 							case 7:
 							if(check_passive(P,138) !=0 ){
 								Redhoodsavefile(P,BotOn);
-							
+								writeinRHU(P,2,0,0,0,0,0,0,0);
 							}
 							return 0;
 				
@@ -1856,7 +2026,7 @@ void print_game_broad_9(){
 	//printf("%d %d",BotOn,Player[1].num);
 	printf("玩家一 │ 遊玩角色：");
 	print_aligned_charname(Player[0].charname, len);
-	update_characters(Player[0].character, Player[1].character);
+	
 	printf(" 血量：%hhd 防禦值：%hhd 能量：%hhd 手牌數：%hhd 血量上限：%hhd 防禦上限：%hhd 必殺閥值:%hhd\n", Player[0].hp, Player[0].armor, Player[0].power, Player[0].hands, Player[0].Maxhp, Player[0].Maxarmor, Player[0].Ult_threshold);
 	printf("出牌區：");
 	for(int i = 0 ; i < Player[0].playcardnum ; i++){
@@ -1925,7 +2095,212 @@ void print_game_broad_9(){
 	update_coordinates(Player[0].coordinate, Player[1].coordinate);
 	return ;
 }
+void print_game_broad_11(){
+	if(end_game_detection() == 1) return ;
+	int8_t len = 0;
+	if(utf8_strlen(Player[0].charname) == 3 && utf8_strlen(Player[1].charname) == 3) len = 6;
+	else len = 8;
+	system("clear");
+	//printf("%d %d",BotOn,Player[1].num);
+	printf("玩家一 │ 遊玩角色：");
+	print_aligned_charname(Player[0].charname, len);
+	printf(" 血量：%hhd 防禦值：%hhd 能量：%hhd 手牌數：%hhd 血量上限：%hhd 防禦上限：%hhd 必殺閥值:%hhd\n", Player[0].hp, Player[0].armor, Player[0].power, Player[0].hands, Player[0].Maxhp, Player[0].Maxarmor, Player[0].Ult_threshold);
+	printf("出牌區：");
+	for(int i = 0 ; i < Player[0].playcardnum ; i++){
+			if(Player[0].playcardnum){
+				card cardtemp1;
+				Card_Define(Player[0].playcard[i], &cardtemp1);
+				printf("%d.%s ",i+1,cardtemp1.cardname);
+			}
+		}
+	printf("\n");
+	printf("持續牌區：");
+	for(int i = 0 ; i < Player[0].starting_size ; i++){
+			if(Player[0].starting_size){
+				card cardtemp1;
+				Card_Define(Player[0].starting[i], &cardtemp1);
+				card cardtemp2;
+				Card_Define(Player[0].combo_basic[i], &cardtemp2);
+				printf("%d.%s -%s  ",i+1,cardtemp1.cardname, cardtemp2.cardname);
+			}
+		}
+	printf("\n");
+	print_extra_inf(&Player[0]);
 
+	printf("玩家二 │ 遊玩角色：");
+	print_aligned_charname(Player[1].charname, len);
+	printf(" 血量：%hhd 防禦值：%hhd 能量：%hhd 手牌數：%hhd 血量上限：%hhd 防禦上限：%hhd 必殺閥值:%hhd\n", Player[1].hp, Player[1].armor, Player[1].power, Player[1].hands, Player[1].Maxhp, Player[1].Maxarmor, Player[1].Ult_threshold);
+	printf("出牌區：");
+	for(int i = 0 ; i < Player[1].playcardnum ; i++){
+			if(Player[1].playcardnum){
+				card cardtemp1;
+				Card_Define(Player[1].playcard[i], &cardtemp1);
+				printf("%d.%s ",i+1,cardtemp1.cardname);
+			}
+		}
+	printf("\n");
+	printf("持續牌區：");
+	for(int i = 0 ; i < Player[1].starting_size ; i++){
+			if(Player[1].starting_size){
+				card cardtemp1;
+				Card_Define(Player[1].starting[i], &cardtemp1);
+				card cardtemp2;
+				Card_Define(Player[1].combo_basic[i], &cardtemp2);
+				printf("%d.%s -%s  ",i+1,cardtemp1.cardname, cardtemp2.cardname);
+			}
+		}
+	printf("\n");
+	print_extra_inf(&Player[1]);
+	
+	printf("玩家三 │ 遊玩角色：");
+	print_aligned_charname(Player[2].charname, len);
+	printf(" 血量：%hhd 防禦值：%hhd 能量：%hhd 手牌數：%hhd 血量上限：%hhd 防禦上限：%hhd 必殺閥值:%hhd\n", Player[2].hp, Player[2].armor, Player[2].power, Player[2].hands, Player[2].Maxhp, Player[2].Maxarmor, Player[2].Ult_threshold);
+	printf("出牌區：");
+	for(int i = 0 ; i < Player[2].playcardnum ; i++){
+			if(Player[2].playcardnum){
+				card cardtemp1;
+				Card_Define(Player[2].playcard[i], &cardtemp1);
+				printf("%d.%s ",i+1,cardtemp1.cardname);
+			}
+		}
+	printf("\n");
+	printf("持續牌區：");
+	for(int i = 0 ; i < Player[2].starting_size ; i++){
+			if(Player[2].starting_size){
+				card cardtemp1;
+				Card_Define(Player[2].starting[i], &cardtemp1);
+				card cardtemp2;
+				Card_Define(Player[2].combo_basic[i], &cardtemp2);
+				printf("%d.%s -%s  ",i+1,cardtemp1.cardname, cardtemp2.cardname);
+			}
+		}
+	printf("\n");
+	print_extra_inf(&Player[2]);
+	
+	printf("玩家四 │ 遊玩角色：");
+	print_aligned_charname(Player[3].charname, len);
+	printf(" 血量：%hhd 防禦值：%hhd 能量：%hhd 手牌數：%hhd 血量上限：%hhd 防禦上限：%hhd 必殺閥值:%hhd\n", Player[3].hp, Player[3].armor, Player[3].power, Player[3].hands, Player[3].Maxhp, Player[3].Maxarmor, Player[3].Ult_threshold);
+	printf("出牌區：");
+	for(int i = 0 ; i < Player[3].playcardnum ; i++){
+			if(Player[3].playcardnum){
+				card cardtemp1;
+				Card_Define(Player[3].playcard[i], &cardtemp1);
+				printf("%d.%s ",i+1,cardtemp1.cardname);
+			}
+		}
+	printf("\n");
+	printf("持續牌區：");
+	for(int i = 0 ; i < Player[3].starting_size ; i++){
+			if(Player[3].starting_size){
+				card cardtemp1;
+				Card_Define(Player[3].starting[i], &cardtemp1);
+				card cardtemp2;
+				Card_Define(Player[3].combo_basic[i], &cardtemp2);
+				printf("%d.%s -%s  ",i+1,cardtemp1.cardname, cardtemp2.cardname);
+			}
+		}
+	printf("\n");
+	print_extra_inf(&Player[3]);
+
+	printf("          ┌────────────────────────┐           \n");
+	
+	printf("     Board│ ");
+	for(int i = 1 ; i <= 11 ; i++){
+		if(Player[0].coordinate == i){
+			if(i ==10){
+				printf(" 1 ");
+			}else if(i ==11){
+				printf(" 1");
+			}else{
+				printf("1 ");
+			}
+		}else if(Player[1].coordinate == i){
+			if(i ==10){
+				printf(" 2 ");
+			}else if(i ==11){
+				printf(" 2");
+			}else{
+				printf("2 ");
+			}
+		}else if(Player[2].coordinate == i){
+			if(i ==10){
+				printf(" 3 ");
+			}else if(i ==11){
+				printf(" 3");
+			}else{
+				printf("3 ");
+			}
+		}else if(Player[3].coordinate == i){
+			if(i ==10){
+				printf(" 4 ");
+			}else if(i ==11){
+				printf(" 4");
+			}else{
+				printf("4 ");
+			}
+		}else{
+			if(i ==10){
+				printf(" _ ");
+			}else if(i ==11){
+				printf(" _");
+			}else{
+				printf("_ ");
+			}
+		}	
+	}
+	printf("│版面                   \n");
+	printf("          ├────────────────────────┤           \n");
+	printf("Coordinate│ 1 2 3 4 5 6 7 8 9 10 11│座標                   \n");
+	printf("          ├────────────────────────┤           \n");
+	printf("     Board│ ");
+	for(int i = -11 ; i < 0 ; i++){
+		if(Player[0].coordinate == i){
+			if(i ==-1){
+				printf(" 1 ");
+			}else if(i ==-2){
+				printf(" 1");
+			}else{
+				printf("1 ");
+			}
+		}else if(Player[1].coordinate == i){
+			if(i ==-1){
+				printf(" 2 ");
+			}else if(i ==-2){
+				printf(" 2");
+			}else{
+				printf("2 ");
+			}
+		}else if(Player[2].coordinate == i){
+			if(i ==-1){
+				printf(" 3 ");
+			}else if(i ==-2){
+				printf(" 3");
+			}else{
+				printf("3 ");
+			}
+		}else if(Player[3].coordinate == i){
+			if(i ==-1){
+				printf(" 4 ");
+			}else if(i ==-2){
+				printf(" 4");
+			}else{
+				printf("4 ");
+			}
+		}else{
+		
+			if(i ==-1){
+				printf(" _ ");
+			}else if(i ==-2){
+				printf(" _");
+			}else{
+				printf("_ ");
+			}
+		}	
+	}
+	printf("│版面                   \n");
+	printf("          └────────────────────────┘           \n");
+	return ;
+}
 void print_header()
 {
 	printf("\033[2J");
@@ -1995,7 +2370,7 @@ void disable_raw_mode() {
 }
 
 void wait_for_space() {
-	if (BotOn == 1) return;
+
 	enable_raw_mode();
 	printf("按下空白鍵繼續遊戲");
 	int8_t ch;
@@ -2038,12 +2413,11 @@ int8_t focus(player *P){
 	printf("請問本回合你要進行專注嘛？\n0. 要\n1. 不要\n");
 	printf(">");
 
-	if(P->bot == 1){
-		focus = botChoice(0, 0, 1, 23);
-		printf("%d\n", focus);
+	if(P->bot ==1 ){
+			focus = botChoice(0,0,1,23);
+																
 	}else{
-		scanf("%hhd", &focus);
-		getchar(); // 吃掉換行
+			scanf("%hhd",&focus);
 	}
 	if(focus == 0){
 		if(remove_card(P) ==-1){
@@ -2251,8 +2625,6 @@ int main(){ //mainfuc
 	Player[2].num = 2;
 	Player[3].num = 3;
 	
-	Player[0].coordinate = 4;
-	Player[1].coordinate = 6;
 	
 	//RelicOn = -1
 	print_header();
@@ -2502,16 +2874,38 @@ int main(){ //mainfuc
 	//遊戲開始
 	int8_t round = 0;
 	int8_t flip_coins=0;
+	int current = -1;
 	flip_coins = rand()%2+1;
 	
 	initialize_player(&Player[0]);
 	initialize_player(&Player[1]);
 	if(mode ==2){
+		initialization_skill_shop(&Player[2]);
+		initialization_skill_shop(&Player[3]);
+		initialization_deck(&Player[2]);
+		initialization_deck(&Player[3]);	
 		initialize_player(&Player[2]);
 		initialize_player(&Player[3]);
+		Player[0].coordinate = 5;
+		Player[1].coordinate = 7;
+		Player[2].coordinate = -7;
+		Player[3].coordinate = -5;
+		
+		Player[0].team = 1;
+		Player[1].team = 0;
+		Player[2].team = 1;
+		Player[3].team = 0;
+		
+		
+		Player[0].alive = 1;
+		Player[1].alive = 1;
+		Player[2].alive = 1;
+		Player[3].alive = 1;
 	}else{
 		Player[2].character = -1;
 		Player[3].character = -1;
+		Player[0].coordinate = 4;
+		Player[1].coordinate = 6;
 	}
 	if(BotOn == 1){
 	Player[1].bot = 1;
@@ -2520,17 +2914,12 @@ int main(){ //mainfuc
 	
 	if(flip_coins == 1){
 		//player 1 first
-		if(mode == 1){
+		
 			Player[0].first = 1;
-		}
+		
 	}else{
 		//player 2 first
-		if(mode == 1){
 			Player[1].first = 1;
-		}
-	}
-	
-	if(Player[0].first == 1){//玩家一先手
 		
 	}
 	while(1){
@@ -2552,6 +2941,7 @@ int main(){ //mainfuc
 				if(round == 1){
 					draw_card(4,&Player[0]);
 					draw_card(6,&Player[1]);
+					update_characters_info(Player[0], Player[1]);
 				}
 			}else{
 				if(round % 2 == 1){
@@ -2566,7 +2956,8 @@ int main(){ //mainfuc
 			
 				if(round == 1){
 					draw_card(4,&Player[1]);
-					draw_card(6,&Player[0]);	
+					draw_card(6,&Player[0]);
+					update_characters_info(Player[0], Player[1]);		
 				}
 			}
 			
@@ -2640,12 +3031,45 @@ int main(){ //mainfuc
 				print_end_game();
 				wait_for_space_end();
 				return 0;
-			}
-			//判斷輸贏
+			}else{
+			while(1){
+			turn++;
+			if (round == 1) {
+						
+                for (int i = 0; i < 4; i++) draw_card((i == 0) ? 4 : 6, &Player[i]);
+                current = (Player[0].first) ? 0 : 1;
+                starting_phase(&Player[current]);
+            } else {
+            		
+                starting_phase(&Player[current]);
+            }
+						
+            Ult_Gain(&Player[target(&Player[current])]);
+            Ult_Gain(&Player[current]);
+
+           	if(turn==1){
+           		if (focus(&Player[current]) == -1) break;
+           		turn= 2;
+           	}
+            print_game_broad_11();
+            action_command(&Player[current]);
+            
+						
+            if (Player[current].end_turn == 1) {
+            	
+                ending_phase(&Player[current]);
+                if (end_game_detection() == 1) {
+                    print_end_game();
+                    wait_for_space_end();
+                    return 0;
+                }
+                current = get_next_player(current, Player);
+                break;
+            }
+            }
+            
 		}
-		
-		
-		
-	} 
+	}
 	return 0;
+}
 }

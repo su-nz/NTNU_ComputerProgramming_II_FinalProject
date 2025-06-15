@@ -5,6 +5,7 @@ int8_t add_card_to_starting(player *P,int16_t card_id  ,int16_t combo_cardid ,in
 	P->starting[P->starting_size] = card_id;
 	P->combo_basic[P->starting_size] = combo_cardid;
 	P->starting_lv[P->starting_size] = lv;
+	P->clone[P->starting_size]=0;
 	P->starting_size++;
 
 	return 0;

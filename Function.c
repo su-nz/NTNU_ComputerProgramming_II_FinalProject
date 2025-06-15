@@ -22,6 +22,67 @@ void shuffle(vector *v) {
 		}
 	}
 }
+int8_t swap_coor(int8_t coor){
+	if(coor < 0){
+		return 11-coor*(-1)+1;
+	}else{
+		return (11-coor+1)*(-1);
+	}
+}
+
+int8_t swap_place(player *P1 ,player *P2){
+	system("clear");
+	print_game_broad_11();
+	print_hands(P1);
+	printf("%s請輸入你要捨棄的移動卡(輸入0取消)\n>",P1->charname);
+	int8_t cn =-1;
+	int p1_C =0;
+	int p2_C =0;
+	
+	if(check_location(swap_coor(P1->coordinate))==-1) return 0;
+	if(check_location(swap_coor(P2->coordinate))==-1) return 0;
+	while(cn!=0){		
+		scanf("%hhd",&cn);
+		if(cn == 0)return 0;
+		if(P1->hands_card[cn-1].type == 2 || P1->hands_card[cn-1].type == 3){
+			p1_C = cn-1;
+			break;
+		}else{
+			printf("這不是移動卡\n>");
+		}
+	}
+	cn =-1;
+	system("clear");
+	print_game_broad_11();
+	print_hands(P2);
+	printf("%s請輸入你要捨棄的移動卡\n>",P2->charname);
+	while(cn!=0){		
+		scanf("%hhd",&cn);
+		if(cn == 0)return 0;
+		if(P2->hands_card[cn-1].type == 2 || P2->hands_card[cn-1].type == 3){
+			p2_C = cn-1;
+			break;
+		}else{
+			printf("這不是移動卡\n>");
+		}
+		
+	}
+	
+	
+							
+	discard_card_from_hand(P1,p1_C);
+	discard_card_from_hand(P2,p2_C);
+	
+	P1->coordinate = swap_coor(P1->coordinate);
+	P2->coordinate = swap_coor(P2->coordinate);
+	
+	
+	
+	
+	
+	return 0;
+}
+
 
 int8_t playcardnum_clear(player *P){
 	for(int i = 0 ; i < P->playcardnum ; i++){
@@ -539,8 +600,11 @@ int8_t check_starting(player *P,player *Enemy){
 
 int8_t initialization_starting(player *P){
 	while(P->starting_size != 0){
-		pushbackVector(&P->discard, P->starting[P->starting_size-1]);
-		if( P->combo_basic[P->starting_size-1] != 0) pushbackVector(&P->discard, P->combo_basic[P->starting_size-1]);
+		if(P->clone[P->starting_size-1] == 0){
+			pushbackVector(&P->discard, P->starting[P->starting_size-1]);
+			if( P->combo_basic[P->starting_size-1] != 0) pushbackVector(&P->discard, P->combo_basic[P->starting_size-1]);
+		}
+		P->clone[P->starting_size-1] = 0;
 		P->combo_basic[P->starting_size-1] = 0;
 		P->starting_lv[P->starting_size-1] = 0;
 		P->starting[P->starting_size-1] = 0;

@@ -59,6 +59,10 @@ typedef struct Redhoodult{
 
 typedef struct Player{
 	int8_t bot;
+	int16_t clone[256];
+	int8_t alive;     // 1: still in game, 0: defeated
+	int8_t team;
+	int8_t layer;
 	int8_t end_turn;
 	int8_t num; //0 1 2 3
 	int8_t character; // 0 - 9
@@ -165,4 +169,8 @@ int8_t writeinRHU(player *P,int8_t a1,int8_t a2,int8_t a3,int8_t a4,int8_t a5,in
 int8_t discard_from_top_of_deck(player* target, int8_t amount);
 int8_t add_poison_to_discard(player* you, player* target, int8_t amount);
 int8_t move_adjacent_to_player(player* you, player* target);
+
+void print_game_broad_11();
+int8_t check_location(int8_t coor);
+int8_t swap_place(player *P1 ,player *P2);
 
