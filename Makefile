@@ -7,7 +7,7 @@ OBJ = $(SRC:.c=.o)
 TARGET = TwistedFables
 
 LIBS = \
-  .libraylib.a \
+  ./libraylib.a \
   ./libSDL2.a \
   ./libSDL2_mixer.a \
   -lGL -lm -lpthread -ldl -lrt -lX11
