@@ -7,19 +7,15 @@
 #include <time.h> 
 #include <unistd.h>
 #include <termios.h>
-#include "raylib.h"
 #include "vector.h"
-#include "board_gui.h"
 #define Ult_threshold Ultt
 #define Maxpower 25
 #define DeckMax 200
-#define ANSI_GREEN "\033[32m"
-#define ANSI_RED   "\033[31m"
-#define ANSI_BLUE  "\033[34m"
-#define ANSI_BOLD  "\033[1m"
-#define ANSI_RESET "\033[0m"
-
-#define POISON_CARD_ID 900
+#define GREEN "\033[32m"
+#define RED   "\033[31m"
+#define BLUE  "\033[34m"
+#define BOLD  "\033[1m"
+#define RESET "\033[0m"
 
 typedef struct Character{
 	int8_t Maxhp;
@@ -58,11 +54,14 @@ typedef struct Redhoodult{
 }RHU;
 
 typedef struct Player{
+	int8_t alive;     // 1: still in game, 0: defeated
+	int8_t team;      // 0 or 1
 	int8_t bot;
 	int8_t end_turn;
 	int8_t num; //0 1 2 3
 	int8_t character; // 0 - 9
 	char * charname;
+	int8_t layer;
 	int8_t Maxhp;
 	int8_t hp;
 	int8_t Maxarmor;
@@ -122,13 +121,14 @@ typedef struct Deck{
 }deck;
 int8_t check_passive(player *P , int check_num);
 int8_t printf_skill_shop(int8_t num);
-int8_t deal_damage(player *attacker, player *target, int8_t damage);
+int8_t deal_damage(player *P , int8_t damage);
 int8_t check_starting(player *P,player *Enemy);
 int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output , int8_t *armor_output, int8_t lv ,int8_t combo_cardid, int8_t mode,int8_t BotOn);
 int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , int8_t *armor_output, int8_t mode ,vector (*skillBuyDeck)[3],vector (*basicBuyDeck)[3],int8_t BotOn);
 int8_t startingskill(player* you ,player *P,int16_t card_id,int16_t lv );
 int8_t clear_select(player *P);
 void print_game_broad_9();
+void print_game_broad_11();
 int8_t action_command(player *P);
 int8_t inputcharacter(player *P, int8_t characternum);
 int16_t Card_Define(int16_t CardID , card *C);
@@ -161,8 +161,5 @@ int8_t botChoice(int16_t mode , int16_t min , int16_t  max  , int16_t situation)
 int8_t Redhoodsavefile(player *P,int BotOn);
 int8_t clearRHU(player *P);
 int8_t writeinRHU(player *P,int8_t a1,int8_t a2,int8_t a3,int8_t a4,int8_t a5,int8_t a6,int8_t a7,int8_t a8);
-
-int8_t discard_from_top_of_deck(player* target, int8_t amount);
-int8_t add_poison_to_discard(player* you, player* target, int8_t amount);
-int8_t move_adjacent_to_player(player* you, player* target);
-
+int8_t check_location(int8_t coor);
+int8_t swap_place(player *P1 ,player *P2);
