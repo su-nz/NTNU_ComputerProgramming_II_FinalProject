@@ -21,7 +21,6 @@ int8_t player4_char = -1;
 int8_t turn = 0;
 
 int RedHoodHPtemp=30;
-int8_t gui_mode = 2;
 
 
 int8_t initialize_player(player *P){
@@ -443,6 +442,7 @@ int8_t skill_shop_command(player *P){
 						skillBuyDeck[P->num][0].SIZE--;
 						P->power -=cardtemp1.cost;
 						Card_Define(skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1], &cardtemp1);
+						writeinRHU(P,4,0,0,0,0,cc,0,0);
 						if(cardtemp1.cost == 0){
 							P->passive[P->passive_n] = skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1];
 							skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1] = 0;
@@ -453,7 +453,7 @@ int8_t skill_shop_command(player *P){
 						}
 						printf_skill_shop(P->num);
 					}
-					writeinRHU(P,4,0,0,0,0,0,cc,0);
+					
 				break;
 				
 				case 2: // 防禦
@@ -481,7 +481,7 @@ int8_t skill_shop_command(player *P){
 						}
 						printf_skill_shop(P->num);
 					}
-					writeinRHU(P,4,0,0,0,0,0,cc,0);
+					writeinRHU(P,4,0,0,0,0,cc,0,0);
 				break;
 				
 				case 3: // 移動
@@ -510,7 +510,7 @@ int8_t skill_shop_command(player *P){
 						}
 						printf_skill_shop(P->num);
 					}
-					writeinRHU(P,4,0,0,0,0,0,cc,0);
+					writeinRHU(P,4,0,0,0,0,cc,0,0);
 				break;
 				
 				
@@ -1207,7 +1207,7 @@ int8_t play_a_card(player *P){
 			}	
 			if(P->sleep != 0) gain_armor(P , def);
 			P->power += power_generate;
-			writeinRHU(P,0,1,0,def,0,0,0,0);
+			writeinRHU(P,0,0,0,def,0,0,0,0);
 			
 			
 			
@@ -1319,7 +1319,7 @@ int8_t play_a_card(player *P){
 							}
 							
 						}else{
-							writeinRHU(P,0,1,0,0,move,0,0,0);
+							writeinRHU(P,0,0,0,0,move,0,0,0);
 							if(P->coordinate +1 != Right_MAX){
 								if(P->coordinate +1 == Player[target(P)].coordinate && P->coordinate + 2 != Right_MAX && move >= 2 ){
 										P->coordinate+=2 ;
@@ -1545,7 +1545,7 @@ int8_t play_a_card(player *P){
 						deal_damage(&Player[target(P)], damage_deal+atk+ P->atk_buff);
 						
 						if(P->sleep != 0) gain_armor(P , armor_get+ P->defend_buff);
-						writeinRHU(P,0,1,damage_deal+atk+ P->atk_buff,armor_get+ P->defend_buff,0,P->hands_card[combo_card-1].level,P->hands_card[combo_card-1].cardcode,P->hands_card[cn-1].cardcode);
+						writeinRHU(P,1,0,damage_deal+atk+ P->atk_buff,armor_get+ P->defend_buff,0,P->hands_card[combo_card-1].level,P->hands_card[combo_card-1].cardcode,P->hands_card[cn-1].cardcode);
 						if(check_passive(&Player[target(P)],145) !=0 && P->hands_card[cn-1].require_basic_card ==2 ){
 							gain_armor(P , P->hands_card[cn-1].level);
 							
@@ -1872,7 +1872,7 @@ int8_t action_command(player *P){
 							case 7:
 							if(check_passive(P,138) !=0 ){
 								Redhoodsavefile(P,BotOn);
-							
+								writeinRHU(P,2,0,0,0,0,0,0,0);
 							}
 							return 0;
 				
@@ -2540,34 +2540,6 @@ int8_t Ult_Gain(player *P){
 
 
 int main(){ //mainfuc
-
-	SetTraceLogLevel(LOG_NONE);
-	printf("是否要使用圖形介面（GUI）？\n");
-	printf("1. 是\n");
-	printf("2. 否（預設使用文字介面）\n");
-	printf("> ");
-	while (scanf("%hhd", &gui_mode) != 1 || !(gui_mode == 1 || gui_mode == 2)) {
-		getchar(); // 清除錯誤輸入
-		printf("輸入錯誤，請重新輸入（1 或 2）：\n> ");
-	}
-	if (gui_mode == 1) {
-	#ifdef __linux__
-		// 可加強偵測是否是 Ubuntu
-		char *desktop_env = getenv("XDG_CURRENT_DESKTOP");
-		if (desktop_env && (strstr(desktop_env, "Ubuntu") || strstr(desktop_env, "GNOME") || strstr(desktop_env, "ubuntu:GNOME"))) {
- 
-			printf("檢測到 Ubuntu 環境，啟用 GUI 模式...\n");
-		} else {
-			printf("警告：你選擇了 GUI 模式，但未檢測到 Ubuntu 環境，可能會發生相容性問題。\n");
-			wait_for_space();
-		}
-	#else
-		printf("目前僅支援 Ubuntu 環境的 GUI 模式，將使用文字介面（TUI）進行遊戲。\n");
-		wait_for_space();
-		gui_mode = 2;
-	#endif
-	}
-	
 	Player[0].starting_size = 0;
 	Player[1].starting_size = 0;
 	Player[2].starting_size = 0;
@@ -2826,15 +2798,7 @@ int main(){ //mainfuc
 	initialization_skill_shop(&Player[1]);
 	initialization_deck(&Player[0]);
 	initialization_deck(&Player[1]);	
-
-	// GUI 開始前 → 更新角色圖與位置
-	if (gui_mode == 1) {
-		update_coordinates(Player[0].coordinate, Player[1].coordinate);
-		update_characters(player1_char, player2_char);
-		update_characters_info(Player[0], Player[1]);
-		start_board_gui();
-	}
-
+	
 	print_header();	
 	wait_for_space();
 	
