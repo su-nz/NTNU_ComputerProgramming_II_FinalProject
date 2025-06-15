@@ -21,6 +21,7 @@ int8_t player4_char = -1;
 int8_t turn = 0;
 
 int RedHoodHPtemp=30;
+int8_t gui_mode = 2;
 
 
 int8_t initialize_player(player *P){

@@ -585,6 +585,7 @@ int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , i
         printf("發動了醞釀之災！\n");
         // 可以在此處呼叫一個未來的函式，如: discard_to_deck_interactive(you, P, 3);
     }
+	
 
 	return 0;
 }

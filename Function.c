@@ -7,6 +7,8 @@
 #define Scheherazade_token_MAX 6
 #define matches_MAX 12
 #define poison_MAX 18
+#define STR_RESET   "\033[0m"
+#define STR_BLUE    "\033[34m"
 
 void shuffle(vector *v) {
     if (!v || v->SIZE <= 1) return;
@@ -603,4 +605,95 @@ int8_t clear_select(player *P){
 	for(int i = 0 ; i < 50 ; i++){
 		P->hands_select[i] = 0; 
 	}
+}
+
+/**
+ * @brief 將目標玩家牌庫頂的 N 張牌移入棄牌堆
+ * @param target 目標玩家
+ * @param amount 要棄置的數量
+ */
+int8_t discard_from_top_of_deck(player* target, int8_t amount) {
+    for (int i = 0; i < amount; i++) {
+        if (target->deck.SIZE == 0) {
+            // 如果牌庫沒牌了，就將棄牌堆洗回去
+            if (target->discard.SIZE == 0) {
+                // 如果連棄牌堆都沒牌，就無法再棄
+                break; 
+            }
+            discard_back_to_deck(target);
+        }
+        // 從牌庫頂（陣列末端）棄牌
+        pushbackVector(&target->discard, BottomVector(&target->deck));
+        popbackVector(&target->deck);
+    }
+    return 0;
+}
+
+/**
+ * @brief 將中毒牌放入目標玩家的棄牌堆
+ * @param you 技能施放者（白雪公主）
+ * @param target 目標玩家
+ * @param amount 中毒牌數量
+ */
+int8_t add_poison_to_discard(player* you, player* target, int8_t amount) {
+    for (int i = 0; i < amount; i++) {
+        if (you->poison > 0) {
+            pushbackVector(&target->discard, POISON_CARD_ID);
+            you->poison--;
+
+            // 檢查被動技能 ID 142 (至純之毒)
+            // 效果：當一張中毒牌進入對手的棄牌堆時，他額外失去1點生命
+            if(check_passive(you, 142) > 0) {
+                // 直接扣除生命值，繞過護甲
+                if(target->hp > 0) {
+                    target->hp--;
+                }
+            }
+        } else {
+            // 白雪公主的中毒牌沒了
+            break;
+        }
+    }
+    return 0;
+}
+
+/**
+ * @brief 將玩家 you 移動到玩家 target 的相鄰格子
+ * @param you 要移動的玩家
+ * @param target 目標玩家
+ */
+int8_t move_adjacent_to_player(player* you, player* target) {
+    int8_t left_pos = target->coordinate - 1;
+    int8_t right_pos = target->coordinate + 1;
+    int8_t choice = -1;
+
+    // 檢查左右兩邊的位置是否可以移動
+    bool can_move_left = (left_pos >= 1);
+    bool can_move_right = (right_pos <= 9); // 假設1v1地圖邊界為9
+
+    if (can_move_left && can_move_right) {
+        printf("你要移動到對手的哪一側？ (1: 左側, 2: 右側)\n> ");
+        if(you->bot == 1) {
+            choice = botChoice(0, 1, 2, 0);
+            printf("%d\n", choice);
+        } else {
+            scanf("%hhd", &choice);
+            getchar();
+        }
+
+        if (choice == 1) {
+            you->coordinate = left_pos;
+        } else {
+            you->coordinate = right_pos;
+        }
+    } else if (can_move_left) {
+        printf("你移動到了對手的左側。\n");
+        you->coordinate = left_pos;
+    } else if (can_move_right) {
+        printf("你移動到了對手的右側。\n");
+        you->coordinate = right_pos;
+    } else {
+        printf("對手處於邊界，沒有可移動的相鄰位置。\n");
+    }
+    return 0;
 }
