@@ -2546,6 +2546,7 @@ int main(){ //mainfuc
 				if(round == 1){
 					draw_card(4,&Player[0]);
 					draw_card(6,&Player[1]);
+					update_characters_info(Player[0], Player[1]);
 				}
 			}else{
 				if(round % 2 == 1){
@@ -2560,7 +2561,8 @@ int main(){ //mainfuc
 			
 				if(round == 1){
 					draw_card(4,&Player[1]);
-					draw_card(6,&Player[0]);	
+					draw_card(6,&Player[0]);
+					update_characters_info(Player[0], Player[1]);	
 				}
 			}
 			
