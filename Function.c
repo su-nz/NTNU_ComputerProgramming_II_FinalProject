@@ -7,8 +7,6 @@
 #define Scheherazade_token_MAX 6
 #define matches_MAX 12
 #define poison_MAX 18
-#define STR_RESET   "\033[0m"
-#define STR_BLUE    "\033[34m"
 
 void shuffle(vector *v) {
     if (!v || v->SIZE <= 1) return;
@@ -22,6 +20,69 @@ void shuffle(vector *v) {
 		}
 	}
 }
+
+int8_t swap_coor(int8_t coor){
+	if(coor < 0){
+		return 11-coor*(-1)+1;
+	}else{
+		return (11-coor+1)*(-1);
+	}
+}
+
+int8_t swap_place(player *P1 ,player *P2){
+	system("clear");
+	print_game_broad_11();
+	print_hands(P1);
+	printf("%s請輸入你要捨棄的移動卡(輸入0取消)\n>",P1->charname);
+	int8_t cn =-1;
+	int p1_C =0;
+	int p2_C =0;
+	
+	if(check_location(swap_coor(P1->coordinate))==-1) return 0;
+	if(check_location(swap_coor(P2->coordinate))==-1) return 0;
+	while(cn!=0){		
+		scanf("%hhd",&cn);
+		if(cn == 0)return 0;
+		if(P1->hands_card[cn-1].type == 2 || P1->hands_card[cn-1].type == 3){
+			p1_C = cn-1;
+			break;
+		}else{
+			printf("這不是移動卡\n>");
+		}
+	}
+	cn =-1;
+	system("clear");
+	print_game_broad_11();
+	print_hands(P2);
+	printf("%s請輸入你要捨棄的移動卡\n>",P2->charname);
+	while(cn!=0){		
+		scanf("%hhd",&cn);
+		if(cn == 0)return 0;
+		if(P2->hands_card[cn-1].type == 2 || P2->hands_card[cn-1].type == 3){
+			p2_C = cn-1;
+			break;
+		}else{
+			printf("這不是移動卡\n>");
+		}
+		
+	}
+	
+	
+							
+	discard_card_from_hand(P1,p1_C);
+	discard_card_from_hand(P2,p2_C);
+	
+	P1->coordinate = swap_coor(P1->coordinate);
+	P2->coordinate = swap_coor(P2->coordinate);
+	
+	
+	
+	
+	
+	return 0;
+}
+
+
 
 int8_t playcardnum_clear(player *P){
 	for(int i = 0 ; i < P->playcardnum ; i++){
@@ -47,7 +108,6 @@ int8_t showplaycardnum(player *P){
 	for(int i = 0 ; i < P->playcardnum ; i++){
 	
 	}
-	return 0;
 }
 
 int8_t remove_card_from_hand(player *P , int8_t select){
@@ -70,11 +130,10 @@ int8_t botChoice(int16_t mode , int16_t min , int16_t  max  , int16_t situation)
 			max = temp;
 	    	}
 	    	int r = rand() % (max - min + 1) + min;
-	    printf("%s%d%s\n", STR_BLUE, r, STR_RESET);
+	    printf(BLUE"%d\n"RESET, r);
 	    usleep(2000000);
 	    return r;	    
 	}
-	return 0;
 }
 
 int8_t clearRHU(player *P){
@@ -86,7 +145,6 @@ int8_t clearRHU(player *P){
 	P->RedUlt.spel_buy=0;
 	P->RedUlt.bas_buy=0;
 	P->RedUlt.cardid=0;
-	return 0;
 }
 
 int8_t writeinRHU(player *P,int8_t a1,int8_t a2,int8_t a3,int8_t a4,int8_t a5,int8_t a6,int8_t a7,int8_t a8){
@@ -98,7 +156,6 @@ int8_t writeinRHU(player *P,int8_t a1,int8_t a2,int8_t a3,int8_t a4,int8_t a5,in
 	P->RedUlt.spel_buy=a6;
 	P->RedUlt.bas_buy=a7;
 	P->RedUlt.cardid=a8;
-	return 0;
 }
 
 
@@ -472,7 +529,6 @@ int8_t gain_sleeptoken(player *P , int8_t amount){
 		}
 	}
 	if(P->sleep_token >= 6 ) P->sleep = 0;
-	return 0;
 }
 
 int8_t remove_sleeptoken(player *P , int8_t amount){
@@ -482,7 +538,6 @@ int8_t remove_sleeptoken(player *P , int8_t amount){
 		}
 	}
 	if(P->sleep_token == 0) P->sleep = 1;
-	return 0;
 }
 
 int8_t remove_hp(player *P , int8_t damage){
@@ -491,7 +546,6 @@ int8_t remove_hp(player *P , int8_t damage){
 			P->hp--;
 		}
 	}
-	return 0;
 }
 
 int8_t regenerate_hp(player *P,int8_t amount){
@@ -500,7 +554,6 @@ int8_t regenerate_hp(player *P,int8_t amount){
 			P->hp++;
 		}
 	}
-	return 0;
 }
 
 int8_t print_discard(player *P){
@@ -511,7 +564,6 @@ int8_t print_discard(player *P){
 		Card_Define(P->discard.array[i] , &temp_card);
 		printf("%d.)%s ",i+1,temp_card.cardname);
 	}
-	return 0;
 }
 
 int8_t range_counter(player *P1,player *P2,int8_t range){
@@ -534,7 +586,6 @@ int8_t check_starting(player *P,player *Enemy){
 		startingskill(P,Enemy,P->starting[i],P->starting_lv[i]);
 	}
 	initialization_starting(P);
-	return 0;
 }
 
 int8_t initialization_starting(player *P){
@@ -546,103 +597,10 @@ int8_t initialization_starting(player *P){
 		P->starting[P->starting_size-1] = 0;
 		P->starting_size--;
 	}
-	return 0;
 }
 
 int8_t clear_select(player *P){
 	for(int i = 0 ; i < 50 ; i++){
 		P->hands_select[i] = 0; 
 	}
-	return 0;
-}
-
-/**
- * @brief 將目標玩家牌庫頂的 N 張牌移入棄牌堆
- * @param target 目標玩家
- * @param amount 要棄置的數量
- */
-int8_t discard_from_top_of_deck(player* target, int8_t amount) {
-    for (int i = 0; i < amount; i++) {
-        if (target->deck.SIZE == 0) {
-            // 如果牌庫沒牌了，就將棄牌堆洗回去
-            if (target->discard.SIZE == 0) {
-                // 如果連棄牌堆都沒牌，就無法再棄
-                break; 
-            }
-            discard_back_to_deck(target);
-        }
-        // 從牌庫頂（陣列末端）棄牌
-        pushbackVector(&target->discard, BottomVector(&target->deck));
-        popbackVector(&target->deck);
-    }
-    return 0;
-}
-
-/**
- * @brief 將中毒牌放入目標玩家的棄牌堆
- * @param you 技能施放者（白雪公主）
- * @param target 目標玩家
- * @param amount 中毒牌數量
- */
-int8_t add_poison_to_discard(player* you, player* target, int8_t amount) {
-    for (int i = 0; i < amount; i++) {
-        if (you->poison > 0) {
-            pushbackVector(&target->discard, POISON_CARD_ID);
-            you->poison--;
-
-            // 檢查被動技能 ID 142 (至純之毒)
-            // 效果：當一張中毒牌進入對手的棄牌堆時，他額外失去1點生命
-            if(check_passive(you, 142) > 0) {
-                // 直接扣除生命值，繞過護甲
-                if(target->hp > 0) {
-                    target->hp--;
-                }
-            }
-        } else {
-            // 白雪公主的中毒牌沒了
-            break;
-        }
-    }
-    return 0;
-}
-
-/**
- * @brief 將玩家 you 移動到玩家 target 的相鄰格子
- * @param you 要移動的玩家
- * @param target 目標玩家
- */
-int8_t move_adjacent_to_player(player* you, player* target) {
-    int8_t left_pos = target->coordinate - 1;
-    int8_t right_pos = target->coordinate + 1;
-    int8_t choice = -1;
-
-    // 檢查左右兩邊的位置是否可以移動
-    bool can_move_left = (left_pos >= 1);
-    bool can_move_right = (right_pos <= 9); // 假設1v1地圖邊界為9
-
-    if (can_move_left && can_move_right) {
-        printf("你要移動到對手的哪一側？ (1: 左側, 2: 右側)\n> ");
-        if(you->bot == 1) {
-            choice = botChoice(0, 1, 2, 0);
-            printf("%d\n", choice);
-        } else {
-            scanf("%hhd", &choice);
-            getchar();
-        }
-
-        if (choice == 1) {
-            you->coordinate = left_pos;
-        } else {
-            you->coordinate = right_pos;
-        }
-    } else if (can_move_left) {
-        printf("你移動到了對手的左側。\n");
-        you->coordinate = left_pos;
-    } else if (can_move_right) {
-        printf("你移動到了對手的右側。\n");
-        you->coordinate = right_pos;
-    } else {
-        printf("對手處於邊界，沒有可移動的相鄰位置。\n");
-    }
-    return 0;
 }
