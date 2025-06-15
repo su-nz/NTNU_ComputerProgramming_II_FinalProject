@@ -19,7 +19,6 @@ int8_t player2_char = -1;
 int8_t player3_char = -1;
 int8_t player4_char = -1;
 int8_t turn = 0;
-int8_t gui_mode = 0;
 
 int RedHoodHPtemp=30;
 
@@ -31,8 +30,60 @@ int8_t initialize_player(player *P){
 		P->Redhoodsave[2] = -1;
 		
 	}
+}
+
+int8_t check_location(int8_t coor){
+	if(coor == Player[0].coordinate){
+		return -1;
+	}else if(coor == Player[1].coordinate){
+		return -1;
+	}else if(coor == Player[2].coordinate){
+		return -1;
+	}else if(coor == Player[3].coordinate){
+		return -1;
+	}
 	return 0;
 }
+
+int get_next_player(int prev, player Player[4]) {
+	int team0_alive[2], team1_alive[2];
+	int t0_count = 0, t1_count = 0;
+
+	// 分別找出每隊的存活玩家
+	for (int i = 0; i < 4; i++) {
+		if (Player[i].alive) {
+			if (Player[i].team == 0)
+				team0_alive[t0_count++] = i;
+			else
+				team1_alive[t1_count++] = i;
+		}
+	}
+
+	// 1v1
+	if (t0_count == 1 && t1_count == 1) {
+		// 交替進行，prev = 上一位，下一位就是另一隊的人
+		if (Player[prev].team == 0) return team1_alive[0];
+		else return team0_alive[0];
+	}
+
+	// 若有隊伍只剩一人，該人執行兩次（模擬死隊友的輪次）
+	if (t0_count == 1) {
+		if (Player[prev].team == 1) return team0_alive[0]; // 敵人剛動完，換該隊唯一生存者
+		else return team1_alive[(team1_alive[0] != prev) ? 0 : 1]; // 換敵隊其他人
+	}
+
+	if (t1_count == 1) {
+		if (Player[prev].team == 0) return team1_alive[0];
+		else return team0_alive[(team0_alive[0] != prev) ? 0 : 1];
+	}
+
+	// 四人都活著 → 正常順時針循環（P0→P1→P2→P3→P0）
+	int next = (prev + 1) % 4;
+	while (!Player[next].alive)
+		next = (next + 1) % 4;
+	return next;
+}
+
 
 int8_t target(player *you){
 	if(you->coordinate > 0){
@@ -46,17 +97,43 @@ int8_t target(player *you){
 		if(Player[2].coordinate < 0 && Player[2].coordinate != you->coordinate) return Player[2].num;
 		if(Player[3].coordinate < 0 && Player[3].coordinate != you->coordinate) return Player[3].num;
 	}
-	return 0;
 }
 
 int8_t end_game_detection(){
-
+	
+	if(Player[0].hp ==0){
+		Player[0].alive = 0;
+		Player[0].coordinate = 99;
+	}
+	if(Player[1].hp ==0){
+		Player[1].alive = 0;
+		Player[1].coordinate = 99;
+	}
+	if(Player[2].hp ==0){
+		Player[2].alive = 0;
+		Player[2].coordinate = 99;
+	}
+	if(Player[3].hp ==0){
+		Player[3].alive = 0;
+		Player[3].coordinate = 99;
+	}
+	
+	
 	if(mode == 1){
 		if(Player[0].hp <=0){
 			
 			return 1;
 			
 		}else if(Player[1].hp <=0){
+			
+			return 1;
+		}
+	}else{
+		if(Player[0].hp <=0 && Player[2].hp <=0){
+			
+			return 1;
+			
+		}else if(Player[3].hp <=0 && Player[1].hp <=0){
 			
 			return 1;
 		}
@@ -79,6 +156,22 @@ int8_t print_end_game(){
 		}else{
 			system("clear");
 			printf("玩家一-%s勝利\n",Player[0].charname);
+			return 1;
+		}
+	}else{
+			if(Player[0].hp <=0 && Player[2].hp <=0){
+			if(BotOn ==1){
+				system("clear");
+				printf("電腦 勝利\n");
+				return 1;
+			}else{
+				system("clear");
+				printf("玩家二-%s 和 玩家四-%s 勝利\n",Player[1].charname,Player[3].charname);
+				return 1;
+			}
+		}else if(Player[1].hp <=0 && Player[3].hp <=0){
+			system("clear");
+			printf("玩家一-%s 和 玩家三-%s 勝利\n",Player[0].charname,Player[2].charname);
 			return 1;
 		}
 	}
@@ -178,7 +271,6 @@ int8_t initialization_skill_shop(player *P){
 			P->Ult_deck[0] = 32;
 			P->Ult_deck[1] = 33;
 			P->Ult_deck[2] = 34;
-			break;
 		}
 		
 		case 2:
@@ -255,7 +347,6 @@ int8_t printf_basic_shop(){
 	printf("8.） 移動卡 Lv2 費用 3 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[2][1].SIZE);
 	printf("9.） 移動卡 Lv3 費用 6 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[2][2].SIZE);
 	printf("10.）通用卡 Lv1 費用 2 點能量  卡片剩餘數:%hhd\n",basicBuyDeck[3][0].SIZE);
-	return 0;
 }
 
 int8_t printf_skill_shop(int8_t player_num){
@@ -291,22 +382,19 @@ int8_t printf_skill_shop(int8_t player_num){
 	}else{
 		printf("3.）移動技能鏈 已售完\n\n");
 	}
-	return 0;
 }
 
 int8_t skill_shop_command(player *P){
+	printf_skill_shop(P->num);
+	card cardtemp1;
+	if(skillBuyDeck[P->num][0].SIZE >0)Card_Define(skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1], &cardtemp1);
+	card cardtemp2;
+	if(skillBuyDeck[P->num][0].SIZE >1)Card_Define(skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1], &cardtemp2);
+	card cardtemp3;
+	if(skillBuyDeck[P->num][0].SIZE >2)Card_Define(skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1], &cardtemp3);
 	int8_t ssc =-1;
-
+	printf_skill_shop(P->num);
 	while(1){
-		// 將卡片資訊的讀取與商店介面的刷新都放到迴圈內
-		// 這樣每次購買後都能顯示最新的狀態
-		card cardtemp1, cardtemp2, cardtemp3;
-		if(skillBuyDeck[P->num][0].SIZE > 0) Card_Define(skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1], &cardtemp1);
-		if(skillBuyDeck[P->num][1].SIZE > 0) Card_Define(skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1], &cardtemp2);
-		if(skillBuyDeck[P->num][2].SIZE > 0) Card_Define(skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1], &cardtemp3);
-
-		printf_skill_shop(P->num);
-
 		if(check_passive(P , 146) != 0){
 				 regenerate_hp(P,5);
 				 quicksort(P->passive,0,P->passive_n -1);
@@ -315,151 +403,137 @@ int8_t skill_shop_command(player *P){
 							P->passive[i] = 999;
 							P->passive_n--;
 						}
-					}
+					}				 
 		}
-		printf("目前剩餘能量："ANSI_BOLD ANSI_GREEN"%d"ANSI_RESET"\n", P->power);
+		printf("目前剩餘能量："BOLD GREEN"%d"RESET"\n", P->power);
 		printf("請輸入你要做什麼？\n");
 		printf("1. 升級技能\n");
 		printf("2. 退出商店\n");
 		printf("> ");
-
-		if(P->bot == 1) {
-			// === 機器人邏輯：決定要「升級」還是「退出」 ===
-			int8_t num_valid_upgrades = 0;
-			if (skillBuyDeck[P->num][0].SIZE > 0 && P->power >= cardtemp1.cost) num_valid_upgrades++;
-			if (skillBuyDeck[P->num][1].SIZE > 0 && P->power >= cardtemp2.cost) num_valid_upgrades++;
-			if (skillBuyDeck[P->num][2].SIZE > 0 && P->power >= cardtemp3.cost) num_valid_upgrades++;
-
-			if (num_valid_upgrades > 0) {
-				// 如果有東西可買，讓機器人隨機決定要不要買 (1=買, 2=不買/退出)
-				// 這讓機器人有機會存錢，而不是無腦花光
-				ssc = botChoice(0, 1, 2, 0); 
-			} else {
-				ssc = 2; // 如果沒有，就必須退出
-			}
-			printf("%hhd\n", ssc);
-			usleep(1000000);
-		} else {
+		if(P->bot ==1 ){
+			ssc = botChoice(0,1,2,0);
+		}else{
 			scanf("%hhd",&ssc);
 			getchar();
 		}
-
+		
 		if(ssc == 1){
 			int8_t cc =-1;
-
-			if(P->bot == 1){
-				// === 機器人邏輯：從「有效選項」中決定要買哪一個 ===
-				int8_t valid_options[3];
-				int8_t num_valid_options = 0;
-
-				// 建立可購買選項的陣列
-				if (skillBuyDeck[P->num][0].SIZE > 0 && P->power >= cardtemp1.cost) {
-					valid_options[num_valid_options++] = 1;
-				}
-				if (skillBuyDeck[P->num][1].SIZE > 0 && P->power >= cardtemp2.cost) {
-					valid_options[num_valid_options++] = 2;
-				}
-				if (skillBuyDeck[P->num][2].SIZE > 0 && P->power >= cardtemp3.cost) {
-					valid_options[num_valid_options++] = 3;
-				}
-
-				// 從有效選項陣列中隨機挑一個
-				int random_index = botChoice(0, 0, num_valid_options - 1, 1);
-				cc = valid_options[random_index];
-
-				printf("請輸入你要升級的技能：%hhd\n", cc);
-				usleep(1000000);
-			} else {
-				printf("請輸入你要升級的技能：") ;
-				scanf("%hhd",&cc);
-			}
-
+			printf("請輸入你要升級的技能：") ;
+		if(P->bot ==1 ){
+			cc = botChoice(0,1,3,1);
+		}else{
+			scanf("%hhd",&cc);
+		}
+		
 			switch(cc){
 				case 1: // 攻擊
 					if(P->power < cardtemp1.cost){
-						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
+						printf(BOLD RED"你的能量不夠\n"RESET) ;
 						wait_for_space();
+						printf_skill_shop(P->num);
 					}else if(skillBuyDeck[P->num][0].SIZE == 0){
-						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n"ANSI_RESET) ;
+						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
 						wait_for_space();
+						printf_skill_shop(P->num);
 					}else{
 						pushbackVector(&P->discard, skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1]);
 						skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1] = 0;
 						skillBuyDeck[P->num][0].SIZE--;
 						P->power -=cardtemp1.cost;
-						if(skillBuyDeck[P->num][0].SIZE > 0 && cardtemp1.cost == 0){
+						Card_Define(skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1], &cardtemp1);
+						if(cardtemp1.cost == 0){
 							P->passive[P->passive_n] = skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1];
 							skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1] = 0;
 							skillBuyDeck[P->num][0].SIZE--;
 							if(skillBuyDeck[P->num][0].SIZE <=0) skillBuyDeck[P->num][0].SIZE = 0;
 							P->passive_n++;
+							if(skillBuyDeck[P->num][0].SIZE >0)Card_Define(skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1], &cardtemp1);
 						}
+						printf_skill_shop(P->num);
 					}
 					writeinRHU(P,4,0,0,0,0,0,cc,0);
 				break;
-
+				
 				case 2: // 防禦
 					if(P->power < cardtemp2.cost){
-						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
+						printf(BOLD RED"你的能量不夠\n"RESET) ;
 						wait_for_space();
+                                                printf_skill_shop(P->num);
 					}else if(skillBuyDeck[P->num][1].SIZE == 0){
-						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n"ANSI_RESET) ;
+						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
 						wait_for_space();
+                                                printf_skill_shop(P->num);
 					}else{
 						pushbackVector(&P->discard, skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1]);
 						skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1] = 0;
 						skillBuyDeck[P->num][1].SIZE--;
 						P->power -=cardtemp2.cost;
-						if(skillBuyDeck[P->num][1].SIZE > 0 && cardtemp2.cost == 0){
+						Card_Define(skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1], &cardtemp2);
+						if(cardtemp2.cost == 0){
 							P->passive[P->passive_n] = skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1];
 							skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1] = 0;
 							skillBuyDeck[P->num][1].SIZE--;
 							if(skillBuyDeck[P->num][1].SIZE <=0) skillBuyDeck[P->num][1].SIZE = 0;
 							P->passive_n++;
+							if(skillBuyDeck[P->num][1].SIZE >0)Card_Define(skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1], &cardtemp2);
 						}
+						printf_skill_shop(P->num);
 					}
 					writeinRHU(P,4,0,0,0,0,0,cc,0);
 				break;
-
+				
 				case 3: // 移動
 					if(P->power < cardtemp3.cost){
-						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
+						printf(BOLD RED"你的能量不夠\n"RESET) ;
 						wait_for_space();
+                                                printf_skill_shop(P->num);
 					}else if(skillBuyDeck[P->num][2].SIZE == 0){
-						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n"ANSI_RESET) ;
+						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
 						wait_for_space();
+                                                printf_skill_shop(P->num);
 					}else{
 						pushbackVector(&P->discard, skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1]);
 						skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1] = 0;
 						skillBuyDeck[P->num][2].SIZE--;
 						P->power -=cardtemp3.cost;
-						if(skillBuyDeck[P->num][2].SIZE > 0 && cardtemp3.cost == 0){
+						Card_Define(skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1], &cardtemp3);
+						if(cardtemp3.cost == 0){
 							P->passive[P->passive_n] = skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1];
 							P->passive_n++;
 							skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1] = 0;
 							skillBuyDeck[P->num][2].SIZE--;
 							if(skillBuyDeck[P->num][2].SIZE <=0) skillBuyDeck[P->num][2].SIZE = 0;
+							
+							if(skillBuyDeck[P->num][2].SIZE >0)Card_Define(skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1], &cardtemp2);
 						}
+						printf_skill_shop(P->num);
 					}
 					writeinRHU(P,4,0,0,0,0,0,cc,0);
 				break;
-
+				
+				
 				default:
-					printf(ANSI_BOLD ANSI_RED"不存在此選項\n"ANSI_RESET);
+					printf(BOLD RED"不存在此選項\n"RESET);
 					wait_for_space();
+                                        printf_skill_shop(P->num);
 				break;
 			}
-		} else if (ssc == 2){
+		}else if (ssc == 2){
+			
 			if(mode == 1){
 				print_game_broad_9();
 				return 0;
 			}else{
-				// other mode logic here
+				print_game_broad_11();
+				return 0;
 			}
+			
 			return 0;
-		} else {
-			printf(ANSI_BOLD ANSI_RED"不合法輸入！！\n"ANSI_RESET) ;
+		}else{
+			printf(BOLD RED"不合法輸入！！\n"RESET) ;
 			wait_for_space();
+                        printf_skill_shop(P->num);
 		}
 	}
 	return 0;
@@ -500,7 +574,8 @@ int8_t discard_command(player *P){
 				print_game_broad_9();
 				return 0;
 			}else{
-				
+				print_game_broad_11();
+				return 0;
 			}
 			
 			return 0;
@@ -512,7 +587,7 @@ int8_t basic_shop_command(player *P){
 	int8_t bsc =-1;
 	printf_basic_shop();
 	while(1){
-		printf("目前剩餘能量："ANSI_BOLD ANSI_GREEN"%d"ANSI_RESET"\n", P->power);
+		printf("目前剩餘能量："BOLD GREEN"%d"RESET"\n", P->power);
 		printf("請輸入你要做什麼？\n");
 		printf("1. 購買卡片\n");
 		printf("2. 退出商店\n");
@@ -539,11 +614,11 @@ int8_t basic_shop_command(player *P){
 			switch(cc){
 				case 1: // 攻擊卡 1
 					if(P->power < 1){
-						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
+						printf(BOLD RED"你的能量不夠\n"RESET) ;
 						wait_for_space();
 						printf_basic_shop();
 					}else if(basicBuyDeck[0][0].SIZE == 0){
-						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n"ANSI_RESET) ;
+						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else{
@@ -558,11 +633,11 @@ int8_t basic_shop_command(player *P){
 				
 				case 2: // 攻擊卡 2
 					if(P->power < 3){
-						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
+						printf(BOLD RED"你的能量不夠\n"RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else if(basicBuyDeck[0][1].SIZE == 0){
-						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n"ANSI_RESET) ;
+						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else{
@@ -577,11 +652,11 @@ int8_t basic_shop_command(player *P){
 				
 				case 3: // 攻擊卡 3
 					if(P->power < 6){
-						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
+						printf(BOLD RED"你的能量不夠\n"RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else if(basicBuyDeck[0][2].SIZE == 0){
-						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n"ANSI_RESET) ;
+						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else{
@@ -596,11 +671,11 @@ int8_t basic_shop_command(player *P){
 				
 				case 4: // 防禦卡 1
 					if(P->power < 1){
-						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
+						printf(BOLD RED"你的能量不夠\n"RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else if(basicBuyDeck[1][0].SIZE == 0){
-						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n"ANSI_RESET) ;
+						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else{
@@ -615,11 +690,11 @@ int8_t basic_shop_command(player *P){
 				
 				case 5: // 防禦卡 2
 					if(P->power < 3){
-						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
+						printf(BOLD RED"你的能量不夠\n"RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else if(basicBuyDeck[1][1].SIZE == 0){
-						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n"ANSI_RESET) ;
+						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else{
@@ -634,11 +709,11 @@ int8_t basic_shop_command(player *P){
 				
 				case 6: // 防禦卡 3
 					if(P->power < 6){
-						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
+						printf(BOLD RED"你的能量不夠\n"RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else if(basicBuyDeck[1][2].SIZE == 0){
-						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n" ANSI_RESET) ;
+						printf(BOLD RED"此卡已經賣光了\n" RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else{
@@ -653,11 +728,11 @@ int8_t basic_shop_command(player *P){
 				
 				case 7: // 移動卡 1
 					if(P->power < 1){
-						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
+						printf(BOLD RED"你的能量不夠\n"RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else if(basicBuyDeck[2][0].SIZE == 0){
-						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n"ANSI_RESET) ;
+						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else{
@@ -672,11 +747,11 @@ int8_t basic_shop_command(player *P){
 				
 				case 8: // 移動卡 2
 					if(P->power < 3){
-						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
+						printf(BOLD RED"你的能量不夠\n"RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else if(basicBuyDeck[2][1].SIZE == 0){
-						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n"ANSI_RESET) ;
+						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else{
@@ -691,11 +766,11 @@ int8_t basic_shop_command(player *P){
 				
 				case 9: // 移動卡 3
 					if(P->power < 6){
-						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
+						printf(BOLD RED"你的能量不夠\n"RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else if(basicBuyDeck[2][2].SIZE == 0){
-						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n"ANSI_RESET) ;
+						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else{
@@ -710,11 +785,11 @@ int8_t basic_shop_command(player *P){
 				
 				case 10: // 通用卡 
 					if(P->power < 2){
-						printf(ANSI_BOLD ANSI_RED"你的能量不夠\n"ANSI_RESET) ;
+						printf(BOLD RED"你的能量不夠\n"RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else if(basicBuyDeck[2][2].SIZE == 0){
-						printf(ANSI_BOLD ANSI_RED"此卡已經賣光了\n"ANSI_RESET) ;
+						printf(BOLD RED"此卡已經賣光了\n"RESET) ;
 						wait_for_space();
                                                 printf_basic_shop();
 					}else{
@@ -728,7 +803,7 @@ int8_t basic_shop_command(player *P){
 				break;
 				
 				default:
-					printf(ANSI_BOLD ANSI_RED"不存在此選項\n"ANSI_RESET);
+					printf(BOLD RED"不存在此選項\n"RESET);
 					wait_for_space();
                                         printf_basic_shop();
 				break;
@@ -739,12 +814,13 @@ int8_t basic_shop_command(player *P){
 				print_game_broad_9();
 				return 0;
 			}else{
-				
+				print_game_broad_11();
+				return 0;
 			}
 			
 			return 0;
 		}else{
-			printf(ANSI_BOLD ANSI_RED"不合法輸入！！\n"ANSI_RESET) ;
+			printf(BOLD RED"不合法輸入！！\n"RESET) ;
 			wait_for_space();
                         printf_basic_shop();
 		}
@@ -759,13 +835,12 @@ int8_t discard_card_from_hand(player *P,int8_t index){
 		Card_Define((*P).hands_card[i + 1].cardcode , &(*P).hands_card[i]);
 	}
 	(*P).hands--;
-	return 0;
 }
 	
 int8_t remove_card(player *P){
 	system("clear");
 	int8_t comm=-1;
-	printf("現在是"ANSI_GREEN ANSI_BOLD"%s"ANSI_RESET"在進行\n",P->charname);
+	printf("現在是"GREEN BOLD"%s"RESET"在進行\n",P->charname);
 	printf("請問你要對哪一個地方使用專注？\n");
 	printf("0. 手牌\n");
 	printf("1. 棄牌堆\n");
@@ -786,7 +861,8 @@ int8_t remove_card(player *P){
 						print_game_broad_9();
 						
 					}else{
-							
+							print_game_broad_11();
+				
 					}
 					printf("你沒有手牌了！\n");
 					
@@ -823,7 +899,8 @@ int8_t remove_card(player *P){
 						print_game_broad_9();
 						
 					}else{
-							
+							print_game_broad_11();
+				
 					}
 					printf("你的棄牌堆沒有牌！\n");
 					
@@ -855,6 +932,7 @@ int8_t remove_card(player *P){
 			print_game_broad_9();
 			
 		}else{
+			print_game_broad_11();
 				
 		}
 		
@@ -863,40 +941,29 @@ int8_t remove_card(player *P){
 		break;
 		
 	}
-	return 0;
 }
 
 
 
 
-int8_t deal_damage(player *attacker, player *target, int8_t damage){
-    int gap = damage - target->armor;
-
-    // 檢查睡美人的被動技能 ID 144 (血祭之禮)，這裡要直接使用 target 變數
-    if(gap > 0 && check_passive(target, 144) != 0 && target->sleep_passive2_cd == 0){
-        target->sleep_passive2_cd = 1;
-        recv_card_sleep(target, gap);
-    }
-
-    for(int i = 0; i < damage; i++){
-        if(target->armor > 0){
-            target->armor--;
-        } else if(target->armor == 0){
-            if(target->hp > 0){
-                target->hp--;
-                if(target->sleep == 1) gain_sleeptoken(target, 1);
-                if(target->sleep_hp > 0) target->sleep_hp--;
-            }
-        }
-    }
-
-    // 檢查白雪公主的被動技能 ID 139 (水晶之棺)
-    if (attacker != NULL && damage >= 2 && check_passive(attacker, 139) > 0) {
-        printf("觸發了水晶之棺的效果！\n");
-        add_poison_to_discard(attacker, target, 1);
-    }
-
-    return 0;
+int8_t deal_damage(player *P , int8_t damage){
+		int gap = damage - P->armor;
+		if(gap > 0 && check_passive(&Player[target(P)] , 144) != 0 && Player[target(P)].sleep_passive2_cd == 0){
+			Player[target(P)].sleep_passive2_cd = 1;
+			recv_card_sleep(&Player[target(P)],gap);
+		}
+		for(int i = 0 ; i < damage ; i++){
+			if(P->armor > 0){
+				P->armor--;
+			}else if(P->armor == 0){
+				if(P->hp > 0){
+					P->hp--;
+					if(P->sleep == 1) gain_sleeptoken(P, 1 );
+					if(P->sleep_hp >0) P->sleep_hp--;
+				}
+			}
+		}
+	return 0;
 }
 
 int8_t gain_armor(player *P , int8_t def){
@@ -907,12 +974,17 @@ int8_t gain_armor(player *P , int8_t def){
 			P-> armor = P-> Maxarmor;
 		}
 	}
-	return 0;
 }
 
 int8_t play_a_card(player *P){
 	system("clear");
-	print_game_broad_9();
+	if(mode == 1){
+				print_game_broad_9();
+						
+				}else{		
+				print_game_broad_11();
+			
+	}
 	print_hands(P);
 	
 	printf("\n1.)攻擊牌\n2.)防禦牌\n3.)移動牌\n4.)技能牌\n5.)大招牌\n");
@@ -923,7 +995,9 @@ int8_t play_a_card(player *P){
 			if(mode == 1){
 				print_game_broad_9();
 						
-				}else{			
+				}else{		
+				print_game_broad_11();
+			
 			}
 			printf("你沒有手牌了！\n");
 			
@@ -939,7 +1013,8 @@ int8_t play_a_card(player *P){
 					print_game_broad_9();
 					return 0;
 				}else{
-					//TODO: 2v2
+					print_game_broad_11();
+					return 0;
 				}
 				
 				return 0;
@@ -970,7 +1045,11 @@ int8_t play_a_card(player *P){
 								P->hp-=2;
 								atk += 1 + P->atk_buff;
 								system("clear");
-								print_game_broad_9();
+								if(mode == 1){
+									print_game_broad_9();	
+								}else{		
+									print_game_broad_11();
+								}
 								print_hands(P);
 								P->sleep_passive1_cd = 1;
 								printf("請選擇所有你想打出的攻擊牌，選擇完後請輸入0\n");
@@ -979,7 +1058,11 @@ int8_t play_a_card(player *P){
 								P->hp-=4;
 								atk += 2 + P->atk_buff;
 								system("clear");
-								print_game_broad_9();
+								if(mode == 1){
+									print_game_broad_9();	
+								}else{		
+									print_game_broad_11();
+								}
 								print_hands(P);
 								P->sleep_passive1_cd = 1;
 								printf("請選擇所有你想打出的攻擊牌，選擇完後請輸入0\n");
@@ -988,7 +1071,11 @@ int8_t play_a_card(player *P){
 								P->hp-=6;
 								atk += 3 + P->atk_buff;
 								system("clear");
-								print_game_broad_9();
+								if(mode == 1){
+									print_game_broad_9();	
+								}else{		
+									print_game_broad_11();
+								}
 								print_hands(P);
 								P->sleep_passive1_cd = 1;
 								printf("請選擇所有你想打出的攻擊牌，選擇完後請輸入0\n");
@@ -1002,7 +1089,11 @@ int8_t play_a_card(player *P){
 							
 							handaddplaycardnum(P,cn-1);//handaddplaycardnum
 							system("clear");
-							print_game_broad_9();
+								if(mode == 1){
+									print_game_broad_9();	
+								}else{		
+									print_game_broad_11();
+								}
 							print_hands(P);
 							
 							printf("請選擇所有你想打出的攻擊牌，選擇完後請輸入0\n");
@@ -1022,7 +1113,7 @@ int8_t play_a_card(player *P){
 				if(P->atk_bb3 !=0){
 					atk +=3;
 				}
-				deal_damage(P, &Player[target(P)], atk);
+				deal_damage(&Player[target(P)] , atk);
 				writeinRHU(P,0,1,atk,0,0,0,0,0);
 				
 				printf("你對對手造成了\033[1;31m%hhd\033[0m點傷害\n",atk);
@@ -1057,7 +1148,11 @@ int8_t play_a_card(player *P){
 								P->hp-=2;
 								def += 1 + P->defend_buff;
 								system("clear");
-								print_game_broad_9();
+								if(mode == 1){
+									print_game_broad_9();	
+								}else{		
+									print_game_broad_11();
+								}
 								print_hands(P);
 								P->sleep_passive1_cd = 1;
 								printf("請選擇所有你想打出的防禦牌，選擇完後請輸入0\n");
@@ -1066,7 +1161,11 @@ int8_t play_a_card(player *P){
 								P->hp-=4;
 								def += 2 + P->defend_buff;
 								system("clear");
-								print_game_broad_9();
+								if(mode == 1){
+									print_game_broad_9();	
+								}else{		
+									print_game_broad_11();
+								}
 								print_hands(P);
 								P->sleep_passive1_cd = 1;
 								printf("請選擇所有你想打出的防禦牌，選擇完後請輸入0\n");
@@ -1075,7 +1174,11 @@ int8_t play_a_card(player *P){
 								P->hp-=6;
 								def += 3 + P->defend_buff;
 								system("clear");
-								print_game_broad_9();
+								if(mode == 1){
+									print_game_broad_9();	
+								}else{		
+									print_game_broad_11();
+								}
 								print_hands(P);
 								P->sleep_passive1_cd = 1;
 								printf("請選擇所有你想打出的防禦牌，選擇完後請輸入0\n");
@@ -1088,7 +1191,11 @@ int8_t play_a_card(player *P){
 					power_generate += P->hands_card[cn-1].power_generate;						
 					handaddplaycardnum(P,cn-1);
 					system("clear");
-					print_game_broad_9();
+					if(mode == 1){
+									print_game_broad_9();	
+								}else{		
+									print_game_broad_11();
+					}
 					print_hands(P);
 					printf("請選擇所有你想打出的防禦牌，選擇完後請輸入0\n>");
 					
@@ -1131,7 +1238,11 @@ int8_t play_a_card(player *P){
 								P->hp-=2;
 								move += 1 + P->speed_buff;
 								system("clear");
-								print_game_broad_9();
+								if(mode == 1){
+									print_game_broad_9();	
+								}else{		
+									print_game_broad_11();
+								}
 								print_hands(P);
 								P->sleep_passive1_cd = 1;
 								printf("請選擇所有你想打出的移動牌，選擇完後請輸入0\n");
@@ -1140,7 +1251,11 @@ int8_t play_a_card(player *P){
 								P->hp-=4;
 								move += 2 + P->speed_buff;
 								system("clear");
-								print_game_broad_9();
+								if(mode == 1){
+									print_game_broad_9();	
+								}else{		
+									print_game_broad_11();
+								}
 								print_hands(P);
 								P->sleep_passive1_cd = 1;
 								printf("請選擇所有你想打出的移動牌，選擇完後請輸入0\n");
@@ -1149,7 +1264,11 @@ int8_t play_a_card(player *P){
 								P->hp-=6;
 								move += 3 + P->speed_buff;
 								system("clear");
-								print_game_broad_9();
+								if(mode == 1){
+									print_game_broad_9();	
+								}else{		
+									print_game_broad_11();
+								}
 								print_hands(P);
 								P->sleep_passive1_cd = 1;
 								printf("請選擇所有你想打出的移動牌，選擇完後請輸入0\n");
@@ -1162,7 +1281,11 @@ int8_t play_a_card(player *P){
 					power_generate += P->hands_card[cn-1].power_generate;						
 					handaddplaycardnum(P,cn-1);
 					system("clear");
-					print_game_broad_9();
+					if(mode == 1){
+									print_game_broad_9();	
+								}else{		
+									print_game_broad_11();
+					}
 					print_hands(P);
 					printf("請選擇所有你想打出的移動牌，選擇完後請輸入0\n>");
 					
@@ -1214,7 +1337,11 @@ int8_t play_a_card(player *P){
 			
 			
 			system("clear");
-			print_game_broad_9();
+			if(mode == 1){
+					print_game_broad_9();	
+			}else{		
+					print_game_broad_11();
+			}
 			print_hands(P);
 			
 			int8_t combo_card =-1;
@@ -1414,7 +1541,7 @@ int8_t play_a_card(player *P){
 							}
 						}
 						
-						deal_damage(P, &Player[target(P)], damage_deal+atk+ P->atk_buff);
+						deal_damage(&Player[target(P)], damage_deal+atk+ P->atk_buff);
 						
 						if(P->sleep != 0) gain_armor(P , armor_get+ P->defend_buff);
 						writeinRHU(P,0,1,damage_deal+atk+ P->atk_buff,armor_get+ P->defend_buff,0,P->hands_card[combo_card-1].level,P->hands_card[combo_card-1].cardcode,P->hands_card[cn-1].cardcode);
@@ -1476,7 +1603,7 @@ int8_t play_a_card(player *P){
 					if(range_counter(P,&Player[target(P)],P->hands_card[cn-1].range-rr) == 1 || P->hands_card[cn-1].range == 0){
 						use_skill(P,&Player[target(P)], P->hands_card[cn-1].cardcode , &damage_deal , &armor_get , lv , sleepbasic  , mode ,BotOn);
 						
-						deal_damage(P, &Player[target(P)], damage_deal+atk+ P->atk_buff);
+						deal_damage(&Player[target(P)], damage_deal+atk+ P->atk_buff);
 						
 						if(P->sleep != 0) gain_armor(P , armor_get+ P->defend_buff);
 						
@@ -1521,7 +1648,11 @@ int8_t play_a_card(player *P){
 					
 		}else if(select == 5){
 			system("clear");
-			print_game_broad_9();
+			if(mode == 1){
+				print_game_broad_9();	
+			}else{		
+				print_game_broad_11();
+			}
 			print_hands(P);
 			
 			int8_t combo_card =-1;
@@ -1556,7 +1687,7 @@ int8_t play_a_card(player *P){
 					}
 					if(range_counter(P,&Player[target(P)],P->hands_card[cn-1].range) == 1 || P->hands_card[cn-1].range == 0){
 						use_Ult(P,&Player[target(P)],P->hands_card[cn-1].cardcode , &damage_deal , &armor_get, mode , skillBuyDeck , basicBuyDeck,BotOn);
-						deal_damage(P, &Player[target(P)], damage_deal);
+						deal_damage(&Player[target(P)], damage_deal);
 						gain_armor(P , armor_get);
 						
 						handaddplaycardnum(P,cn-1);
@@ -1592,7 +1723,8 @@ int8_t action_command(player *P){
 		P->end_turn = 1;
 		return -1;
 	}
-	printf("現在是"ANSI_GREEN ANSI_BOLD"%s"ANSI_RESET"的回合，現在是你的執行階段請從以下的動作中選一個執行\n",(*P).charname);
+	printf("現在是"GREEN BOLD"%s"RESET"的回合，現在是你的執行階段請從以下的動作中選一個執行\n",(*P).charname);
+	if(mode == 2) printf("0. 與隊友換位置\n");
 	printf("1. 購買基礎牌\n");
 	printf("2. 購買技能牌\n");
 	printf("3. 打牌\n");
@@ -1635,7 +1767,18 @@ int8_t action_command(player *P){
 	}
 	
 	switch(comm){
-		
+							
+							case 0:  // 購買基礎牌
+							if(P->num ==1 || P->num ==3){
+							swap_place(&Player[1],&Player[3]);
+							}else if(P->num ==0 || P->num ==2){
+								swap_place(&Player[0],&Player[2]);
+							}
+							return 0;
+			
+            	break;
+							
+							
             	case 1:  // 購買基礎牌
 							basic_shop_command(P);
 							return 0;
@@ -1654,7 +1797,7 @@ int8_t action_command(player *P){
 					
 					while(1){
 									int choices_R=0;
-									printf(ANSI_GREEN ANSI_BOLD"%s"ANSI_RESET"你可以捨棄至多一張技能牌來將傷害減少X，X為你捨棄的技能牌等級\n",Player[target(P)].charname);
+									printf(GREEN BOLD"%s"RESET"你可以捨棄至多一張技能牌來將傷害減少X，X為你捨棄的技能牌等級\n",Player[target(P)].charname);
 									printf("0)不捨棄 1)捨棄\n>");
 									
 									if(P->bot ==1 ){
@@ -1856,7 +1999,6 @@ void print_game_broad_9(){
 	//printf("%d %d",BotOn,Player[1].num);
 	printf("玩家一 │ 遊玩角色：");
 	print_aligned_charname(Player[0].charname, len);
-	update_characters(Player[0].character, Player[1].character);
 	printf(" 血量：%hhd 防禦值：%hhd 能量：%hhd 手牌數：%hhd 血量上限：%hhd 防禦上限：%hhd 必殺閥值:%hhd\n", Player[0].hp, Player[0].armor, Player[0].power, Player[0].hands, Player[0].Maxhp, Player[0].Maxarmor, Player[0].Ult_threshold);
 	printf("出牌區：");
 	for(int i = 0 ; i < Player[0].playcardnum ; i++){
@@ -1921,8 +2063,213 @@ void print_game_broad_9(){
 	printf("          ├───────────────────┤           \n");
 	printf("Coordinate│ 1 2 3 4 5 6 7 8 9 │座標                   \n");
 	printf("          └───────────────────┘           \n");
+	return ;
+}
 
-	update_coordinates(Player[0].coordinate, Player[1].coordinate);
+void print_game_broad_11(){
+	if(end_game_detection() == 1) return ;
+	int8_t len = 0;
+	if(utf8_strlen(Player[0].charname) == 3 && utf8_strlen(Player[1].charname) == 3) len = 6;
+	else len = 8;
+	system("clear");
+	//printf("%d %d",BotOn,Player[1].num);
+	printf("玩家一 │ 遊玩角色：");
+	print_aligned_charname(Player[0].charname, len);
+	printf(" 血量：%hhd 防禦值：%hhd 能量：%hhd 手牌數：%hhd 血量上限：%hhd 防禦上限：%hhd 必殺閥值:%hhd\n", Player[0].hp, Player[0].armor, Player[0].power, Player[0].hands, Player[0].Maxhp, Player[0].Maxarmor, Player[0].Ult_threshold);
+	printf("出牌區：");
+	for(int i = 0 ; i < Player[0].playcardnum ; i++){
+			if(Player[0].playcardnum){
+				card cardtemp1;
+				Card_Define(Player[0].playcard[i], &cardtemp1);
+				printf("%d.%s ",i+1,cardtemp1.cardname);
+			}
+		}
+	printf("\n");
+	printf("持續牌區：");
+	for(int i = 0 ; i < Player[0].starting_size ; i++){
+			if(Player[0].starting_size){
+				card cardtemp1;
+				Card_Define(Player[0].starting[i], &cardtemp1);
+				card cardtemp2;
+				Card_Define(Player[0].combo_basic[i], &cardtemp2);
+				printf("%d.%s -%s  ",i+1,cardtemp1.cardname, cardtemp2.cardname);
+			}
+		}
+	printf("\n");
+	print_extra_inf(&Player[0]);
+
+	printf("玩家二 │ 遊玩角色：");
+	print_aligned_charname(Player[1].charname, len);
+	printf(" 血量：%hhd 防禦值：%hhd 能量：%hhd 手牌數：%hhd 血量上限：%hhd 防禦上限：%hhd 必殺閥值:%hhd\n", Player[1].hp, Player[1].armor, Player[1].power, Player[1].hands, Player[1].Maxhp, Player[1].Maxarmor, Player[1].Ult_threshold);
+	printf("出牌區：");
+	for(int i = 0 ; i < Player[1].playcardnum ; i++){
+			if(Player[1].playcardnum){
+				card cardtemp1;
+				Card_Define(Player[1].playcard[i], &cardtemp1);
+				printf("%d.%s ",i+1,cardtemp1.cardname);
+			}
+		}
+	printf("\n");
+	printf("持續牌區：");
+	for(int i = 0 ; i < Player[1].starting_size ; i++){
+			if(Player[1].starting_size){
+				card cardtemp1;
+				Card_Define(Player[1].starting[i], &cardtemp1);
+				card cardtemp2;
+				Card_Define(Player[1].combo_basic[i], &cardtemp2);
+				printf("%d.%s -%s  ",i+1,cardtemp1.cardname, cardtemp2.cardname);
+			}
+		}
+	printf("\n");
+	print_extra_inf(&Player[1]);
+	
+	printf("玩家三 │ 遊玩角色：");
+	print_aligned_charname(Player[2].charname, len);
+	printf(" 血量：%hhd 防禦值：%hhd 能量：%hhd 手牌數：%hhd 血量上限：%hhd 防禦上限：%hhd 必殺閥值:%hhd\n", Player[2].hp, Player[2].armor, Player[2].power, Player[2].hands, Player[2].Maxhp, Player[2].Maxarmor, Player[2].Ult_threshold);
+	printf("出牌區：");
+	for(int i = 0 ; i < Player[2].playcardnum ; i++){
+			if(Player[2].playcardnum){
+				card cardtemp1;
+				Card_Define(Player[2].playcard[i], &cardtemp1);
+				printf("%d.%s ",i+1,cardtemp1.cardname);
+			}
+		}
+	printf("\n");
+	printf("持續牌區：");
+	for(int i = 0 ; i < Player[2].starting_size ; i++){
+			if(Player[2].starting_size){
+				card cardtemp1;
+				Card_Define(Player[2].starting[i], &cardtemp1);
+				card cardtemp2;
+				Card_Define(Player[2].combo_basic[i], &cardtemp2);
+				printf("%d.%s -%s  ",i+1,cardtemp1.cardname, cardtemp2.cardname);
+			}
+		}
+	printf("\n");
+	print_extra_inf(&Player[2]);
+	
+	printf("玩家四 │ 遊玩角色：");
+	print_aligned_charname(Player[3].charname, len);
+	printf(" 血量：%hhd 防禦值：%hhd 能量：%hhd 手牌數：%hhd 血量上限：%hhd 防禦上限：%hhd 必殺閥值:%hhd\n", Player[3].hp, Player[3].armor, Player[3].power, Player[3].hands, Player[3].Maxhp, Player[3].Maxarmor, Player[3].Ult_threshold);
+	printf("出牌區：");
+	for(int i = 0 ; i < Player[3].playcardnum ; i++){
+			if(Player[3].playcardnum){
+				card cardtemp1;
+				Card_Define(Player[3].playcard[i], &cardtemp1);
+				printf("%d.%s ",i+1,cardtemp1.cardname);
+			}
+		}
+	printf("\n");
+	printf("持續牌區：");
+	for(int i = 0 ; i < Player[3].starting_size ; i++){
+			if(Player[3].starting_size){
+				card cardtemp1;
+				Card_Define(Player[3].starting[i], &cardtemp1);
+				card cardtemp2;
+				Card_Define(Player[3].combo_basic[i], &cardtemp2);
+				printf("%d.%s -%s  ",i+1,cardtemp1.cardname, cardtemp2.cardname);
+			}
+		}
+	printf("\n");
+	print_extra_inf(&Player[3]);
+
+	printf("          ┌────────────────────────┐           \n");
+	
+	printf("     Board│ ");
+	for(int i = 1 ; i <= 11 ; i++){
+		if(Player[0].coordinate == i){
+			if(i ==10){
+				printf(" 1 ");
+			}else if(i ==11){
+				printf(" 1");
+			}else{
+				printf("1 ");
+			}
+		}else if(Player[1].coordinate == i){
+			if(i ==10){
+				printf(" 2 ");
+			}else if(i ==11){
+				printf(" 2");
+			}else{
+				printf("2 ");
+			}
+		}else if(Player[2].coordinate == i){
+			if(i ==10){
+				printf(" 3 ");
+			}else if(i ==11){
+				printf(" 3");
+			}else{
+				printf("3 ");
+			}
+		}else if(Player[3].coordinate == i){
+			if(i ==10){
+				printf(" 4 ");
+			}else if(i ==11){
+				printf(" 4");
+			}else{
+				printf("4 ");
+			}
+		}else{
+			if(i ==10){
+				printf(" _ ");
+			}else if(i ==11){
+				printf(" _");
+			}else{
+				printf("_ ");
+			}
+		}	
+	}
+	printf("│版面                   \n");
+	printf("          ├────────────────────────┤           \n");
+	printf("Coordinate│ 1 2 3 4 5 6 7 8 9 10 11│座標                   \n");
+	printf("          ├────────────────────────┤           \n");
+	printf("     Board│ ");
+	for(int i = -11 ; i < 0 ; i++){
+		if(Player[0].coordinate == i){
+			if(i ==-1){
+				printf(" 1 ");
+			}else if(i ==-2){
+				printf(" 1");
+			}else{
+				printf("1 ");
+			}
+		}else if(Player[1].coordinate == i){
+			if(i ==-1){
+				printf(" 2 ");
+			}else if(i ==-2){
+				printf(" 2");
+			}else{
+				printf("2 ");
+			}
+		}else if(Player[2].coordinate == i){
+			if(i ==-1){
+				printf(" 3 ");
+			}else if(i ==-2){
+				printf(" 3");
+			}else{
+				printf("3 ");
+			}
+		}else if(Player[3].coordinate == i){
+			if(i ==-1){
+				printf(" 4 ");
+			}else if(i ==-2){
+				printf(" 4");
+			}else{
+				printf("4 ");
+			}
+		}else{
+		
+			if(i ==-1){
+				printf(" _ ");
+			}else if(i ==-2){
+				printf(" _");
+			}else{
+				printf("_ ");
+			}
+		}	
+	}
+	printf("│版面                   \n");
+	printf("          └────────────────────────┘           \n");
 	return ;
 }
 
@@ -1995,7 +2342,6 @@ void disable_raw_mode() {
 }
 
 void wait_for_space() {
-	if (BotOn == 1) return;
 	enable_raw_mode();
 	printf("按下空白鍵繼續遊戲");
 	int8_t ch;
@@ -2034,16 +2380,15 @@ void print_aligned_charname(const char* name, int8_t width) {
 int8_t focus(player *P){
 	system("clear");
 	int8_t focus = -1;
-	printf("現在是"ANSI_GREEN ANSI_BOLD"%s"ANSI_RESET"在進行\n",P->charname);
+	printf("現在是"GREEN BOLD"%s"RESET"在進行\n",P->charname);
 	printf("請問本回合你要進行專注嘛？\n0. 要\n1. 不要\n");
 	printf(">");
 
-	if(P->bot == 1){
-		focus = botChoice(0, 0, 1, 23);
-		printf("%d\n", focus);
+	if(P->bot ==1 ){
+						focus = botChoice(0,0,1,23);
+																
 	}else{
-		scanf("%hhd", &focus);
-		getchar(); // 吃掉換行
+						scanf("%hhd",&focus);
 	}
 	if(focus == 0){
 		if(remove_card(P) ==-1){
@@ -2087,7 +2432,7 @@ int8_t starting_phase(player *P){
 					
 					while(1){
 									int choices_R=0;
-									printf(ANSI_GREEN ANSI_BOLD"%s"ANSI_RESET"你可以捨棄至多一張技能牌來將傷害減少X，X為你捨棄的技能牌等級\n",Player[target(P)].charname);
+									printf(GREEN BOLD"%s"RESET"你可以捨棄至多一張技能牌來將傷害減少X，X為你捨棄的技能牌等級\n",Player[target(P)].charname);
 									printf("0)不捨棄 1)捨棄\n>");
 									
 									if(P->bot ==1 ){
@@ -2151,7 +2496,7 @@ int8_t Ult_Gain(player *P){
 		Card_Define(P->Ult_deck[2], &cardtemp3);
 		printf("%d) %s 效果：%s\n",2,cardtemp3.cardname,cardtemp3.inf);
 		while(1){
-			printf(ANSI_GREEN ANSI_BOLD"%s"ANSI_RESET"請選擇你要的必殺牌：\n>",P->charname);
+			printf(GREEN BOLD"%s"RESET"請選擇你要的必殺牌：\n>",P->charname);
 			int cho = -1;
 			if(P->bot ==1 ){
 				cho = botChoice(0,0,1,26);
@@ -2186,44 +2531,14 @@ int8_t Ult_Gain(player *P){
 			}
 		}
 	}
-	return 0;
 }
 
 
 
-//=====================================================
+
 
 
 int main(){ //mainfuc
-	SetTraceLogLevel(LOG_NONE);
-	printf("是否要使用圖形介面（GUI）？\n");
-	printf("1. 是\n");
-	printf("2. 否（預設使用文字介面）\n");
-	printf("> ");
-	while (scanf("%hhd", &gui_mode) != 1 || !(gui_mode == 1 || gui_mode == 2)) {
-		getchar(); // 清除錯誤輸入
-		printf("輸入錯誤，請重新輸入（1 或 2）：\n> ");
-	}
-	if (gui_mode == 1) {
-	#ifdef __linux__
-		// 可加強偵測是否是 Ubuntu
-		char *desktop_env = getenv("XDG_CURRENT_DESKTOP");
-		if (desktop_env && (strstr(desktop_env, "Ubuntu") || strstr(desktop_env, "GNOME") || strstr(desktop_env, "ubuntu:GNOME"))) {
- 
-			printf("檢測到 Ubuntu 環境，啟用 GUI 模式...\n");
-		} else {
-			printf("警告：你選擇了 GUI 模式，但未檢測到 Ubuntu 環境，可能會發生相容性問題。\n");
-			wait_for_space();
-		}
-	#else
-		printf("目前僅支援 Ubuntu 環境的 GUI 模式，將使用文字介面（TUI）進行遊戲。\n");
-		wait_for_space();
-		gui_mode = 2;
-	#endif
-	}
-	if (gui_mode == 1) {
-		start_board_gui();
-	}
 	Player[0].starting_size = 0;
 	Player[1].starting_size = 0;
 	Player[2].starting_size = 0;
@@ -2253,8 +2568,7 @@ int main(){ //mainfuc
 	Player[2].num = 2;
 	Player[3].num = 3;
 	
-	Player[0].coordinate = 4;
-	Player[1].coordinate = 6;
+	
 	
 	//RelicOn = -1
 	print_header();
@@ -2483,7 +2797,7 @@ int main(){ //mainfuc
 	initialization_skill_shop(&Player[1]);
 	initialization_deck(&Player[0]);
 	initialization_deck(&Player[1]);	
-
+	
 	print_header();	
 	wait_for_space();
 	
@@ -2492,20 +2806,42 @@ int main(){ //mainfuc
 	}else{
 		Right_MAX = 11;
 	}
-
 	//遊戲開始
 	int8_t round = 0;
 	int8_t flip_coins=0;
+	 int current = -1;
 	flip_coins = rand()%2+1;
 	
 	initialize_player(&Player[0]);
 	initialize_player(&Player[1]);
 	if(mode ==2){
+		initialization_skill_shop(&Player[2]);
+		initialization_skill_shop(&Player[3]);
+		initialization_deck(&Player[2]);
+		initialization_deck(&Player[3]);	
 		initialize_player(&Player[2]);
 		initialize_player(&Player[3]);
+		Player[0].coordinate = 5;
+		Player[1].coordinate = 7;
+		Player[2].coordinate = -7;
+		Player[3].coordinate = -5;
+		
+		Player[0].team = 1;
+		Player[1].team = 0;
+		Player[2].team = 1;
+		Player[3].team = 0;
+		
+		
+		Player[0].alive = 1;
+		Player[1].alive = 1;
+		Player[2].alive = 1;
+		Player[3].alive = 1;
 	}else{
 		Player[2].character = -1;
 		Player[3].character = -1;
+		Player[0].coordinate = 4;
+		Player[1].coordinate = 6;
+		
 	}
 	if(BotOn == 1){
 	Player[1].bot = 1;
@@ -2514,22 +2850,18 @@ int main(){ //mainfuc
 	
 	if(flip_coins == 1){
 		//player 1 first
-		if(mode == 1){
+		
 			Player[0].first = 1;
-		}
+		
 	}else{
 		//player 2 first
-		if(mode == 1){
 			Player[1].first = 1;
-		}
-	}
-	
-	if(Player[0].first == 1){//玩家一先手
 		
 	}
+	
+	
 	while(1){
 		 round++;
-		 update_characters_info(Player[0], Player[1]);
 		 turn = 0;
 		if(mode == 1){//單人模式
 			
@@ -2546,7 +2878,6 @@ int main(){ //mainfuc
 				if(round == 1){
 					draw_card(4,&Player[0]);
 					draw_card(6,&Player[1]);
-					update_characters_info(Player[0], Player[1]);
 				}
 			}else{
 				if(round % 2 == 1){
@@ -2561,8 +2892,7 @@ int main(){ //mainfuc
 			
 				if(round == 1){
 					draw_card(4,&Player[1]);
-					draw_card(6,&Player[0]);
-					update_characters_info(Player[0], Player[1]);	
+					draw_card(6,&Player[0]);	
 				}
 			}
 			
@@ -2618,6 +2948,8 @@ int main(){ //mainfuc
 				}
 			} // 執行階段結束
 			
+			
+			
 			if(Player[0].first == 1){
 				if(round % 2 == 1){	
 					ending_phase(&Player[0]);
@@ -2638,10 +2970,50 @@ int main(){ //mainfuc
 				return 0;
 			}
 			//判斷輸贏
+		}else{
+			while(1){
+			turn++;
+			if (round == 1) {
+						
+                for (int i = 0; i < 4; i++) draw_card((i == 0) ? 4 : 6, &Player[i]);
+                current = (Player[0].first) ? 0 : 1;
+                starting_phase(&Player[current]);
+            } else {
+            		
+                starting_phase(&Player[current]);
+            }
+						
+            Ult_Gain(&Player[target(&Player[current])]);
+            Ult_Gain(&Player[current]);
+
+           	if(turn==1){
+           		if (focus(&Player[current]) == -1) break;
+           		turn= 2;
+           	}
+            print_game_broad_11();
+            action_command(&Player[current]);
+            
+						
+            if (Player[current].end_turn == 1) {
+            	
+                ending_phase(&Player[current]);
+                if (end_game_detection() == 1) {
+                    print_end_game();
+                    wait_for_space_end();
+                    return 0;
+                }
+                current = get_next_player(current, Player);
+                break;
+            }
+            }
+            
 		}
+			}
+			
+			
 		
 		
 		
-	} 
+	 
 	return 0;
 }
