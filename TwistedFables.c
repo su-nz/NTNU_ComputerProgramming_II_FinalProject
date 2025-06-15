@@ -2603,7 +2603,7 @@ int main(){ //mainfuc
     }
 
     Mix_PlayMusic(bgm, -1); // -1 = 無限循環播放（背景音樂）	
-	
+	Mix_VolumeMusic(64);
 
 
 	SetTraceLogLevel(LOG_NONE);
