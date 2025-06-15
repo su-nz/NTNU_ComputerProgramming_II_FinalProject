@@ -12,11 +12,11 @@
 #define Ult_threshold Ultt
 #define Maxpower 25
 #define DeckMax 200
-#define GREEN "\033[32m"
-#define RED   "\033[31m"
-#define BLUE  "\033[34m"
-#define BOLD  "\033[1m"
-#define RESET "\033[0m"
+#define ANSI_GREEN "\033[32m"
+#define ANSI_RED   "\033[31m"
+#define ANSI_BLUE  "\033[34m"
+#define ANSI_BOLD  "\033[1m"
+#define ANSI_RESET "\033[0m"
 
 #define POISON_CARD_ID 999
 
