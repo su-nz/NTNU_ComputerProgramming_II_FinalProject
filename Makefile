@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -std=c99 -Wall -Wextra -Wno-unused-parameter -Wno-unused-function
-CFLAGS += -Iexternal/SDL/include -Iexternal/SDL_mixer/include
+CFLAGS += -Iinclude
 
 SRC = TwistedFables.c Function.c Skill.c Card.c vector.c board_gui.c
 OBJ = $(SRC:.c=.o)
@@ -8,8 +8,8 @@ TARGET = TwistedFables
 
 LIBS = \
   raylib/build/raylib/libraylib.a \
-  external/libSDL2.a \
-  external/libSDL2_mixer.a \
+  ./libSDL2.a \
+  ./libSDL2_mixer.a \
   -lGL -lm -lpthread -ldl -lrt -lX11
 
 .PHONY: all clean run
