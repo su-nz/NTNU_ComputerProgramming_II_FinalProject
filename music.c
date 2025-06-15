@@ -11,6 +11,15 @@ makefile example:
 
 	- gcc music.c -o music `sdl2-config --cflags --libs` -lSDL2_mixer
 
+	 安裝 SDL2 和 SDL_mixer
+	
+	1.Ubuntu / Debian:
+	
+	sudo apt install libsdl2-dev libsdl2-mixer-dev
+	
+	2.macOS (使用 Homebrew):
+	
+	brew install sdl2 sdl2_mixer
 
 */
 
