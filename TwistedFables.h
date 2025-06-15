@@ -7,6 +7,9 @@
 #include <time.h> 
 #include <unistd.h>
 #include <termios.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
+#include <signal.h>
 #include "raylib.h"
 #include "vector.h"
 #include "board_gui.h"

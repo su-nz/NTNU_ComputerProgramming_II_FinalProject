@@ -24,6 +24,10 @@ int8_t gui_mode = 0;
 
 int RedHoodHPtemp=30;
 
+void handle_sigint(int sig) {
+    printf("\n收到 Ctrl+C，中止程式...\n");
+    exit(0);
+}
 
 int8_t initialize_player(player *P){
 	if(P->character == 0){
@@ -481,13 +485,15 @@ int8_t skill_shop_command(player *P){
 						P->power -=cardtemp1.cost;
 						Card_Define(skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1], &cardtemp1);
 						writeinRHU(P,4,0,0,0,0,cc,0,0);
-						if(skillBuyDeck[P->num][0].SIZE > 0 && cardtemp1.cost == 0){
+						if(cardtemp1.cost == 0){
 							P->passive[P->passive_n] = skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1];
 							skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1] = 0;
 							skillBuyDeck[P->num][0].SIZE--;
 							if(skillBuyDeck[P->num][0].SIZE <=0) skillBuyDeck[P->num][0].SIZE = 0;
 							P->passive_n++;
+							if(skillBuyDeck[P->num][0].SIZE >0)Card_Define(skillBuyDeck[P->num][0].array[skillBuyDeck[P->num][0].SIZE-1], &cardtemp1);
 						}
+						printf_skill_shop(P->num);
 					}
 					
 				break;
@@ -504,13 +510,16 @@ int8_t skill_shop_command(player *P){
 						skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1] = 0;
 						skillBuyDeck[P->num][1].SIZE--;
 						P->power -=cardtemp2.cost;
-						if(skillBuyDeck[P->num][1].SIZE > 0 && cardtemp2.cost == 0){
+						Card_Define(skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1], &cardtemp2);
+						if(cardtemp2.cost == 0){
 							P->passive[P->passive_n] = skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1];
 							skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1] = 0;
 							skillBuyDeck[P->num][1].SIZE--;
 							if(skillBuyDeck[P->num][1].SIZE <=0) skillBuyDeck[P->num][1].SIZE = 0;
 							P->passive_n++;
+							if(skillBuyDeck[P->num][1].SIZE >0)Card_Define(skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][1].SIZE-1], &cardtemp2);
 						}
+						printf_skill_shop(P->num);
 					}
 					writeinRHU(P,4,0,0,0,0,cc,0,0);
 				break;
@@ -526,14 +535,17 @@ int8_t skill_shop_command(player *P){
 						pushbackVector(&P->discard, skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1]);
 						skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1] = 0;
 						skillBuyDeck[P->num][2].SIZE--;
-						P->power -=cardtemp3.cost;
-						if(skillBuyDeck[P->num][2].SIZE > 0 && cardtemp3.cost == 0){
+						P->power -=cardtemp2.cost;
+						Card_Define(skillBuyDeck[P->num][1].array[skillBuyDeck[P->num][2].SIZE-1], &cardtemp2);
+						if(cardtemp2.cost == 0){
 							P->passive[P->passive_n] = skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1];
-							P->passive_n++;
 							skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][2].SIZE-1] = 0;
 							skillBuyDeck[P->num][2].SIZE--;
 							if(skillBuyDeck[P->num][2].SIZE <=0) skillBuyDeck[P->num][2].SIZE = 0;
+							P->passive_n++;
+							if(skillBuyDeck[P->num][2].SIZE >0)Card_Define(skillBuyDeck[P->num][2].array[skillBuyDeck[P->num][1].SIZE-1], &cardtemp2);
 						}
+						printf_skill_shop(P->num);
 					}
 					writeinRHU(P,4,0,0,0,0,cc,0,0);
 				break;
@@ -2018,6 +2030,7 @@ int8_t utf8_strlen(const char *s) {
 }
 
 void print_game_broad_9(){
+	
 	if(end_game_detection() == 1) return ;
 	int8_t len = 0;
 	if(utf8_strlen(Player[0].charname) == 3 && utf8_strlen(Player[1].charname) == 3) len = 6;
@@ -2074,6 +2087,7 @@ void print_game_broad_9(){
 		}
 	printf("\n");
 	print_extra_inf(&Player[1]);
+	
 
 	printf("          ┌───────────────────┐           \n");
 	
@@ -2093,6 +2107,7 @@ void print_game_broad_9(){
 	printf("          └───────────────────┘           \n");
 
 	update_coordinates(Player[0].coordinate, Player[1].coordinate);
+	
 	return ;
 }
 void print_game_broad_11(){
@@ -2569,6 +2584,28 @@ int8_t Ult_Gain(player *P){
 
 
 int main(){ //mainfuc
+
+	signal(SIGINT, handle_sigint);
+	 if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+        fprintf(stderr, "SDL_Init error: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        fprintf(stderr, "Mix_OpenAudio error: %s\n", Mix_GetError());
+        return 1;
+    }
+
+    Mix_Music* bgm = Mix_LoadMUS("music.mp3");
+    if (!bgm) {
+        fprintf(stderr, "Load BGM error: %s\n", Mix_GetError());
+        return 1;
+    }
+
+    Mix_PlayMusic(bgm, -1); // -1 = 無限循環播放（背景音樂）	
+	
+
+
 	SetTraceLogLevel(LOG_NONE);
 	printf("是否要使用圖形介面（GUI）？\n");
 	printf("1. 是\n");
@@ -2595,6 +2632,7 @@ int main(){ //mainfuc
 		gui_mode = 2;
 	#endif
 	}
+	
 	
 	Player[0].starting_size = 0;
 	Player[1].starting_size = 0;
@@ -2624,6 +2662,7 @@ int main(){ //mainfuc
 	Player[1].num = 1;
 	Player[2].num = 2;
 	Player[3].num = 3;
+	
 	
 	
 	//RelicOn = -1
@@ -2853,15 +2892,7 @@ int main(){ //mainfuc
 	initialization_skill_shop(&Player[1]);
 	initialization_deck(&Player[0]);
 	initialization_deck(&Player[1]);	
-
-	// GUI 開始前 → 更新角色圖與位置
-	if (gui_mode == 1) {
-		update_coordinates(Player[0].coordinate, Player[1].coordinate);
-		update_characters(player1_char, player2_char);
-		update_characters_info(Player[0], Player[1]);
-		start_board_gui();
-	}
-
+	
 	print_header();	
 	wait_for_space();
 	
@@ -2870,11 +2901,10 @@ int main(){ //mainfuc
 	}else{
 		Right_MAX = 11;
 	}
-
 	//遊戲開始
 	int8_t round = 0;
 	int8_t flip_coins=0;
-	int current = -1;
+	 int current = -1;
 	flip_coins = rand()%2+1;
 	
 	initialize_player(&Player[0]);
@@ -2906,6 +2936,7 @@ int main(){ //mainfuc
 		Player[3].character = -1;
 		Player[0].coordinate = 4;
 		Player[1].coordinate = 6;
+		
 	}
 	if(BotOn == 1){
 	Player[1].bot = 1;
@@ -2922,9 +2953,11 @@ int main(){ //mainfuc
 			Player[1].first = 1;
 		
 	}
+	
+	
 	while(1){
+		update_characters_info(Player[0], Player[1]);
 		 round++;
-		 update_characters_info(Player[0], Player[1]);
 		 turn = 0;
 		if(mode == 1){//單人模式
 			
@@ -2957,7 +2990,7 @@ int main(){ //mainfuc
 				if(round == 1){
 					draw_card(4,&Player[1]);
 					draw_card(6,&Player[0]);
-					update_characters_info(Player[0], Player[1]);		
+					update_characters_info(Player[0], Player[1]);	
 				}
 			}
 			
@@ -3013,6 +3046,8 @@ int main(){ //mainfuc
 				}
 			} // 執行階段結束
 			
+			
+			
 			if(Player[0].first == 1){
 				if(round % 2 == 1){	
 					ending_phase(&Player[0]);
@@ -3031,7 +3066,9 @@ int main(){ //mainfuc
 				print_end_game();
 				wait_for_space_end();
 				return 0;
-			}else{
+			}
+			//判斷輸贏
+		}else{
 			while(1){
 			turn++;
 			if (round == 1) {
@@ -3069,7 +3106,10 @@ int main(){ //mainfuc
             }
             
 		}
-	}
-	return 0;
-}
+			}
+			 Mix_HaltMusic();
+	Mix_FreeMusic(bgm);
+	    Mix_CloseAudio();
+	    SDL_Quit();	
+			return 0;
 }
