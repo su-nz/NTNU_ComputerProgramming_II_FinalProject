@@ -2221,9 +2221,7 @@ int main(){ //mainfuc
 		gui_mode = 2;
 	#endif
 	}
-	if (gui_mode == 1) {
-		start_board_gui();
-	}
+	
 	Player[0].starting_size = 0;
 	Player[1].starting_size = 0;
 	Player[2].starting_size = 0;
@@ -2483,6 +2481,14 @@ int main(){ //mainfuc
 	initialization_skill_shop(&Player[1]);
 	initialization_deck(&Player[0]);
 	initialization_deck(&Player[1]);	
+
+	// GUI 開始前 → 更新角色圖與位置
+	if (gui_mode == 1) {
+		update_coordinates(Player[0].coordinate, Player[1].coordinate);
+		update_characters(player1_char, player2_char);
+		update_characters_info(Player[0], Player[1]);
+		start_board_gui();
+	}
 
 	print_header();	
 	wait_for_space();
