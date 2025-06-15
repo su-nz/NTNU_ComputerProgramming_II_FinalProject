@@ -7,15 +7,18 @@
 #include <time.h> 
 #include <unistd.h>
 #include <termios.h>
+#include "raylib.h"
 #include "vector.h"
+#include "board_gui.h"
 #define Ult_threshold Ultt
 #define Maxpower 25
 #define DeckMax 200
-#define GREEN "\033[32m"
-#define RED   "\033[31m"
-#define BLUE  "\033[34m"
-#define BOLD  "\033[1m"
-#define RESET "\033[0m"
+#define ANSI_GREEN "\033[32m"
+#define ANSI_RED   "\033[31m"
+#define ANSI_BLUE  "\033[34m"
+#define ANSI_BOLD  "\033[1m"
+#define ANSI_RESET "\033[0m"
+
 
 typedef struct Character{
 	int8_t Maxhp;
@@ -157,3 +160,4 @@ int8_t botChoice(int16_t mode , int16_t min , int16_t  max  , int16_t situation)
 int8_t Redhoodsavefile(player *P,int BotOn);
 int8_t clearRHU(player *P);
 int8_t writeinRHU(player *P,int8_t a1,int8_t a2,int8_t a3,int8_t a4,int8_t a5,int8_t a6,int8_t a7,int8_t a8);
+
