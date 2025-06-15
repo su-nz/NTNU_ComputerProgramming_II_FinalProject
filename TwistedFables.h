@@ -113,7 +113,10 @@ typedef struct Player{
 	int16_t hands_select[50];//手牌選取
 	int16_t Ult_deck[3];
 	int16_t Redhoodsave[3];
+	int immune;
 	RHU RedUlt;
+	int8_t mulan_draw_buff; //花木蘭抽牌buff 
+
 	
 }player;
 
@@ -177,3 +180,4 @@ void print_game_broad_11();
 int8_t check_location(int8_t coor);
 int8_t swap_place(player *P1 ,player *P2);
 
+int get_affordable_card_choices(player *P, int* choices_out);

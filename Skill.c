@@ -11,6 +11,37 @@ int8_t add_card_to_starting(player *P,int16_t card_id  ,int16_t combo_cardid ,in
 	return 0;
 }
 
+bool is_kaguya_defense_card(int id){
+    return id == 74 || id == 75 || id == 76;
+}
+
+void remove_card_interactively(player* p) {
+    if (p->hands <= 0) return;
+
+    printf("請選擇要移除的手牌（0 ~ %d）：\n", p->hands - 1);
+    for (int i = 0; i < p->hands; i++) {
+        printf("[%d] 卡片名稱: %s (ID: %d)\n", i, p->hands_card[i].cardname, p->hands_card[i].cardcode);
+    }
+
+    int select = 0;
+    scanf("%d", &select);
+    if (select < 0 || select >= p->hands) {
+        printf("選擇錯誤，取消移除。\n");
+        return;
+    }
+
+    int removed_id = p->hands_card[select].cardcode;
+    remove_card_from_hand(p, select);
+    printf("你移除了卡片 ID %d。\n", removed_id);
+}
+
+void remove_card_from_deck_index(player* p, int index) {
+    if (index < 0 || index >= p->deck.SIZE) return;
+    for (int i = index; i < p->deck.SIZE - 1; i++) {
+        p->deck.array[i] = p->deck.array[i + 1];
+    }
+    p->deck.SIZE--;
+}
 
 int8_t startingskill(player* you ,player *P,int16_t card_id,int16_t lv ){
 	if(card_id == 14){
@@ -35,6 +66,25 @@ int8_t startingskill(player* you ,player *P,int16_t card_id,int16_t lv ){
 		draw_card( 6-you->sleep_hp, you);
 		you->sleep_hp = -2;
 	}
+	else if(card_id == 78){
+	    if(range_counter(you, P, 4) == 0){
+		deal_damage(you, P, 4);
+	    }
+	}
+	else if(card_id == 79){
+	    if(range_counter(you, P, 4) == 0){
+		deal_damage(you, P, 6);
+	    }
+	}
+	else if(card_id == 82){
+	    move_adjacent_to_player(P, you);
+	    deal_damage(you, P, 3);
+	}else if(card_id == 154){ // 暴風前夕
+        if(you->qi < 12) { // 假設氣的上限是12
+            you->qi++;
+            printf("暴風前夕觸發，%s 獲得1點氣，目前：%d\n", you->charname, you->qi);
+        }
+    }	
 	return 0;
 }
 
@@ -546,13 +596,41 @@ int8_t use_Ult(player* you,player *P,int16_t card_id , int8_t *damage_output , i
     }
     else if (card_id == 34) { // 醞釀之災
         *damage_output = 3;
-        // 這個效果比較複雜，需要額外的UI互動讓玩家選擇。
-        // 作為初步實作，我們先印出提示訊息
-		//(選擇棄牌堆卡牌洗回牌庫的功能待實作)。
         printf("發動了醞釀之災！\n");
-        // 可以在此處呼叫一個未來的函式，如: discard_to_deck_interactive(you, P, 3);
     }
-
+	else if(card_id == 80){ // 炙熱的竹刀
+	    you->immune = 1;
+	}
+	else if(card_id == 81){ // 注定的審判
+	    *armor_output = 6;
+	    int diff = you->armor - P->armor;
+	    if(diff > 0){
+		*damage_output = diff;
+	    } else {
+		*damage_output = 0;
+	    }
+	}
+	else if(card_id == 82){ // 躁動的血性
+	    move_adjacent_to_player(P, you); // 把對手移到你旁邊
+	    *damage_output = 3;
+	    add_card_to_starting(you, card_id, 0, 0); // 下一回合再次觸發
+	}    
+	// --- 加入花木蘭必殺技 ---
+    if(card_id == 68) { // 氣沖雲霄
+        you->mulan_draw_buff += 4;
+        printf("%s 發動了氣沖雲霄，準備在本回合結束時額外抽 4 張牌！\n", you->charname);
+    }
+    else if(card_id == 69) { // 直面混沌
+        move_adjacent_to_player(you, P);
+        you->qi += 3;
+        if (you->qi > 12) you->qi = 12; // 假設氣的上限是12
+        printf("%s 發動了直面混沌，移動到對手身邊並獲得 3 點氣，目前氣: %d\n", you->charname, you->qi);
+    }
+    else if(card_id == 70) { // 雷霆一擊
+        *damage_output = you->qi;
+        printf("%s 發動了雷霆一擊，花費了 %d 點氣，造成 %d 點傷害！\n", you->charname, you->qi, *damage_output);
+        you->qi = 0;
+    }
 	return 0;
 }
 
@@ -852,6 +930,111 @@ int8_t use_skill(player* you,player *P,int16_t card_id , int8_t *damage_output ,
             case 31: // 破碎的命運
                 move_adjacent_to_player(you, P);
                 break;
+		}
+	}
+	// === 輝夜姬：攻擊技能 ===
+	else if(card_id == 71 || card_id == 72 || card_id == 73){
+	    *armor_output = 0;
+	    *damage_output = lv;
+	    if(you->armor >= 3){
+		*damage_output += 1;
+	    }
+	}
+
+	// === 輝夜姬：防禦技能 ===
+	else if(card_id == 74 || card_id == 75 || card_id == 76){
+	    *armor_output = lv;
+	    *damage_output = 0;
+
+	    int peek = lv; // 看幾張
+	    for(int i = 0; i < peek && i < you->deck.SIZE; i++){
+		int top = you->deck.array[you->deck.SIZE - 1 - i];
+		if(is_kaguya_defense_card(top)){
+		    pushbackVector(&you->hands, top);
+		    remove_card_from_deck_index(you, you->deck.SIZE - 1 - i);
+		    break;
+		}
+	    }
+	}
+
+	// === 輝夜姬：移動技能 ===
+	else if(card_id == 77 || card_id == 78 || card_id == 79){
+	    *armor_output = 0;
+	    *damage_output = lv;
+	    if(you->hp > 1){
+		you->hp -= 1;
+		remove_card_interactively(you); // 讓玩家選擇移除卡
+	    }
+	    add_card_to_starting(you, card_id, 0, lv); // 持續效果
+	}
+
+	//花木蘭
+	// 攻擊技能鏈 (不容小覷, 勢不可擋, 堅不可摧)
+    if(card_id >= 59 && card_id <= 61) {
+        card C;
+        Card_Define(card_id, &C);
+        *damage_output = C.damage + lv;
+
+        // 將對手放置到另一個相鄰格子
+        int8_t current_pos = P->coordinate;
+        int8_t your_pos = you->coordinate;
+        int8_t other_adjacent_pos = (current_pos == your_pos + 1) ? your_pos - 1 : your_pos + 1;
+        
+        int8_t Right_MAX = (mode == 1) ? 9 : 11;
+        if (other_adjacent_pos >= 1 && other_adjacent_pos <= Right_MAX) {
+            P->coordinate = other_adjacent_pos;
+            printf("%s 被移動到格子 %d\n", P->charname, P->coordinate);
+        }
+
+        // 檢查邊緣棄牌效果
+        if (P->coordinate == 1 || P->coordinate == Right_MAX) {
+            if (P->hands > 0) {
+                int rand_card_idx = rand() % P->hands;
+                printf("%s 位於戰鬥軌道邊緣，隨機棄掉一張手牌！\n", P->charname);
+                discard_card_from_hand(P, rand_card_idx);
+            }
+        }
+    }
+    // 防禦技能鏈 (以靜制動, 以柔克剛, 以弱勝強)
+    else if(card_id >= 62 && card_id <= 64) {
+        card C;
+        Card_Define(card_id, &C);
+        *armor_output = lv; // 防禦O
+        you->mulan_draw_buff += C.level; // 設置結束階段抽牌buff
+        printf("%s 準備在本回合結束時，花費氣額外抽牌 (至多 %d 張)\n", you->charname, you->mulan_draw_buff);
+    }
+    // 移動技能鏈 (永不退縮, 毫不留情, 絕不饒恕)
+    else if(card_id >= 65 && card_id <= 67) {
+        card C;
+        Card_Define(card_id, &C);
+        *damage_output = C.damage;
+
+        // 擊退對手
+        int8_t knockback = lv;
+        int8_t direction = (P->coordinate > you->coordinate) ? 1 : -1;
+        int8_t Right_MAX = (mode == 1) ? 9 : 11;
+
+        for (int i = 0; i < knockback; ++i) {
+            int8_t next_pos = P->coordinate + direction;
+            if (next_pos >= 1 && next_pos <= Right_MAX) {
+                P->coordinate = next_pos;
+            } else {
+                break; // 到達邊界
+            }
+        }
+        printf("%s 被擊退到格子 %d\n", P->charname, P->coordinate);
+
+        // 將自己放置到相鄰格子
+        move_adjacent_to_player(you, P);
+        printf("%s 移動到 %s 的相鄰格子 %d\n", you->charname, P->charname, you->coordinate);
+
+        // 檢查邊緣棄牌效果
+        if (P->coordinate == 1 || P->coordinate == Right_MAX) {
+            if (P->hands > 0) {
+                int rand_card_idx = rand() % P->hands;
+                printf("%s 位於戰鬥軌道邊緣，隨機棄掉一張手牌！\n", P->charname);
+                discard_card_from_hand(P, rand_card_idx);
+            }
         }
     }
 	return 0;

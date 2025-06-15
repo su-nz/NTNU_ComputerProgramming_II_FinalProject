@@ -183,6 +183,7 @@ int8_t inputcharacter(player *P, int8_t characternum) { //寫入角色資訊
 	P->sleep_hp=-1;
 	(*P).alice=-1; //愛麗絲 狀態 -1代表不是愛麗絲
 	(*P).qi=-1; //花木蘭 氣 -1代表不是花木蘭
+	(*P).mulan_draw_buff = 0; //花木蘭抽牌buff // <--- 新增此行
 	(*P).combo=-1; //桃樂絲 連擊 -1代表不是桃樂絲
 	(*P).tentacle= -1;
 	(*P).Scheherazade_token=-1;
