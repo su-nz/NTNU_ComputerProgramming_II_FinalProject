@@ -62,3 +62,41 @@
 make
 ./TwistedFables
 ```
+---
+# more install
+
+```
+CC = gcc
+CFLAGS = -std=c99 -Wall -Wextra -Wno-unused-parameter -Wno-unused-function
+
+SRC = TwistedFables.c Function.c Skill.c Card.c vector.c board_gui.c
+OBJ = $(SRC:.c=.o)
+TARGET = TwistedFables
+
+LIBS = raylib/build/raylib/libraylib.a -lGL -lm -lpthread -ldl -lrt -lX11
+
+.PHONY: all clean
+
+all: $(TARGET)
+
+$(TARGET): $(OBJ)
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+clean:
+	rm -f *.o $(TARGET)
+
+```
+
+```
+sudo apt update
+sudo apt install -y gcc make libraylib-dev libgl1-mesa-dev libx11-dev libpthread-stubs0-dev
+```
+
+之前在 不同路徑下跑過 cmake，導致 raylib/build 資料夾裡的 CMakeCache.txt 指向了舊的專案位置，現在換資料夾後 CMake 檔案「對不上」
+```
+rm -rf raylib/build
+./build_raylib.sh
+```

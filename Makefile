@@ -5,7 +5,7 @@ SRC = TwistedFables.c Function.c Skill.c Card.c vector.c board_gui.c
 OBJ = $(SRC:.c=.o)
 TARGET = TwistedFables
 
-LIBS = -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 `sdl2-config --cflags --libs` -lSDL2_mixer
+LIBS = raylib/build/raylib/libraylib.a -lGL -lm -lpthread -ldl -lrt -lX11 `sdl2-config --cflags --libs` -lSDL2_mixer
 
 .PHONY: all clean
 
