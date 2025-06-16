@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -std=c99 -Wall -Wextra -Wno-unused-parameter -Wno-unused-function
+CFLAGS = -std=c99 -w
 CFLAGS += -Iinclude
 
 SRC = TwistedFables.c Function.c Skill.c Card.c vector.c board_gui.c
